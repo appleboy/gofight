@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestHelloWorld(t *testing.T) {
+func TestGinHelloWorld(t *testing.T) {
 	r := mocha.New()
 
 	r.GET("/").

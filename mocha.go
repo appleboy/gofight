@@ -3,6 +3,8 @@ package mocha
 import (
 	"bytes"
 	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/test"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -11,6 +13,9 @@ import (
 
 // response handling func type
 type ResponseFunc func(*httptest.ResponseRecorder)
+
+// echo response handling func type
+type EchoResponseFunc func(*test.ResponseRecorder)
 
 type RequestConfig struct {
 	Method  string
@@ -75,7 +80,7 @@ func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	return rc
 }
 
-func (rc *RequestConfig) RunGinEngine(r *gin.Engine, response ResponseFunc) {
+func (rc *RequestConfig) InitialTest() (*http.Request, *httptest.ResponseRecorder) {
 	qs := ""
 	if strings.Contains(rc.Path, "?") {
 		ss := strings.Split(rc.Path, "?")
@@ -112,7 +117,39 @@ func (rc *RequestConfig) RunGinEngine(r *gin.Engine, response ResponseFunc) {
 	}
 
 	w := httptest.NewRecorder()
+
+	return req, w
+}
+
+func (rc *RequestConfig) RunGinEngine(r *gin.Engine, response ResponseFunc) {
+
+	req, w := rc.InitialTest()
 	r.ServeHTTP(w, req)
 
 	response(w)
+}
+
+func (rc *RequestConfig) RunEchoEngine(e *echo.Echo, response EchoResponseFunc) {
+
+	switch rc.Method {
+	case "GET":
+		rc.Method = echo.GET
+	case "POST":
+		rc.Method = echo.POST
+	case "PUT":
+		rc.Method = echo.PUT
+	case "DELETE":
+		rc.Method = echo.DELETE
+	}
+
+	rq := test.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
+	rec := test.NewResponseRecorder()
+
+	for k, v := range rc.Headers {
+		rq.Header().Add(k, v)
+	}
+
+	e.ServeHTTP(rq, rec)
+
+	response(rec)
 }
