@@ -9,10 +9,11 @@ func helloHandler(c *gin.Context) {
 	c.String(http.StatusOK, "Hello World")
 }
 
-func main() {
+func GinEngine() *gin.Engine {
+	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
 	r.GET("/", helloHandler)
 
-	r.Run(":8080")
+	return r
 }
