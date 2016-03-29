@@ -1,4 +1,4 @@
-package mocha
+package ginMocha
 
 import (
 	"github.com/buger/jsonparser"
