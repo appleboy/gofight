@@ -3,10 +3,10 @@ package mocha
 import (
 	"bytes"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
-	"log"
 )
 
 // request handling func type to replace gin.HandlerFunc
@@ -23,7 +23,7 @@ type RequestConfig struct {
 	Middlewares []gin.HandlerFunc
 	Handler     RequestFunc
 	Callback    ResponseFunc
-	Debug bool
+	Debug       bool
 }
 
 func (rc *RequestConfig) SetDebug(enable bool) *RequestConfig {
@@ -87,6 +87,7 @@ func (rc *RequestConfig) Run() {
 		log.Printf("Request Path: %s", rc.Path)
 		log.Printf("Request Body: %s", rc.Body)
 		log.Printf("Request Headers: %s", rc.Headers)
+		log.Printf("Request Header: %s", req.Header)
 	}
 
 	w := httptest.NewRecorder()

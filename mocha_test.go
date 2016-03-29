@@ -9,6 +9,12 @@ import (
 	"testing"
 )
 
+// Binding from JSON
+type Login struct {
+	A int `json:"a" binding:"required"`
+	B int `json:"b" binding:"required"`
+}
+
 func helloHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"hello": "world",
@@ -25,7 +31,7 @@ func queryHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"hello": text,
-		"foo": foo,
+		"foo":   foo,
 	})
 }
 
@@ -37,6 +43,16 @@ func postHandler(c *gin.Context) {
 		"a": a,
 		"b": b,
 	})
+}
+
+func testPostJsonHandler(c *gin.Context) {
+	var json Login
+	if c.BindJSON(&json) == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"a": json.A,
+			"b": json.B,
+		})
+	}
 }
 
 func putHandler(c *gin.Context) {
@@ -68,7 +84,7 @@ func TestHelloWorld(t *testing.T) {
 func TestHeader(t *testing.T) {
 	r := &RequestConfig{
 		Handler: textHandler,
-		Headers: map[string]string {
+		Headers: map[string]string{
 			"Content-Type": "text/plain",
 		},
 		Callback: func(r *httptest.ResponseRecorder) {
@@ -83,7 +99,7 @@ func TestHeader(t *testing.T) {
 
 func TestQuery(t *testing.T) {
 	r := &RequestConfig{
-		Path: "/hello?text=world&foo=bar",
+		Path:    "/hello?text=world&foo=bar",
 		Handler: queryHandler,
 		Callback: func(r *httptest.ResponseRecorder) {
 			data := []byte(r.Body.String())
@@ -102,8 +118,8 @@ func TestQuery(t *testing.T) {
 
 func TestPost(t *testing.T) {
 	r := &RequestConfig{
-		Method: "POST",
-		Body: "a=1&b=2",
+		Method:  "POST",
+		Body:    "a=1&b=2",
 		Handler: postHandler,
 		Callback: func(r *httptest.ResponseRecorder) {
 			data := []byte(r.Body.String())
@@ -120,10 +136,30 @@ func TestPost(t *testing.T) {
 	r.Run()
 }
 
+func TestPostJsonData(t *testing.T) {
+	r := &RequestConfig{
+		Method:  "POST",
+		Body:    `{"a":1,"b":2}`,
+		Handler: testPostJsonHandler,
+		Callback: func(r *httptest.ResponseRecorder) {
+			data := []byte(r.Body.String())
+
+			a, _ := jsonparser.GetInt(data, "a")
+			b, _ := jsonparser.GetInt(data, "b")
+
+			assert.Equal(t, int(a), 1)
+			assert.Equal(t, int(b), 2)
+			assert.Equal(t, r.Code, http.StatusOK)
+		},
+	}
+
+	r.SetDebug(true).Run()
+}
+
 func TestPut(t *testing.T) {
 	r := &RequestConfig{
-		Method: "PUT",
-		Body: "c=1&d=2",
+		Method:  "PUT",
+		Body:    "c=1&d=2",
 		Handler: putHandler,
 		Callback: func(r *httptest.ResponseRecorder) {
 			data := []byte(r.Body.String())
