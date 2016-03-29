@@ -1,7 +1,7 @@
 package mocha
 
 import (
-	"github.com/appleboy/gin-mocha/framework"
+	"github.com/appleboy/mocha/framework"
 	"github.com/buger/jsonparser"
 	"github.com/stretchr/testify/assert"
 	"net/http"

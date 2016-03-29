@@ -1,13 +1,13 @@
-# gin-mocha
+# mocha
 
-[![Build Status](https://travis-ci.org/appleboy/gin-mocha.svg?branch=master)](https://travis-ci.org/appleboy/gin-mocha) [![Coverage Status](https://coveralls.io/repos/github/appleboy/gin-mocha/badge.svg?branch=master)](https://coveralls.io/github/appleboy/gin-mocha?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gin-mocha)](https://goreportcard.com/report/github.com/appleboy/gin-mocha)
+[![Build Status](https://travis-ci.org/appleboy/mocha.svg?branch=master)](https://travis-ci.org/appleboy/mocha) [![Coverage Status](https://coveralls.io/repos/github/appleboy/mocha/badge.svg?branch=master)](https://coveralls.io/github/appleboy/mocha?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/mocha)](https://goreportcard.com/report/github.com/appleboy/mocha)
 
 API Handler Testing for Gin framework written in Golang.
 
 ## Installation
 
 ```
-$ go get -u github.com/appleboy/gin-mocha
+$ go get -u github.com/appleboy/mocha
 ```
 
 ## Usage
@@ -42,7 +42,7 @@ main_test.go
 package main
 
 import (
-  "github.com/appleboy/gin-mocha"
+  "github.com/appleboy/mocha"
   "github.com/stretchr/testify/assert"
   "net/http"
   "net/http/httptest"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/appleboy/gin-mocha"
+	"github.com/appleboy/mocha"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
