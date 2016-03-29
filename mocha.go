@@ -1,4 +1,4 @@
-package tests
+package mocha
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ type RequestConfig struct {
 	Headers     map[string]string
 	Middlewares []gin.HandlerFunc
 	Handler     RequestFunc
-	Finaliser   ResponseFunc
+	Callback    ResponseFunc
 }
 
 func RunRequest(rc RequestConfig) {
@@ -69,7 +69,7 @@ func RunRequest(rc RequestConfig) {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	if rc.Finaliser != nil {
-		rc.Finaliser(w)
+	if rc.Callback != nil {
+		rc.Callback(w)
 	}
 }
