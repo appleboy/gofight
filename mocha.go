@@ -9,21 +9,15 @@ import (
 	"strings"
 )
 
-// request handling func type to replace gin.HandlerFunc
-type RequestFunc func(*gin.Context)
-
 // response handling func type
 type ResponseFunc func(*httptest.ResponseRecorder)
 
 type RequestConfig struct {
-	Method      string
-	Path        string
-	Body        string
-	Headers     map[string]string
-	Middlewares []gin.HandlerFunc
-	Handler     RequestFunc
-	Callback    ResponseFunc
-	Debug       bool
+	Method  string
+	Path    string
+	Body    string
+	Headers map[string]string
+	Debug   bool
 }
 
 func New() *RequestConfig {
