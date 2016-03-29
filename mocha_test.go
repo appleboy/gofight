@@ -15,6 +15,10 @@ func helloHandler(c *gin.Context) {
 	})
 }
 
+func textHandler(c *gin.Context) {
+	c.String(http.StatusOK, "Hello World")
+}
+
 func TestHelloWorld(t *testing.T) {
 	r := &RequestConfig{
 		Handler: helloHandler,
@@ -24,6 +28,22 @@ func TestHelloWorld(t *testing.T) {
 			value, _ := jsonparser.GetString(data, "hello")
 
 			assert.Equal(t, value, "world")
+			assert.Equal(t, r.Code, http.StatusOK)
+		},
+	}
+
+	r.Run()
+}
+
+func TestHeader(t *testing.T) {
+	r := &RequestConfig{
+		Handler: textHandler,
+		Headers: map[string]string {
+			"Content-Type": "text/plain",
+		},
+		Callback: func(r *httptest.ResponseRecorder) {
+
+			assert.Equal(t, r.Body.String(), "Hello World")
 			assert.Equal(t, r.Code, http.StatusOK)
 		},
 	}

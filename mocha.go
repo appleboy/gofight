@@ -6,6 +6,11 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"log"
+)
+
+var (
+	debug bool
 )
 
 // request handling func type to replace gin.HandlerFunc
@@ -22,6 +27,12 @@ type RequestConfig struct {
 	Middlewares []gin.HandlerFunc
 	Handler     RequestFunc
 	Callback    ResponseFunc
+}
+
+func (rc *RequestConfig) SetDebug(enable bool) *RequestConfig {
+	debug = enable
+
+	return rc
 }
 
 func (rc *RequestConfig) Run() {
@@ -73,6 +84,13 @@ func (rc *RequestConfig) Run() {
 		//change argument if necessary here
 		rc.Handler(c)
 	})
+
+	if debug {
+		log.Printf("Request Method: %s", rc.Method)
+		log.Printf("Request Path: %s", rc.Path)
+		log.Printf("Request Body: %s", rc.Body)
+		log.Printf("Request Headers: %s", rc.Headers)
+	}
 
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
