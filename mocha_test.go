@@ -45,7 +45,7 @@ func postHandler(c *gin.Context) {
 	})
 }
 
-func testPostJsonHandler(c *gin.Context) {
+func testPostJSONHandler(c *gin.Context) {
 	var json Login
 	if c.BindJSON(&json) == nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -140,7 +140,7 @@ func TestPostJsonData(t *testing.T) {
 	r := &RequestConfig{
 		Method:  "POST",
 		Body:    `{"a":1,"b":2}`,
-		Handler: testPostJsonHandler,
+		Handler: testPostJSONHandler,
 		Callback: func(r *httptest.ResponseRecorder) {
 			data := []byte(r.Body.String())
 
