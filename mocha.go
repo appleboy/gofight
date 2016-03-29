@@ -1,4 +1,4 @@
-package ginMocha
+package mocha
 
 import (
 	"bytes"
@@ -26,30 +26,62 @@ type RequestConfig struct {
 	Debug       bool
 }
 
+func New() *RequestConfig {
+
+	return &RequestConfig{}
+}
+
 func (rc *RequestConfig) SetDebug(enable bool) *RequestConfig {
 	rc.Debug = enable
 
 	return rc
 }
 
-func (rc *RequestConfig) Run() {
-	gin.SetMode(gin.TestMode)
-	r := gin.New()
+func (rc *RequestConfig) GET(path string) *RequestConfig {
+	rc.Path = path
+	rc.Method = "GET"
 
-	if rc.Method == "" {
-		rc.Method = "GET"
+	return rc
+}
+
+func (rc *RequestConfig) POST(path string) *RequestConfig {
+	rc.Path = path
+	rc.Method = "POST"
+
+	return rc
+}
+
+func (rc *RequestConfig) PUT(path string) *RequestConfig {
+	rc.Path = path
+	rc.Method = "PUT"
+
+	return rc
+}
+
+func (rc *RequestConfig) DELETE(path string) *RequestConfig {
+	rc.Path = path
+	rc.Method = "DELETE"
+
+	return rc
+}
+
+func (rc *RequestConfig) SetHeader(headers map[string]string) *RequestConfig {
+	if len(headers) > 0 {
+		rc.Headers = headers
 	}
 
-	if rc.Path == "" {
-		rc.Path = "/"
+	return rc
+}
+
+func (rc *RequestConfig) SetBody(body string) *RequestConfig {
+	if len(body) > 0 {
+		rc.Body = body
 	}
 
-	if rc.Middlewares != nil && len(rc.Middlewares) > 0 {
-		for _, mw := range rc.Middlewares {
-			r.Use(mw)
-		}
-	}
+	return rc
+}
 
+func (rc *RequestConfig) RunGinEngine(r *gin.Engine, response ResponseFunc) {
 	qs := ""
 	if strings.Contains(rc.Path, "?") {
 		ss := strings.Split(rc.Path, "?")
@@ -77,11 +109,6 @@ func (rc *RequestConfig) Run() {
 		}
 	}
 
-	r.Handle(rc.Method, rc.Path, func(c *gin.Context) {
-		//change argument if necessary here
-		rc.Handler(c)
-	})
-
 	if rc.Debug {
 		log.Printf("Request Method: %s", rc.Method)
 		log.Printf("Request Path: %s", rc.Path)
@@ -93,7 +120,5 @@ func (rc *RequestConfig) Run() {
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
-	if rc.Callback != nil {
-		rc.Callback(w)
-	}
+	response(w)
 }
