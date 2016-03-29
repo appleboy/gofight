@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/test"
+	"github.com/labstack/echo/engine"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -80,7 +81,7 @@ func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	return rc
 }
 
-func (rc *RequestConfig) InitialTest() (*http.Request, *httptest.ResponseRecorder) {
+func (rc *RequestConfig) InitGinTest() (*http.Request, *httptest.ResponseRecorder) {
 	qs := ""
 	if strings.Contains(rc.Path, "?") {
 		ss := strings.Split(rc.Path, "?")
@@ -121,26 +122,15 @@ func (rc *RequestConfig) InitialTest() (*http.Request, *httptest.ResponseRecorde
 	return req, w
 }
 
-func (rc *RequestConfig) RunGinEngine(r *gin.Engine, response ResponseFunc) {
+func (rc *RequestConfig) RunGin(r *gin.Engine, response ResponseFunc) {
 
-	req, w := rc.InitialTest()
+	req, w := rc.InitGinTest()
 	r.ServeHTTP(w, req)
 
 	response(w)
 }
 
-func (rc *RequestConfig) RunEchoEngine(e *echo.Echo, response EchoResponseFunc) {
-
-	switch rc.Method {
-	case "GET":
-		rc.Method = echo.GET
-	case "POST":
-		rc.Method = echo.POST
-	case "PUT":
-		rc.Method = echo.PUT
-	case "DELETE":
-		rc.Method = echo.DELETE
-	}
+func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder) {
 
 	rq := test.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
 	rec := test.NewResponseRecorder()
@@ -149,6 +139,12 @@ func (rc *RequestConfig) RunEchoEngine(e *echo.Echo, response EchoResponseFunc) 
 		rq.Header().Add(k, v)
 	}
 
+	return rq, rec
+}
+
+func (rc *RequestConfig) RunEcho(e *echo.Echo, response EchoResponseFunc) {
+
+	rq, rec := rc.InitEchoTest()
 	e.ServeHTTP(rq, rec)
 
 	response(rec)

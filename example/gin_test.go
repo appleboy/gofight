@@ -13,8 +13,8 @@ func TestGinHelloWorld(t *testing.T) {
 
 	r.GET("/").
 		SetDebug(true).
-		RunGinEngine(GinEngine(), func(r *httptest.ResponseRecorder) {
-			assert.Equal(t, r.Body.String(), "Hello World")
-			assert.Equal(t, r.Code, http.StatusOK)
+		RunGin(GinEngine(), func(r *httptest.ResponseRecorder) {
+			assert.Equal(t, "Hello World", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }

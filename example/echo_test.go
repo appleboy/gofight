@@ -13,7 +13,7 @@ func TestEchoHelloWorld(t *testing.T) {
 
 	r.GET("/").
 		SetDebug(true).
-		RunEchoEngine(EchoEngine(), func(r *test.ResponseRecorder) {
+		RunEcho(EchoEngine(), func(r *test.ResponseRecorder) {
 			assert.Equal(t, "Hello World", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Status())
 		})
