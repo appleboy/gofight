@@ -29,6 +29,26 @@ func queryHandler(c *gin.Context) {
 	})
 }
 
+func postHandler(c *gin.Context) {
+	a := c.PostForm("a")
+	b := c.PostForm("b")
+
+	c.JSON(http.StatusOK, gin.H{
+		"a": a,
+		"b": b,
+	})
+}
+
+func putHandler(c *gin.Context) {
+	foo := c.PostForm("c")
+	bar := c.PostForm("d")
+
+	c.JSON(http.StatusOK, gin.H{
+		"c": foo,
+		"d": bar,
+	})
+}
+
 func TestHelloWorld(t *testing.T) {
 	r := &RequestConfig{
 		Handler: helloHandler,
@@ -73,6 +93,46 @@ func TestQuery(t *testing.T) {
 
 			assert.Equal(t, hello, "world")
 			assert.Equal(t, foo, "bar")
+			assert.Equal(t, r.Code, http.StatusOK)
+		},
+	}
+
+	r.Run()
+}
+
+func TestPost(t *testing.T) {
+	r := &RequestConfig{
+		Method: "POST",
+		Body: "a=1&b=2",
+		Handler: postHandler,
+		Callback: func(r *httptest.ResponseRecorder) {
+			data := []byte(r.Body.String())
+
+			a, _ := jsonparser.GetString(data, "a")
+			b, _ := jsonparser.GetString(data, "b")
+
+			assert.Equal(t, a, "1")
+			assert.Equal(t, b, "2")
+			assert.Equal(t, r.Code, http.StatusOK)
+		},
+	}
+
+	r.Run()
+}
+
+func TestPut(t *testing.T) {
+	r := &RequestConfig{
+		Method: "PUT",
+		Body: "c=1&d=2",
+		Handler: putHandler,
+		Callback: func(r *httptest.ResponseRecorder) {
+			data := []byte(r.Body.String())
+
+			c, _ := jsonparser.GetString(data, "c")
+			d, _ := jsonparser.GetString(data, "d")
+
+			assert.Equal(t, c, "1")
+			assert.Equal(t, d, "2")
 			assert.Equal(t, r.Code, http.StatusOK)
 		},
 	}
