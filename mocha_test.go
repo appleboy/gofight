@@ -16,10 +16,7 @@ func helloHandler(c *gin.Context) {
 }
 
 func TestHelloWorld(t *testing.T) {
-	r := RequestConfig{
-		Method:  "GET",
-		Path:    "/hello",
-		Body:    `{}`,
+	r := &RequestConfig{
 		Handler: helloHandler,
 		Callback: func(r *httptest.ResponseRecorder) {
 			data := []byte(r.Body.String())
@@ -31,5 +28,5 @@ func TestHelloWorld(t *testing.T) {
 		},
 	}
 
-	RunRequest(r)
+	r.Run()
 }

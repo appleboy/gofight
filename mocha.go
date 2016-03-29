@@ -24,9 +24,17 @@ type RequestConfig struct {
 	Callback    ResponseFunc
 }
 
-func RunRequest(rc RequestConfig) {
+func (rc *RequestConfig) Run() {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
+
+	if rc.Method == "" {
+		rc.Method = "GET"
+	}
+
+	if rc.Path == "" {
+		rc.Path = "/"
+	}
 
 	if rc.Middlewares != nil && len(rc.Middlewares) > 0 {
 		for _, mw := range rc.Middlewares {
