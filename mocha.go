@@ -9,10 +9,6 @@ import (
 	"log"
 )
 
-var (
-	debug bool
-)
-
 // request handling func type to replace gin.HandlerFunc
 type RequestFunc func(*gin.Context)
 
@@ -27,10 +23,11 @@ type RequestConfig struct {
 	Middlewares []gin.HandlerFunc
 	Handler     RequestFunc
 	Callback    ResponseFunc
+	Debug bool
 }
 
 func (rc *RequestConfig) SetDebug(enable bool) *RequestConfig {
-	debug = enable
+	rc.Debug = enable
 
 	return rc
 }
@@ -85,7 +82,7 @@ func (rc *RequestConfig) Run() {
 		rc.Handler(c)
 	})
 
-	if debug {
+	if rc.Debug {
 		log.Printf("Request Method: %s", rc.Method)
 		log.Printf("Request Path: %s", rc.Path)
 		log.Printf("Request Body: %s", rc.Body)

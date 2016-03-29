@@ -32,7 +32,7 @@ func TestHelloWorld(t *testing.T) {
 		},
 	}
 
-	r.Run()
+	r.SetDebug(true).Run()
 }
 
 func TestHeader(t *testing.T) {
