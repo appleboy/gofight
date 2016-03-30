@@ -6,22 +6,22 @@ import (
 )
 
 // Binding from JSON
-type input struct {
+type ginJSONContent struct {
 	A int `json:"a" binding:"required"`
 	B int `json:"b" binding:"required"`
 }
 
-func helloHandler(c *gin.Context) {
+func ginHelloHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"hello": "world",
 	})
 }
 
-func textHandler(c *gin.Context) {
+func ginTextHandler(c *gin.Context) {
 	c.String(http.StatusOK, "Hello World")
 }
 
-func queryHandler(c *gin.Context) {
+func ginQueryHandler(c *gin.Context) {
 	text := c.Query("text")
 	foo := c.Query("foo")
 
@@ -31,7 +31,7 @@ func queryHandler(c *gin.Context) {
 	})
 }
 
-func postFormHandler(c *gin.Context) {
+func ginPostFormHandler(c *gin.Context) {
 	a := c.PostForm("a")
 	b := c.PostForm("b")
 
@@ -41,8 +41,8 @@ func postFormHandler(c *gin.Context) {
 	})
 }
 
-func postJSONHandler(c *gin.Context) {
-	var json input
+func ginPostJSONHandler(c *gin.Context) {
+	var json ginJSONContent
 	if c.BindJSON(&json) == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"a": json.A,
@@ -51,7 +51,7 @@ func postJSONHandler(c *gin.Context) {
 	}
 }
 
-func putHandler(c *gin.Context) {
+func ginPutHandler(c *gin.Context) {
 	foo := c.PostForm("c")
 	bar := c.PostForm("d")
 
@@ -61,7 +61,7 @@ func putHandler(c *gin.Context) {
 	})
 }
 
-func deleteHandler(c *gin.Context) {
+func ginDeleteHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"hello": "world",
 	})
@@ -71,14 +71,14 @@ func GinEngine() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 
-	r.GET("/hello", helloHandler)
-	r.GET("/text", textHandler)
-	r.GET("/query", queryHandler)
+	r.GET("/hello", ginHelloHandler)
+	r.GET("/text", ginTextHandler)
+	r.GET("/query", ginQueryHandler)
 
-	r.POST("/form", postFormHandler)
-	r.POST("/json", postJSONHandler)
-	r.PUT("/update", putHandler)
-	r.DELETE("/delete", deleteHandler)
+	r.POST("/form", ginPostFormHandler)
+	r.POST("/json", ginPostJSONHandler)
+	r.PUT("/update", ginPutHandler)
+	r.DELETE("/delete", ginDeleteHandler)
 
 	return r
 }
