@@ -20,7 +20,7 @@ const (
 )
 
 // response handling func type
-type ResponseFunc func(*httptest.ResponseRecorder)
+type ResponseFunc func(*httptest.ResponseRecorder, *http.Request)
 
 // echo response handling func type
 type EchoResponseFunc func(*test.ResponseRecorder)
@@ -136,7 +136,7 @@ func (rc *RequestConfig) RunGin(r *gin.Engine, response ResponseFunc) {
 	req, w := rc.InitGinTest()
 	r.ServeHTTP(w, req)
 
-	response(w)
+	response(w, req)
 }
 
 func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder) {
