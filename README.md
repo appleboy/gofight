@@ -7,7 +7,7 @@ API Handler Testing for Golang framework.
 ## Support Framework
 
 * [x] [Gin](https://github.com/gin-gonic/gin)
-* [ ] [Echo](https://github.com/labstack/echo)
+* [x] [Echo](https://github.com/labstack/echo)
 
 ## Installation
 
@@ -17,10 +17,12 @@ $ go get -u github.com/appleboy/mocha
 
 ## Usage
 
-For Gin framework: gin.go
+### Gin Framework
+
+[gin.go](example/gin.go)
 
 ```go
-package main
+package example
 
 import (
   "github.com/gin-gonic/gin"
@@ -39,12 +41,13 @@ func GinEngine() *gin.Engine {
 
   return r
 }
+
 ```
 
-main_test.go
+[gin_test.go](example/gin.go)
 
 ```go
-package main
+package example
 
 import (
   "github.com/appleboy/mocha"
@@ -54,14 +57,73 @@ import (
   "testing"
 )
 
-func TestHelloWorld(t *testing.T) {
+func TestGinHelloWorld(t *testing.T) {
   r := mocha.New()
 
   r.GET("/").
     SetDebug(true).
-    RunGinEngine(GinEngine(), func(r *httptest.ResponseRecorder) {
-      assert.Equal(t, r.Body.String(), "Hello World")
-      assert.Equal(t, r.Code, http.StatusOK)
+    RunGin(GinEngine(), func(r *httptest.ResponseRecorder) {
+      assert.Equal(t, "Hello World", r.Body.String())
+      assert.Equal(t, http.StatusOK, r.Code)
     })
 }
+
 ```
+
+### Echo Framework
+
+[echo.go](example/echo.go)
+
+```go
+package example
+
+import (
+  "github.com/labstack/echo"
+  "net/http"
+)
+
+// Handler
+func hello() echo.HandlerFunc {
+  return func(c echo.Context) error {
+    return c.String(http.StatusOK, "Hello World")
+  }
+}
+
+func EchoEngine() *echo.Echo {
+  // Echo instance
+  e := echo.New()
+
+  // Routes
+  e.Get("/", hello())
+
+  return e
+}
+
+```
+
+[echo_test.go](example/echo.go)
+
+```go
+package example
+
+import (
+  "github.com/appleboy/mocha"
+  "github.com/labstack/echo/test"
+  "github.com/stretchr/testify/assert"
+  "net/http"
+  "testing"
+)
+
+func TestEchoHelloWorld(t *testing.T) {
+  r := mocha.New()
+
+  r.GET("/").
+    SetDebug(true).
+    RunEcho(EchoEngine(), func(r *test.ResponseRecorder) {
+      assert.Equal(t, "Hello World", r.Body.String())
+      assert.Equal(t, http.StatusOK, r.Status())
+    })
+}
+
+```
+
