@@ -12,6 +12,13 @@ import (
 	"strings"
 )
 
+// Media types
+const (
+	ContentType        = "Content-Type"
+	ApplicationJSON                  = "application/json"
+	ApplicationForm                  = "application/x-www-form-urlencoded"
+)
+
 // response handling func type
 type ResponseFunc func(*httptest.ResponseRecorder)
 
@@ -97,15 +104,17 @@ func (rc *RequestConfig) InitGinTest() (*http.Request, *httptest.ResponseRecorde
 		req.URL.RawQuery = qs
 	}
 
+	if rc.Method == "POST" || rc.Method == "PUT" {
+		if strings.HasPrefix(rc.Body, "{") {
+			req.Header.Set(ContentType, ApplicationJSON)
+		} else {
+			req.Header.Set(ContentType, ApplicationForm)
+		}
+	}
+
 	if len(rc.Headers) > 0 {
 		for k, v := range rc.Headers {
 			req.Header.Set(k, v)
-		}
-	} else if rc.Method == "POST" || rc.Method == "PUT" {
-		if strings.HasPrefix(rc.Body, "{") {
-			req.Header.Set("Content-Type", "application/json")
-		} else {
-			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		}
 	}
 
@@ -137,9 +146,9 @@ func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder)
 
 	if rc.Method == "POST" || rc.Method == "PUT" {
 		if strings.HasPrefix(rc.Body, "{") {
-			rq.Header().Add("Content-Type", "application/json")
+			rq.Header().Add(ContentType, ApplicationJSON)
 		} else {
-			rq.Header().Add("Content-Type", "application/x-www-form-urlencoded")
+			rq.Header().Add(ContentType, ApplicationForm)
 		}
 	}
 
