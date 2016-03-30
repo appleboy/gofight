@@ -19,11 +19,19 @@ const (
 	ApplicationForm = "application/x-www-form-urlencoded"
 )
 
+// Gin http request and response
+type HttpResponse *httptest.ResponseRecorder
+type HttpRequest *http.Request
+
+// Echo http request and response
+type EchoHttpResponse *test.ResponseRecorder
+type EchoHttpRequest engine.Request
+
 // response handling func type
-type ResponseFunc func(*httptest.ResponseRecorder)
+type ResponseFunc func(HttpResponse, HttpRequest)
 
 // echo response handling func type
-type EchoResponseFunc func(*test.ResponseRecorder)
+type EchoResponseFunc func(EchoHttpResponse, EchoHttpRequest)
 
 type RequestConfig struct {
 	Method  string
@@ -136,7 +144,7 @@ func (rc *RequestConfig) RunGin(r *gin.Engine, response ResponseFunc) {
 	req, w := rc.InitGinTest()
 	r.ServeHTTP(w, req)
 
-	response(w)
+	response(w, req)
 }
 
 func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder) {
@@ -164,5 +172,5 @@ func (rc *RequestConfig) RunEcho(e *echo.Echo, response EchoResponseFunc) {
 	rq, rec := rc.InitEchoTest()
 	e.ServeHTTP(rq, rec)
 
-	response(rec)
+	response(rec, rq)
 }
