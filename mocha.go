@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"github.com/gin-gonic/gin"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/test"
 	"github.com/labstack/echo/engine"
+	"github.com/labstack/echo/test"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -132,6 +132,7 @@ func (rc *RequestConfig) RunGin(r *gin.Engine, response ResponseFunc) {
 
 func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder) {
 
+	log.Println(rc.Body)
 	rq := test.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
 	rec := test.NewResponseRecorder()
 
