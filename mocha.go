@@ -14,9 +14,9 @@ import (
 
 // Media types
 const (
-	ContentType        = "Content-Type"
-	ApplicationJSON                  = "application/json"
-	ApplicationForm                  = "application/x-www-form-urlencoded"
+	ContentType     = "Content-Type"
+	ApplicationJSON = "application/json"
+	ApplicationForm = "application/x-www-form-urlencoded"
 )
 
 // response handling func type
