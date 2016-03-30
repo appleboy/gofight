@@ -2,9 +2,9 @@ package example
 
 import (
 	"github.com/appleboy/mocha"
+	"github.com/labstack/echo/engine"
 	"github.com/labstack/echo/test"
 	"github.com/stretchr/testify/assert"
-	"github.com/labstack/echo/engine"
 	"net/http"
 	"testing"
 )

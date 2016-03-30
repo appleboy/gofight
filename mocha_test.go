@@ -3,13 +3,13 @@ package mocha
 import (
 	"github.com/appleboy/mocha/framework"
 	"github.com/buger/jsonparser"
+	"github.com/labstack/echo/engine"
 	"github.com/labstack/echo/test"
 	"github.com/stretchr/testify/assert"
-	"github.com/labstack/echo/engine"
 	"net/http"
 	"net/http/httptest"
-	"testing"
 	"runtime"
+	"testing"
 )
 
 var go_version = runtime.Version()
@@ -37,7 +37,7 @@ func TestGinHeader(t *testing.T) {
 	r.GET("/text").
 		SetHeader(map[string]string{
 			"Content-Type": "text/plain",
-			"Go-Version": go_version,
+			"Go-Version":   go_version,
 		}).
 		RunGin(framework.GinEngine(), func(r *httptest.ResponseRecorder, rq *http.Request) {
 
@@ -150,7 +150,7 @@ func TestEchoHeader(t *testing.T) {
 	r.GET("/text").
 		SetHeader(map[string]string{
 			"Content-Type": "text/plain",
-			"Go-Version": go_version,
+			"Go-Version":   go_version,
 		}).
 		RunEcho(framework.EchoEngine(), func(r *test.ResponseRecorder, rq engine.Request) {
 
