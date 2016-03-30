@@ -19,8 +19,12 @@ const (
 	ApplicationForm = "application/x-www-form-urlencoded"
 )
 
+// Gin http request and response
+type HttpResponse *httptest.ResponseRecorder
+type HttpRequest *http.Request
+
 // response handling func type
-type ResponseFunc func(*httptest.ResponseRecorder, *http.Request)
+type ResponseFunc func(HttpResponse, HttpRequest)
 
 // echo response handling func type
 type EchoResponseFunc func(*test.ResponseRecorder, engine.Request)
