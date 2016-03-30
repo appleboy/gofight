@@ -23,11 +23,15 @@ const (
 type HttpResponse *httptest.ResponseRecorder
 type HttpRequest *http.Request
 
+// Echo http request and response
+type EchoHttpResponse *test.ResponseRecorder
+type EchoHttpRequest engine.Request
+
 // response handling func type
 type ResponseFunc func(HttpResponse, HttpRequest)
 
 // echo response handling func type
-type EchoResponseFunc func(*test.ResponseRecorder, engine.Request)
+type EchoResponseFunc func(EchoHttpResponse, EchoHttpRequest)
 
 type RequestConfig struct {
 	Method  string
