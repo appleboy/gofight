@@ -44,7 +44,7 @@ func GinEngine() *gin.Engine {
 
 ```
 
-[gin_test.go](example/gin.go)
+[gin_test.go](example/gin_test.go)
 
 ```go
 package example
@@ -99,7 +99,7 @@ func EchoEngine() *echo.Echo {
 
 ```
 
-[echo_test.go](example/echo.go)
+[echo_test.go](example/echo_test.go)
 
 ```go
 package example
