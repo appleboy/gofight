@@ -23,7 +23,7 @@ const (
 type ResponseFunc func(*httptest.ResponseRecorder, *http.Request)
 
 // echo response handling func type
-type EchoResponseFunc func(*test.ResponseRecorder)
+type EchoResponseFunc func(*test.ResponseRecorder, engine.Request)
 
 type RequestConfig struct {
 	Method  string
@@ -164,5 +164,5 @@ func (rc *RequestConfig) RunEcho(e *echo.Echo, response EchoResponseFunc) {
 	rq, rec := rc.InitEchoTest()
 	e.ServeHTTP(rq, rec)
 
-	response(rec)
+	response(rec, rq)
 }
