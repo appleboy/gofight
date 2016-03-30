@@ -3,14 +3,27 @@ package mocha
 import (
 	"bytes"
 	"github.com/gin-gonic/gin"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine"
+	"github.com/labstack/echo/test"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 )
 
+// Media types
+const (
+	ContentType     = "Content-Type"
+	ApplicationJSON = "application/json"
+	ApplicationForm = "application/x-www-form-urlencoded"
+)
+
 // response handling func type
 type ResponseFunc func(*httptest.ResponseRecorder)
+
+// echo response handling func type
+type EchoResponseFunc func(*test.ResponseRecorder)
 
 type RequestConfig struct {
 	Method  string
@@ -75,7 +88,7 @@ func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	return rc
 }
 
-func (rc *RequestConfig) RunGinEngine(r *gin.Engine, response ResponseFunc) {
+func (rc *RequestConfig) InitGinTest() (*http.Request, *httptest.ResponseRecorder) {
 	qs := ""
 	if strings.Contains(rc.Path, "?") {
 		ss := strings.Split(rc.Path, "?")
@@ -91,15 +104,17 @@ func (rc *RequestConfig) RunGinEngine(r *gin.Engine, response ResponseFunc) {
 		req.URL.RawQuery = qs
 	}
 
+	if rc.Method == "POST" || rc.Method == "PUT" {
+		if strings.HasPrefix(rc.Body, "{") {
+			req.Header.Set(ContentType, ApplicationJSON)
+		} else {
+			req.Header.Set(ContentType, ApplicationForm)
+		}
+	}
+
 	if len(rc.Headers) > 0 {
 		for k, v := range rc.Headers {
 			req.Header.Set(k, v)
-		}
-	} else if rc.Method == "POST" || rc.Method == "PUT" {
-		if strings.HasPrefix(rc.Body, "{") {
-			req.Header.Set("Content-Type", "application/json")
-		} else {
-			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		}
 	}
 
@@ -112,7 +127,42 @@ func (rc *RequestConfig) RunGinEngine(r *gin.Engine, response ResponseFunc) {
 	}
 
 	w := httptest.NewRecorder()
+
+	return req, w
+}
+
+func (rc *RequestConfig) RunGin(r *gin.Engine, response ResponseFunc) {
+
+	req, w := rc.InitGinTest()
 	r.ServeHTTP(w, req)
 
 	response(w)
+}
+
+func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder) {
+
+	rq := test.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
+	rec := test.NewResponseRecorder()
+
+	if rc.Method == "POST" || rc.Method == "PUT" {
+		if strings.HasPrefix(rc.Body, "{") {
+			rq.Header().Add(ContentType, ApplicationJSON)
+		} else {
+			rq.Header().Add(ContentType, ApplicationForm)
+		}
+	}
+
+	for k, v := range rc.Headers {
+		rq.Header().Add(k, v)
+	}
+
+	return rq, rec
+}
+
+func (rc *RequestConfig) RunEcho(e *echo.Echo, response EchoResponseFunc) {
+
+	rq, rec := rc.InitEchoTest()
+	e.ServeHTTP(rq, rec)
+
+	response(rec)
 }
