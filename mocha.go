@@ -132,9 +132,16 @@ func (rc *RequestConfig) RunGin(r *gin.Engine, response ResponseFunc) {
 
 func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder) {
 
-	log.Println(rc.Body)
 	rq := test.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
 	rec := test.NewResponseRecorder()
+
+	if rc.Method == "POST" || rc.Method == "PUT" {
+		if strings.HasPrefix(rc.Body, "{") {
+			rq.Header().Add("Content-Type", "application/json")
+		} else {
+			rq.Header().Add("Content-Type", "application/x-www-form-urlencoded")
+		}
+	}
 
 	for k, v := range rc.Headers {
 		rq.Header().Add(k, v)

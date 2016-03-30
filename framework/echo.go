@@ -2,6 +2,7 @@ package framework
 
 import (
 	"github.com/labstack/echo"
+	"log"
 	"net/http"
 )
 
@@ -12,8 +13,12 @@ type echoContent struct {
 	B     string `json:"b"`
 	C     string `json:"c"`
 	D     string `json:"d"`
-	E     string `json:"e"`
-	F     string `json:"f"`
+}
+
+// Binding from JSON
+type echoJSONContent struct {
+	A int `json:"a" binding:"required"`
+	B int `json:"b" binding:"required"`
 }
 
 func echoHelloHandler() echo.HandlerFunc {
@@ -56,11 +61,11 @@ func echoPostFormHandler() echo.HandlerFunc {
 
 func echoPostJSONHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		var json echoContent
+		json := new(echoJSONContent)
 		err := c.Bind(json)
 
 		if err != nil {
-
+			log.Println(err)
 		}
 
 		return c.JSON(http.StatusOK, json)
@@ -73,8 +78,8 @@ func echoPutHandler() echo.HandlerFunc {
 		bar := c.FormValue("d")
 
 		return c.JSON(http.StatusOK, &echoContent{
-			A: foo,
-			B: bar,
+			C: foo,
+			D: bar,
 		})
 	}
 }

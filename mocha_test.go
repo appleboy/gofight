@@ -166,56 +166,56 @@ func TestEchoQuery(t *testing.T) {
 		})
 }
 
-// func TestEchoPostFormData(t *testing.T) {
-//   r := New()
+func TestEchoPostFormData(t *testing.T) {
+	r := New()
 
-//   r.POST("/form").
-//     SetBody("a=1&b=2").
-//     RunEcho(framework.EchoEngine(), func(r *test.ResponseRecorder) {
-//       data := []byte(r.Body.String())
+	r.POST("/form").
+		SetBody("a=1&b=2").
+		RunEcho(framework.EchoEngine(), func(r *test.ResponseRecorder) {
+			data := []byte(r.Body.String())
 
-//       a, _ := jsonparser.GetString(data, "a")
-//       b, _ := jsonparser.GetString(data, "b")
+			a, _ := jsonparser.GetString(data, "a")
+			b, _ := jsonparser.GetString(data, "b")
 
-//       assert.Equal(t, "1", a)
-//       assert.Equal(t, "2", b)
-//       assert.Equal(t, http.StatusOK, r.Status())
-//     })
-// }
+			assert.Equal(t, "1", a)
+			assert.Equal(t, "2", b)
+			assert.Equal(t, http.StatusOK, r.Status())
+		})
+}
 
-// func TestEchoPostJSONData(t *testing.T) {
-//   r := New()
+func TestEchoPostJSONData(t *testing.T) {
+	r := New()
 
-//   r.POST("/json").
-//     SetBody(`{"a":1,"b":2}`).
-//     RunEcho(framework.EchoEngine(), func(r *test.ResponseRecorder) {
-//       data := []byte(r.Body.String())
+	r.POST("/json").
+		SetBody(`{"a":1,"b":2}`).
+		RunEcho(framework.EchoEngine(), func(r *test.ResponseRecorder) {
+			data := []byte(r.Body.String())
 
-//       a, _ := jsonparser.GetInt(data, "a")
-//       b, _ := jsonparser.GetInt(data, "b")
+			a, _ := jsonparser.GetInt(data, "a")
+			b, _ := jsonparser.GetInt(data, "b")
 
-//       assert.Equal(t, 1, int(a))
-//       assert.Equal(t, 2, int(b))
-//       assert.Equal(t, http.StatusOK, r.Status())
-//     })
-// }
+			assert.Equal(t, 1, int(a))
+			assert.Equal(t, 2, int(b))
+			assert.Equal(t, http.StatusOK, r.Status())
+		})
+}
 
-// func TestEchoPut(t *testing.T) {
-//   r := New()
+func TestEchoPut(t *testing.T) {
+	r := New()
 
-//   r.PUT("/update").
-//     SetBody("c=1&d=2").
-//     RunEcho(framework.EchoEngine(), func(r *test.ResponseRecorder) {
-//       data := []byte(r.Body.String())
+	r.PUT("/update").
+		SetBody("c=1&d=2").
+		RunEcho(framework.EchoEngine(), func(r *test.ResponseRecorder) {
+			data := []byte(r.Body.String())
 
-//       c, _ := jsonparser.GetString(data, "c")
-//       d, _ := jsonparser.GetString(data, "d")
+			c, _ := jsonparser.GetString(data, "c")
+			d, _ := jsonparser.GetString(data, "d")
 
-//       assert.Equal(t, "1", c)
-//       assert.Equal(t, "2", d)
-//       assert.Equal(t, http.StatusOK, r.Status())
-//     })
-// }
+			assert.Equal(t, "1", c)
+			assert.Equal(t, "2", d)
+			assert.Equal(t, http.StatusOK, r.Status())
+		})
+}
 
 func TestEchoDelete(t *testing.T) {
 	r := New()
