@@ -2,7 +2,6 @@ package mocha
 
 import (
 	"bytes"
-	"github.com/gin-gonic/gin"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine"
 	"github.com/labstack/echo/test"
@@ -139,7 +138,7 @@ func (rc *RequestConfig) InitGinTest() (*http.Request, *httptest.ResponseRecorde
 	return req, w
 }
 
-func (rc *RequestConfig) RunGin(r *gin.Engine, response ResponseFunc) {
+func (rc *RequestConfig) RunGin(r http.Handler, response ResponseFunc) {
 
 	req, w := rc.InitGinTest()
 	r.ServeHTTP(w, req)
