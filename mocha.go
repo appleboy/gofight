@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"net/url"
 )
 
 // Media types
@@ -96,6 +97,18 @@ func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
 	if b, err := json.Marshal(body); err == nil {
 		rc.Body = string(b)
 	}
+
+	return rc
+}
+
+func (rc *RequestConfig) SetFORM(body H) *RequestConfig {
+	f := make(url.Values)
+
+	for k, v := range body {
+		f.Set(k, v)
+	}
+
+	rc.Body = f.Encode()
 
 	return rc
 }

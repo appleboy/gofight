@@ -65,7 +65,10 @@ func TestGinPostFormData(t *testing.T) {
 	r := New()
 
 	r.POST("/form").
-		SetBody("a=1&b=2").
+		SetFORM(H{
+			"a": "1",
+			"b": "2",
+		}).
 		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 			data := []byte(r.Body.String())
 
