@@ -32,6 +32,7 @@ type ResponseFunc func(HttpResponse, HttpRequest)
 // echo response handling func type
 type EchoResponseFunc func(EchoHttpResponse, EchoHttpRequest)
 
+// Request Header type
 type H map[string]string
 
 type RequestConfig struct {

@@ -6,7 +6,7 @@ import (
 )
 
 func MuxHelloHandler(w http.ResponseWriter, r *http.Request) {
-  w.Write([]byte("Hello World"))
+	w.Write([]byte("Hello World"))
 }
 
 func MuxEngine() *mux.Router {
