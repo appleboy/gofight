@@ -12,6 +12,7 @@ func TestBasicHelloWorld(t *testing.T) {
 	version := "0.0.1"
 
 	r.GET("/").
+		// trun on the debug mode.
 		SetDebug(true).
 		SetHeader(mocha.H{
 			"X-Version": version,

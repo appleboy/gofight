@@ -19,9 +19,9 @@ $ go get -u github.com/appleboy/mocha
 
 ## Usage
 
-### Basic Http Handler
+The following is basic testing example.
 
-[basic.go](example/basic.go)
+Main Program:
 
 ```go
 package example
@@ -31,20 +31,19 @@ import (
   "net/http"
 )
 
-func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
+func BasicHelloHandler(w http.ResponseWriter, r *http.Request) {
   io.WriteString(w, "Hello World")
 }
 
 func BasicEngine() http.Handler {
   mux := http.NewServeMux()
-  mux.HandleFunc("/", basicHelloHandler)
+  mux.HandleFunc("/", BasicHelloHandler)
 
   return mux
 }
-
 ```
 
-[basic_test.go](example/basic_test.go)
+Testing:
 
 ```go
 package example
@@ -58,9 +57,29 @@ import (
 
 func TestBasicHelloWorld(t *testing.T) {
   r := mocha.New()
+
+  r.GET("/").
+    // trun on the debug mode.
+    SetDebug(true).
+    Run(BasicEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
+
+      assert.Equal(t, "Hello World", r.Body.String())
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
+}
+```
+
+### Set Header
+
+You can add custom header via `SetHeader` func.
+
+```go
+func TestBasicHelloWorld(t *testing.T) {
+  r := mocha.New()
   version := "0.0.1"
 
   r.GET("/").
+    // trun on the debug mode.
     SetDebug(true).
     SetHeader(mocha.H{
       "X-Version": version,
@@ -72,164 +91,86 @@ func TestBasicHelloWorld(t *testing.T) {
       assert.Equal(t, http.StatusOK, r.Code)
     })
 }
-
-
 ```
 
-### Gin Framework
+### POST FORM Data
 
-[gin.go](example/gin.go)
-
-```go
-package example
-
-import (
-  "github.com/gin-gonic/gin"
-  "net/http"
-)
-
-func helloHandler(c *gin.Context) {
-  c.String(http.StatusOK, "Hello World")
-}
-
-func GinEngine() *gin.Engine {
-  gin.SetMode(gin.TestMode)
-  r := gin.New()
-
-  r.GET("/", helloHandler)
-
-  return r
-}
-
-```
-
-[gin_test.go](example/gin_test.go)
+Using `SetFORM` to generate form data.
 
 ```go
-package example
-
-import (
-  "github.com/appleboy/mocha"
-  "github.com/stretchr/testify/assert"
-  "net/http"
-  "testing"
-)
-
-func TestGinHelloWorld(t *testing.T) {
+func TestPostFormData(t *testing.T) {
   r := mocha.New()
 
-  r.GET("/").
-    SetDebug(true).
-    Run(GinEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
-      assert.Equal(t, "Hello World", r.Body.String())
+  r.POST("/form").
+    SetFORM(mocha.H{
+      "a": "1",
+      "b": "2",
+    }).
+    Run(BasicEngine(), func(r HttpResponse, rq HttpRequest) {
+      data := []byte(r.Body.String())
+
+      a, _ := jsonparser.GetString(data, "a")
+      b, _ := jsonparser.GetString(data, "b")
+
+      assert.Equal(t, "1", a)
+      assert.Equal(t, "2", b)
       assert.Equal(t, http.StatusOK, r.Code)
     })
 }
 ```
 
-### Echo Framework
+### POST JSON Data
 
-[echo.go](example/echo.go)
-
-```go
-package example
-
-import (
-  "github.com/labstack/echo"
-  "net/http"
-)
-
-// Handler
-func hello() echo.HandlerFunc {
-  return func(c echo.Context) error {
-    return c.String(http.StatusOK, "Hello World")
-  }
-}
-
-func EchoEngine() *echo.Echo {
-  // Echo instance
-  e := echo.New()
-
-  // Routes
-  e.Get("/", hello())
-
-  return e
-}
-
-```
-
-[echo_test.go](example/echo_test.go)
+Using `SetJSON` to generate json data.
 
 ```go
-package example
-
-import (
-  "github.com/appleboy/mocha"
-  "github.com/stretchr/testify/assert"
-  "net/http"
-  "testing"
-)
-
-func TestEchoHelloWorld(t *testing.T) {
+func TestPostJSONData(t *testing.T) {
   r := mocha.New()
 
-  r.GET("/").
-    SetDebug(true).
-    RunEcho(EchoEngine(), func(r mocha.EchoHttpResponse, rq mocha.EchoHttpRequest) {
-      assert.Equal(t, "Hello World", r.Body.String())
-      assert.Equal(t, http.StatusOK, r.Status())
-    })
-}
+  r.POST("/json").
+    SetJSON(mocha.D{
+      "a": 1,
+      "b": 2,
+    }).
+    Run(BasicEngine, func(r HttpResponse, rq HttpRequest) {
+      data := []byte(r.Body.String())
 
-```
+      a, _ := jsonparser.GetInt(data, "a")
+      b, _ := jsonparser.GetInt(data, "b")
 
-### Mux framework
-
-[mux.go](example/mux.go)
-
-```go
-package example
-
-import (
-  "github.com/gorilla/mux"
-  "net/http"
-)
-
-func MuxHelloHandler(w http.ResponseWriter, r *http.Request) {
-  w.Write([]byte("Hello World"))
-}
-
-func MuxEngine() *mux.Router {
-  r := mux.NewRouter()
-  r.HandleFunc("/", MuxHelloHandler)
-
-  return r
-}
-
-```
-
-[mux_test.go](example/mux_test.go)
-
-```go
-package example
-
-import (
-  "github.com/appleboy/mocha"
-  "github.com/stretchr/testify/assert"
-  "net/http"
-  "testing"
-)
-
-func TestMuxHelloWorld(t *testing.T) {
-  r := mocha.New()
-
-  r.GET("/").
-    SetDebug(true).
-    Run(MuxEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
-      assert.Equal(t, "Hello World", r.Body.String())
+      assert.Equal(t, 1, int(a))
+      assert.Equal(t, 2, int(b))
       assert.Equal(t, http.StatusOK, r.Code)
     })
 }
-
 ```
 
+### POST RAW Data
+
+Using `SetBody` to generate raw data.
+
+```go
+func TestPostRawData(t *testing.T) {
+  r := mocha.New()
+
+  r.POST("/raw").
+    SetBody("a=1&b=1").
+    Run(BasicEngine, func(r HttpResponse, rq HttpRequest) {
+      data := []byte(r.Body.String())
+
+      a, _ := jsonparser.GetString(data, "a")
+      b, _ := jsonparser.GetString(data, "b")
+
+      assert.Equal(t, "1", a)
+      assert.Equal(t, "2", b)
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
+}
+```
+
+## Example
+
+* Basic HTTP Router: [basic.go](example/basic.go), [basic_test.go](example/basic_test.go)
+* Gin Framework: [gin.go](example/gin.go), [gin_test.go](example/gin_test.go)
+* Echo Framework: [echo.go](example/echo.go), [echo_test.go](example/echo_test.go)
+* Mux Framework: [mux.go](example/mux.go), [mux_test.go](example/mux_test.go)
