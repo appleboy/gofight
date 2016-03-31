@@ -82,7 +82,10 @@ func TestGinPostJSONData(t *testing.T) {
 	r := New()
 
 	r.POST("/json").
-		SetBody(`{"a":1,"b":2}`).
+		SetJSON(D{
+			"a": 1,
+			"b": 2,
+		}).
 		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 			data := []byte(r.Body.String())
 
@@ -194,7 +197,10 @@ func TestEchoPostJSONData(t *testing.T) {
 	r := New()
 
 	r.POST("/json").
-		SetBody(`{"a":1,"b":2}`).
+		SetJSON(D{
+			"a": 1,
+			"b": 2,
+		}).
 		RunEcho(framework.EchoEngine(), func(r EchoHttpResponse, rq EchoHttpRequest) {
 			data := []byte(r.Body.String())
 

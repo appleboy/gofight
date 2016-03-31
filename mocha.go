@@ -1,6 +1,7 @@
 package mocha
 
 import (
+	"encoding/json"
 	"bytes"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine"
@@ -34,6 +35,7 @@ type EchoResponseFunc func(EchoHttpResponse, EchoHttpRequest)
 
 // Request Header type
 type H map[string]string
+type D map[string]interface{}
 
 type RequestConfig struct {
 	Method  string
@@ -85,6 +87,14 @@ func (rc *RequestConfig) DELETE(path string) *RequestConfig {
 func (rc *RequestConfig) SetHeader(headers H) *RequestConfig {
 	if len(headers) > 0 {
 		rc.Headers = headers
+	}
+
+	return rc
+}
+
+func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
+	if b, err := json.Marshal(body); err == nil {
+		rc.Body = string(b)
 	}
 
 	return rc
