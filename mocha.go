@@ -32,15 +32,15 @@ type ResponseFunc func(HttpResponse, HttpRequest)
 // echo response handling func type
 type EchoResponseFunc func(EchoHttpResponse, EchoHttpRequest)
 
+type H map[string]string
+
 type RequestConfig struct {
 	Method  string
 	Path    string
 	Body    string
-	Headers map[string]string
+	Headers H
 	Debug   bool
 }
-
-type H map[string]string
 
 func New() *RequestConfig {
 
@@ -81,7 +81,7 @@ func (rc *RequestConfig) DELETE(path string) *RequestConfig {
 	return rc
 }
 
-func (rc *RequestConfig) SetHeader(headers map[string]string) *RequestConfig {
+func (rc *RequestConfig) SetHeader(headers H) *RequestConfig {
 	if len(headers) > 0 {
 		rc.Headers = headers
 	}
