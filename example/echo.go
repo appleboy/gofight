@@ -6,7 +6,7 @@ import (
 )
 
 // Handler
-func hello() echo.HandlerFunc {
+func EchoHelloHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello World")
 	}
@@ -17,7 +17,7 @@ func EchoEngine() *echo.Echo {
 	e := echo.New()
 
 	// Routes
-	e.Get("/", hello())
+	e.Get("/", EchoHelloHandler())
 
 	return e
 }
