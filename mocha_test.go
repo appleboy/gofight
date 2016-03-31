@@ -32,7 +32,7 @@ func TestGinHeader(t *testing.T) {
 	go_version := runtime.Version()
 
 	r.GET("/text").
-		SetHeader(map[string]string{
+		SetHeader(H{
 			"Content-Type": "text/plain",
 			"Go-Version":   go_version,
 		}).
@@ -145,7 +145,7 @@ func TestEchoHeader(t *testing.T) {
 	r := New()
 
 	r.GET("/text").
-		SetHeader(map[string]string{
+		SetHeader(H{
 			"Content-Type": "text/plain",
 			"Go-Version":   go_version,
 		}).

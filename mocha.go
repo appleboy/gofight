@@ -40,6 +40,8 @@ type RequestConfig struct {
 	Debug   bool
 }
 
+type H map[string]string
+
 func New() *RequestConfig {
 
 	return &RequestConfig{}
