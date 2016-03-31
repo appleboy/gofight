@@ -6,6 +6,7 @@ API Handler Testing for Golang framework.
 
 ## Support Framework
 
+* [x] [Http Handler](https://golang.org/pkg/net/http/) Package http provides HTTP client and server implementations.
 * [x] [Gin](https://github.com/gin-gonic/gin)
 * [x] [Echo](https://github.com/labstack/echo)
 
@@ -16,6 +17,56 @@ $ go get -u github.com/appleboy/mocha
 ```
 
 ## Usage
+
+### Basic Http Handler
+
+[basic.go](example/basic.go)
+
+```
+package example
+
+import (
+  "io"
+  "net/http"
+)
+
+func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
+  io.WriteString(w, "Hello World")
+}
+
+func BasicEngine() http.Handler {
+  mux := http.NewServeMux()
+  mux.HandleFunc("/", basicHelloHandler)
+
+  return mux
+}
+
+```
+
+[basic_test.go](example/basic_test.go)
+
+```go
+package example
+
+import (
+  "github.com/appleboy/mocha"
+  "github.com/stretchr/testify/assert"
+  "net/http"
+  "testing"
+)
+
+func TestBasicHelloWorld(t *testing.T) {
+  r := mocha.New()
+
+  r.GET("/").
+    SetDebug(true).
+    Run(BasicEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
+      assert.Equal(t, "Hello World", r.Body.String())
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
+}
+
+```
 
 ### Gin Framework
 
