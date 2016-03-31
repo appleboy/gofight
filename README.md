@@ -9,6 +9,7 @@ API Handler Testing for Golang framework.
 * [x] [Http Handler](https://golang.org/pkg/net/http/) Golang package http provides HTTP client and server implementations.
 * [x] [Gin](https://github.com/gin-gonic/gin)
 * [x] [Echo](https://github.com/labstack/echo)
+* [x] [Mux](https://github.com/gorilla/mux)
 
 ## Installation
 
@@ -170,6 +171,56 @@ func TestEchoHelloWorld(t *testing.T) {
     RunEcho(EchoEngine(), func(r mocha.EchoHttpResponse, rq mocha.EchoHttpRequest) {
       assert.Equal(t, "Hello World", r.Body.String())
       assert.Equal(t, http.StatusOK, r.Status())
+    })
+}
+
+```
+
+### Mux framework
+
+[mux.go](example/mux.go)
+
+```go
+package example
+
+import (
+  "github.com/gorilla/mux"
+  "net/http"
+)
+
+func MuxHelloHandler(w http.ResponseWriter, r *http.Request) {
+  w.Write([]byte("Hello World"))
+}
+
+func MuxEngine() *mux.Router {
+  r := mux.NewRouter()
+  r.HandleFunc("/", MuxHelloHandler)
+
+  return r
+}
+
+```
+
+[mux_test.go](example/mux_test.go)
+
+```go
+package example
+
+import (
+  "github.com/appleboy/mocha"
+  "github.com/stretchr/testify/assert"
+  "net/http"
+  "testing"
+)
+
+func TestMuxHelloWorld(t *testing.T) {
+  r := mocha.New()
+
+  r.GET("/").
+    SetDebug(true).
+    Run(MuxEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
+      assert.Equal(t, "Hello World", r.Body.String())
+      assert.Equal(t, http.StatusOK, r.Code)
     })
 }
 
