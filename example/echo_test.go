@@ -1,18 +1,18 @@
 package example
 
 import (
-	"github.com/appleboy/mocha"
+	"github.com/appleboy/gofight"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
 )
 
 func TestEchoHelloWorld(t *testing.T) {
-	r := mocha.New()
+	r := gofight.New()
 
 	r.GET("/").
 		SetDebug(true).
-		RunEcho(EchoEngine(), func(r mocha.EchoHttpResponse, rq mocha.EchoHttpRequest) {
+		RunEcho(EchoEngine(), func(r gofight.EchoHttpResponse, rq gofight.EchoHttpRequest) {
 			assert.Equal(t, "Hello World", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Status())
 		})

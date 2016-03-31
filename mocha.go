@@ -1,4 +1,4 @@
-package mocha
+package gofight
 
 import (
 	"bytes"

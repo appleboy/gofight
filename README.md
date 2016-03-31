@@ -1,6 +1,6 @@
-# mocha
+# Gofight
 
-[![Build Status](https://travis-ci.org/appleboy/mocha.svg?branch=master)](https://travis-ci.org/appleboy/mocha) [![Coverage Status](https://coveralls.io/repos/github/appleboy/mocha/badge.svg?branch=master)](https://coveralls.io/github/appleboy/mocha?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/mocha)](https://goreportcard.com/report/github.com/appleboy/mocha) [![codebeat badge](https://codebeat.co/badges/4d8b58ae-67ec-469e-bde6-be3dd336b30d)](https://codebeat.co/projects/github-com-appleboy-mocha)
+[![Build Status](https://travis-ci.org/appleboy/gofight.svg?branch=master)](https://travis-ci.org/appleboy/gofight) [![Coverage Status](https://coveralls.io/repos/github/appleboy/gofight/badge.svg?branch=master)](https://coveralls.io/github/appleboy/gofight?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gofight)](https://goreportcard.com/report/github.com/appleboy/gofight) [![codebeat badge](https://codebeat.co/badges/4d8b58ae-67ec-469e-bde6-be3dd336b30d)](https://codebeat.co/projects/github-com-appleboy-gofight)
 
 API Handler Testing for Golang framework.
 
@@ -14,7 +14,7 @@ API Handler Testing for Golang framework.
 ## Installation
 
 ```
-$ go get -u github.com/appleboy/mocha
+$ go get -u github.com/appleboy/gofight
 ```
 
 ## Usage
@@ -49,19 +49,19 @@ Testing:
 package example
 
 import (
-  "github.com/appleboy/mocha"
+  "github.com/appleboy/gofight"
   "github.com/stretchr/testify/assert"
   "net/http"
   "testing"
 )
 
 func TestBasicHelloWorld(t *testing.T) {
-  r := mocha.New()
+  r := gofight.New()
 
   r.GET("/").
     // trun on the debug mode.
     SetDebug(true).
-    Run(BasicEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
+    Run(BasicEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
 
       assert.Equal(t, "Hello World", r.Body.String())
       assert.Equal(t, http.StatusOK, r.Code)
@@ -75,16 +75,16 @@ You can add custom header via `SetHeader` func.
 
 ```go
 func TestBasicHelloWorld(t *testing.T) {
-  r := mocha.New()
+  r := gofight.New()
   version := "0.0.1"
 
   r.GET("/").
     // trun on the debug mode.
     SetDebug(true).
-    SetHeader(mocha.H{
+    SetHeader(gofight.H{
       "X-Version": version,
     }).
-    Run(BasicEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
+    Run(BasicEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
 
       assert.Equal(t, version, rq.Header.Get("X-Version"))
       assert.Equal(t, "Hello World", r.Body.String())
@@ -99,10 +99,10 @@ Using `SetFORM` to generate form data.
 
 ```go
 func TestPostFormData(t *testing.T) {
-  r := mocha.New()
+  r := gofight.New()
 
   r.POST("/form").
-    SetFORM(mocha.H{
+    SetFORM(gofight.H{
       "a": "1",
       "b": "2",
     }).
@@ -125,10 +125,10 @@ Using `SetJSON` to generate json data.
 
 ```go
 func TestPostJSONData(t *testing.T) {
-  r := mocha.New()
+  r := gofight.New()
 
   r.POST("/json").
-    SetJSON(mocha.D{
+    SetJSON(gofight.D{
       "a": 1,
       "b": 2,
     }).
@@ -151,7 +151,7 @@ Using `SetBody` to generate raw data.
 
 ```go
 func TestPostRawData(t *testing.T) {
-  r := mocha.New()
+  r := gofight.New()
 
   r.POST("/raw").
     SetBody("a=1&b=1").

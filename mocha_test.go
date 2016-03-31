@@ -1,7 +1,7 @@
-package mocha
+package gofight
 
 import (
-	"github.com/appleboy/mocha/framework"
+	"github.com/appleboy/gofight/framework"
 	"github.com/buger/jsonparser"
 	"github.com/stretchr/testify/assert"
 	"net/http"
