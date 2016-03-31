@@ -95,7 +95,7 @@ func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	return rc
 }
 
-func (rc *RequestConfig) InitGinTest() (*http.Request, *httptest.ResponseRecorder) {
+func (rc *RequestConfig) InitTest() (*http.Request, *httptest.ResponseRecorder) {
 	qs := ""
 	if strings.Contains(rc.Path, "?") {
 		ss := strings.Split(rc.Path, "?")
@@ -138,9 +138,9 @@ func (rc *RequestConfig) InitGinTest() (*http.Request, *httptest.ResponseRecorde
 	return req, w
 }
 
-func (rc *RequestConfig) RunGin(r http.Handler, response ResponseFunc) {
+func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 
-	req, w := rc.InitGinTest()
+	req, w := rc.InitTest()
 	r.ServeHTTP(w, req)
 
 	response(w, req)

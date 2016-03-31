@@ -61,7 +61,7 @@ func TestGinHelloWorld(t *testing.T) {
 
   r.GET("/").
     SetDebug(true).
-    RunGin(GinEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
+    Run(GinEngine(), func(r mocha.HttpResponse, rq mocha.HttpRequest) {
       assert.Equal(t, "Hello World", r.Body.String())
       assert.Equal(t, http.StatusOK, r.Code)
     })

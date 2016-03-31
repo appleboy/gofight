@@ -16,7 +16,7 @@ func TestGinHelloWorld(t *testing.T) {
 
 	r.GET("/hello").
 		SetDebug(true).
-		RunGin(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
+		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")
@@ -36,7 +36,7 @@ func TestGinHeader(t *testing.T) {
 			"Content-Type": "text/plain",
 			"Go-Version":   go_version,
 		}).
-		RunGin(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
+		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 
 			assert.Equal(t, go_version, rq.Header.Get("Go-Version"))
 			assert.Equal(t, "Hello World", r.Body.String())
@@ -48,7 +48,7 @@ func TestGinQuery(t *testing.T) {
 	r := New()
 
 	r.GET("/query?text=world&foo=bar").
-		RunGin(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
+		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 
 			data := []byte(r.Body.String())
 
@@ -66,7 +66,7 @@ func TestGinPostFormData(t *testing.T) {
 
 	r.POST("/form").
 		SetBody("a=1&b=2").
-		RunGin(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
+		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 			data := []byte(r.Body.String())
 
 			a, _ := jsonparser.GetString(data, "a")
@@ -83,7 +83,7 @@ func TestGinPostJSONData(t *testing.T) {
 
 	r.POST("/json").
 		SetBody(`{"a":1,"b":2}`).
-		RunGin(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
+		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 			data := []byte(r.Body.String())
 
 			a, _ := jsonparser.GetInt(data, "a")
@@ -100,7 +100,7 @@ func TestGinPut(t *testing.T) {
 
 	r.PUT("/update").
 		SetBody("c=1&d=2").
-		RunGin(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
+		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 			data := []byte(r.Body.String())
 
 			c, _ := jsonparser.GetString(data, "c")
@@ -116,7 +116,7 @@ func TestGinDelete(t *testing.T) {
 	r := New()
 
 	r.DELETE("/delete").
-		RunGin(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
+		Run(framework.GinEngine(), func(r HttpResponse, rq HttpRequest) {
 			data := []byte(r.Body.String())
 
 			hello, _ := jsonparser.GetString(data, "hello")
