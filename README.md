@@ -6,7 +6,7 @@ API Handler Testing for Golang framework.
 
 ## Support Framework
 
-* [x] [Http Handler](https://golang.org/pkg/net/http/) Package http provides HTTP client and server implementations.
+* [x] [Http Handler](https://golang.org/pkg/net/http/) Golang package http provides HTTP client and server implementations.
 * [x] [Gin](https://github.com/gin-gonic/gin)
 * [x] [Echo](https://github.com/labstack/echo)
 
@@ -22,7 +22,7 @@ $ go get -u github.com/appleboy/mocha
 
 [basic.go](example/basic.go)
 
-```
+```go
 package example
 
 import (
