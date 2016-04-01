@@ -10,6 +10,7 @@ API Handler Testing for Golang framework.
 * [x] [Gin](https://github.com/gin-gonic/gin)
 * [x] [Echo](https://github.com/labstack/echo)
 * [x] [Mux](https://github.com/gorilla/mux)
+* [x] [HttpRouter](https://github.com/julienschmidt/httprouter)
 
 ## Installation
 
@@ -174,6 +175,7 @@ func TestPostRawData(t *testing.T) {
 * Gin Framework: [gin.go](example/gin.go), [gin_test.go](example/gin_test.go)
 * Echo Framework: [echo.go](example/echo.go), [echo_test.go](example/echo_test.go)
 * Mux Framework: [mux.go](example/mux.go), [mux_test.go](example/mux_test.go)
+* HttpRouter Framework: [httprouter.go](example/httprouter.go), [httprouter_test.go](example/httprouter_test.go)
 
 ## License
 
