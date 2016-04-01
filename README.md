@@ -174,3 +174,9 @@ func TestPostRawData(t *testing.T) {
 * Gin Framework: [gin.go](example/gin.go), [gin_test.go](example/gin_test.go)
 * Echo Framework: [echo.go](example/echo.go), [echo_test.go](example/echo_test.go)
 * Mux Framework: [mux.go](example/mux.go), [mux_test.go](example/mux_test.go)
+
+## License
+
+Copyright 2016 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
+
+Licensed under the MIT License.
