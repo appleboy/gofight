@@ -1,9 +1,9 @@
 package example
 
 import (
+	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"fmt"
 )
 
 func HttpRouterHelloHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
