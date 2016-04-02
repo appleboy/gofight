@@ -3,13 +3,30 @@ package gofight
 import (
 	"github.com/appleboy/gofight/framework"
 	"github.com/buger/jsonparser"
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"runtime"
 	"testing"
+	"time"
 )
 
 var go_version = runtime.Version()
+
+func TestURL(t *testing.T) {
+	router := gin.New()
+
+	go func() {
+		router.GET("/example", func(c *gin.Context) { c.String(http.StatusOK, "it worked") })
+		assert.NoError(t, router.Run())
+	}()
+	// have to wait for the goroutine to start and run the server
+	// otherwise the main thread will complete
+	time.Sleep(5 * time.Millisecond)
+
+	assert.Error(t, router.Run(":8080"))
+	TestRequest(t, "http://localhost:8080/example")
+}
 
 func TestGinHelloWorld(t *testing.T) {
 	r := New()

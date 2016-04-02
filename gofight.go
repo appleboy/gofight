@@ -6,11 +6,14 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine"
 	"github.com/labstack/echo/test"
+	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
+	"testing"
 )
 
 // Media types
@@ -44,6 +47,16 @@ type RequestConfig struct {
 	Body    string
 	Headers H
 	Debug   bool
+}
+
+func TestRequest(t *testing.T, url string) {
+	resp, err := http.Get(url)
+	defer resp.Body.Close()
+	assert.NoError(t, err)
+
+	_, ioerr := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, ioerr)
+	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
 }
 
 func New() *RequestConfig {
