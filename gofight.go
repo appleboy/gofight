@@ -23,24 +23,28 @@ const (
 	ApplicationForm = "application/x-www-form-urlencoded"
 )
 
-// Gin http request and response
-type HttpResponse *httptest.ResponseRecorder
-type HttpRequest *http.Request
+// HTTPResponse is basic HTTP response type
+type HTTPResponse *httptest.ResponseRecorder
+// HTTPRequest is basic HTTP request type
+type HTTPRequest *http.Request
 
-// Echo http request and response
-type EchoHttpResponse *test.ResponseRecorder
-type EchoHttpRequest engine.Request
+// EchoHTTPResponse is HTTP response type for echo framework
+type EchoHTTPResponse *test.ResponseRecorder
+// EchoHTTPRequest is HTTP request type for echo framework
+type EchoHTTPRequest engine.Request
 
-// response handling func type
-type ResponseFunc func(HttpResponse, HttpRequest)
+// ResponseFunc response handling func type
+type ResponseFunc func(HTTPResponse, HTTPRequest)
 
-// echo response handling func type
-type EchoResponseFunc func(EchoHttpResponse, EchoHttpRequest)
+// EchoResponseFunc response handling func type for echo framework
+type EchoResponseFunc func(EchoHTTPResponse, EchoHTTPRequest)
 
-// Request Header type
+// H is HTTP Header Type
 type H map[string]string
+// D is HTTP Data Type
 type D map[string]interface{}
 
+// RequestConfig provide user input request structure
 type RequestConfig struct {
 	Method  string
 	Path    string
@@ -49,6 +53,7 @@ type RequestConfig struct {
 	Debug   bool
 }
 
+// TestRequest is testing url string if server is running
 func TestRequest(t *testing.T, url string) {
 	resp, err := http.Get(url)
 	defer resp.Body.Close()
