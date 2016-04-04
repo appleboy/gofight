@@ -62,7 +62,7 @@ func TestBasicHelloWorld(t *testing.T) {
   r.GET("/").
     // trun on the debug mode.
     SetDebug(true).
-    Run(BasicEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+    Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
       assert.Equal(t, "Hello World", r.Body.String())
       assert.Equal(t, http.StatusOK, r.Code)
@@ -85,7 +85,7 @@ func TestBasicHelloWorld(t *testing.T) {
     SetHeader(gofight.H{
       "X-Version": version,
     }).
-    Run(BasicEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+    Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
       assert.Equal(t, version, rq.Header.Get("X-Version"))
       assert.Equal(t, "Hello World", r.Body.String())
@@ -107,7 +107,7 @@ func TestPostFormData(t *testing.T) {
       "a": "1",
       "b": "2",
     }).
-    Run(BasicEngine(), func(r HttpResponse, rq HttpRequest) {
+    Run(BasicEngine(), func(r HTTPResponse, rq HTTPRequest) {
       data := []byte(r.Body.String())
 
       a, _ := jsonparser.GetString(data, "a")
@@ -133,7 +133,7 @@ func TestPostJSONData(t *testing.T) {
       "a": 1,
       "b": 2,
     }).
-    Run(BasicEngine, func(r HttpResponse, rq HttpRequest) {
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
       data := []byte(r.Body.String())
 
       a, _ := jsonparser.GetInt(data, "a")
@@ -156,7 +156,7 @@ func TestPostRawData(t *testing.T) {
 
   r.POST("/raw").
     SetBody("a=1&b=1").
-    Run(BasicEngine, func(r HttpResponse, rq HttpRequest) {
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
       data := []byte(r.Body.String())
 
       a, _ := jsonparser.GetString(data, "a")
