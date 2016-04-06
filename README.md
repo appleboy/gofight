@@ -25,7 +25,7 @@ The following is basic testing example.
 Main Program:
 
 ```go
-package example
+package main
 
 import (
   "io"
@@ -47,7 +47,7 @@ func BasicEngine() http.Handler {
 Testing:
 
 ```go
-package example
+package main
 
 import (
   "github.com/appleboy/gofight"

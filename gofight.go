@@ -1,3 +1,39 @@
+// Package gofight offers simple API http handler testing for Golang framework.
+//
+// Details about the gofight project are found in github page:
+//
+//     https://github.com/appleboy/gofight
+//
+// Installation:
+//
+//    $ go get -u github.com/appleboy/gofight
+//
+// Set Header: You can add custom header via SetHeader func.
+//
+//    SetHeader(gofight.H{
+//      "X-Version": version,
+//    })
+//
+// POST FORM Data: Using SetFORM to generate form data.
+//
+//    SetFORM(gofight.H{
+//      "a": "1",
+//      "b": "2",
+//    })
+//
+// POST JSON Data: Using SetJSON to generate json data.
+//
+//    SetJSON(gofight.H{
+//      "a": "1",
+//      "b": "2",
+//    })
+//
+// POST RAW Data: Using SetBody to generate raw data.
+//
+//    SetBody("a=1&b=1")
+//
+// For more details, see the documentation and example.
+//
 package gofight
 
 import (
@@ -25,11 +61,13 @@ const (
 
 // HTTPResponse is basic HTTP response type
 type HTTPResponse *httptest.ResponseRecorder
+
 // HTTPRequest is basic HTTP request type
 type HTTPRequest *http.Request
 
 // EchoHTTPResponse is HTTP response type for echo framework
 type EchoHTTPResponse *test.ResponseRecorder
+
 // EchoHTTPRequest is HTTP request type for echo framework
 type EchoHTTPRequest engine.Request
 
@@ -41,6 +79,7 @@ type EchoResponseFunc func(EchoHTTPResponse, EchoHTTPRequest)
 
 // H is HTTP Header Type
 type H map[string]string
+
 // D is HTTP Data Type
 type D map[string]interface{}
 
@@ -64,17 +103,20 @@ func TestRequest(t *testing.T, url string) {
 	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
 }
 
+// New supply initial structure
 func New() *RequestConfig {
 
 	return &RequestConfig{}
 }
 
+// SetDebug supply enable debug mode.
 func (rc *RequestConfig) SetDebug(enable bool) *RequestConfig {
 	rc.Debug = enable
 
 	return rc
 }
 
+// GET is request method.
 func (rc *RequestConfig) GET(path string) *RequestConfig {
 	rc.Path = path
 	rc.Method = "GET"
@@ -82,6 +124,7 @@ func (rc *RequestConfig) GET(path string) *RequestConfig {
 	return rc
 }
 
+// POST is request method.
 func (rc *RequestConfig) POST(path string) *RequestConfig {
 	rc.Path = path
 	rc.Method = "POST"
@@ -89,6 +132,7 @@ func (rc *RequestConfig) POST(path string) *RequestConfig {
 	return rc
 }
 
+// PUT is request method.
 func (rc *RequestConfig) PUT(path string) *RequestConfig {
 	rc.Path = path
 	rc.Method = "PUT"
@@ -96,6 +140,7 @@ func (rc *RequestConfig) PUT(path string) *RequestConfig {
 	return rc
 }
 
+// DELETE is request method.
 func (rc *RequestConfig) DELETE(path string) *RequestConfig {
 	rc.Path = path
 	rc.Method = "DELETE"
@@ -103,6 +148,7 @@ func (rc *RequestConfig) DELETE(path string) *RequestConfig {
 	return rc
 }
 
+// PATCH is request method.
 func (rc *RequestConfig) PATCH(path string) *RequestConfig {
 	rc.Path = path
 	rc.Method = "PATCH"
@@ -110,6 +156,7 @@ func (rc *RequestConfig) PATCH(path string) *RequestConfig {
 	return rc
 }
 
+// HEAD is request method.
 func (rc *RequestConfig) HEAD(path string) *RequestConfig {
 	rc.Path = path
 	rc.Method = "HEAD"
@@ -117,6 +164,7 @@ func (rc *RequestConfig) HEAD(path string) *RequestConfig {
 	return rc
 }
 
+// OPTIONS is request method.
 func (rc *RequestConfig) OPTIONS(path string) *RequestConfig {
 	rc.Path = path
 	rc.Method = "OPTIONS"
@@ -124,6 +172,7 @@ func (rc *RequestConfig) OPTIONS(path string) *RequestConfig {
 	return rc
 }
 
+// SetHeader supply http header what you defined.
 func (rc *RequestConfig) SetHeader(headers H) *RequestConfig {
 	if len(headers) > 0 {
 		rc.Headers = headers
@@ -132,6 +181,7 @@ func (rc *RequestConfig) SetHeader(headers H) *RequestConfig {
 	return rc
 }
 
+// SetJSON supply JSON body.
 func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
 	if b, err := json.Marshal(body); err == nil {
 		rc.Body = string(b)
@@ -140,6 +190,7 @@ func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
 	return rc
 }
 
+// SetFORM supply form body.
 func (rc *RequestConfig) SetFORM(body H) *RequestConfig {
 	f := make(url.Values)
 
@@ -152,6 +203,7 @@ func (rc *RequestConfig) SetFORM(body H) *RequestConfig {
 	return rc
 }
 
+// SetBody supply raw body.
 func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	if len(body) > 0 {
 		rc.Body = body
@@ -160,7 +212,7 @@ func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	return rc
 }
 
-func (rc *RequestConfig) InitTest() (*http.Request, *httptest.ResponseRecorder) {
+func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) {
 	qs := ""
 	if strings.Contains(rc.Path, "?") {
 		ss := strings.Split(rc.Path, "?")
@@ -203,15 +255,16 @@ func (rc *RequestConfig) InitTest() (*http.Request, *httptest.ResponseRecorder) 
 	return req, w
 }
 
+// Run execute http request
 func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 
-	req, w := rc.InitTest()
+	req, w := rc.initTest()
 	r.ServeHTTP(w, req)
 
 	response(w, req)
 }
 
-func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder) {
+func (rc *RequestConfig) initEchoTest() (engine.Request, *test.ResponseRecorder) {
 
 	rq := test.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
 	rec := test.NewResponseRecorder()
@@ -231,9 +284,10 @@ func (rc *RequestConfig) InitEchoTest() (engine.Request, *test.ResponseRecorder)
 	return rq, rec
 }
 
+// RunEcho execute http request for echo framework
 func (rc *RequestConfig) RunEcho(e *echo.Echo, response EchoResponseFunc) {
 
-	rq, rec := rc.InitEchoTest()
+	rq, rec := rc.initEchoTest()
 	e.ServeHTTP(rq, rec)
 
 	response(rec, rq)
