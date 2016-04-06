@@ -103,6 +103,27 @@ func (rc *RequestConfig) DELETE(path string) *RequestConfig {
 	return rc
 }
 
+func (rc *RequestConfig) PATCH(path string) *RequestConfig {
+	rc.Path = path
+	rc.Method = "PATCH"
+
+	return rc
+}
+
+func (rc *RequestConfig) HEAD(path string) *RequestConfig {
+	rc.Path = path
+	rc.Method = "HEAD"
+
+	return rc
+}
+
+func (rc *RequestConfig) OPTIONS(path string) *RequestConfig {
+	rc.Path = path
+	rc.Method = "OPTIONS"
+
+	return rc
+}
+
 func (rc *RequestConfig) SetHeader(headers H) *RequestConfig {
 	if len(headers) > 0 {
 		rc.Headers = headers

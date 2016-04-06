@@ -41,7 +41,7 @@ func ginPostFormHandler(c *gin.Context) {
 	})
 }
 
-func ginPostJSONHandler(c *gin.Context) {
+func ginJSONHandler(c *gin.Context) {
 	var json ginJSONContent
 	if c.BindJSON(&json) == nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -76,9 +76,13 @@ func GinEngine() *gin.Engine {
 	r.GET("/query", ginQueryHandler)
 
 	r.POST("/form", ginPostFormHandler)
-	r.POST("/json", ginPostJSONHandler)
+	r.POST("/json", ginJSONHandler)
 	r.PUT("/update", ginPutHandler)
 	r.DELETE("/delete", ginDeleteHandler)
+
+	r.PATCH("/patch", ginJSONHandler)
+	r.HEAD("/head", ginJSONHandler)
+	r.OPTIONS("/options", ginJSONHandler)
 
 	return r
 }

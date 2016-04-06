@@ -59,7 +59,7 @@ func echoPostFormHandler() echo.HandlerFunc {
 	}
 }
 
-func echoPostJSONHandler() echo.HandlerFunc {
+func echoJSONHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		json := new(echoJSONContent)
 		err := c.Bind(json)
@@ -100,9 +100,13 @@ func EchoEngine() *echo.Echo {
 	e.Get("/query", echoQueryHandler())
 
 	e.Post("/form", echoPostFormHandler())
-	e.Post("/json", echoPostJSONHandler())
+	e.Post("/json", echoJSONHandler())
 	e.Put("/update", echoPutHandler())
 	e.Delete("/delete", echoDeleteHandler())
+
+	e.Patch("/patch", echoHelloHandler())
+	e.Options("/options", echoHelloHandler())
+	e.Head("/head", echoHelloHandler())
 
 	return e
 }

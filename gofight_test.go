@@ -148,6 +148,66 @@ func TestGinDelete(t *testing.T) {
 		})
 }
 
+func TestGinPatch(t *testing.T) {
+	r := New()
+
+	r.PATCH("/patch").
+		SetJSON(D{
+			"a": 1,
+			"b": 2,
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			a, _ := jsonparser.GetInt(data, "a")
+			b, _ := jsonparser.GetInt(data, "b")
+
+			assert.Equal(t, 1, int(a))
+			assert.Equal(t, 2, int(b))
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestGinHead(t *testing.T) {
+	r := New()
+
+	r.HEAD("/head").
+		SetJSON(D{
+			"a": 1,
+			"b": 2,
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			a, _ := jsonparser.GetInt(data, "a")
+			b, _ := jsonparser.GetInt(data, "b")
+
+			assert.Equal(t, 1, int(a))
+			assert.Equal(t, 2, int(b))
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestGinOptions(t *testing.T) {
+	r := New()
+
+	r.OPTIONS("/options").
+		SetJSON(D{
+			"a": 1,
+			"b": 2,
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			a, _ := jsonparser.GetInt(data, "a")
+			b, _ := jsonparser.GetInt(data, "b")
+
+			assert.Equal(t, 1, int(a))
+			assert.Equal(t, 2, int(b))
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
 func TestEchoHelloWorld(t *testing.T) {
 	r := New()
 
@@ -259,6 +319,48 @@ func TestEchoDelete(t *testing.T) {
 			hello, _ := jsonparser.GetString(data, "hello")
 
 			assert.Equal(t, "world", hello)
+			assert.Equal(t, http.StatusOK, r.Status())
+		})
+}
+
+func TestEchoPatch(t *testing.T) {
+	r := New()
+
+	r.PATCH("/patch").
+		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+			data := []byte(r.Body.String())
+
+			value, _ := jsonparser.GetString(data, "hello")
+
+			assert.Equal(t, "world", value)
+			assert.Equal(t, http.StatusOK, r.Status())
+		})
+}
+
+func TestEchoHead(t *testing.T) {
+	r := New()
+
+	r.HEAD("/head").
+		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+			data := []byte(r.Body.String())
+
+			value, _ := jsonparser.GetString(data, "hello")
+
+			assert.Equal(t, "world", value)
+			assert.Equal(t, http.StatusOK, r.Status())
+		})
+}
+
+func TestEchoOptions(t *testing.T) {
+	r := New()
+
+	r.OPTIONS("/options").
+		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+			data := []byte(r.Body.String())
+
+			value, _ := jsonparser.GetString(data, "hello")
+
+			assert.Equal(t, "world", value)
 			assert.Equal(t, http.StatusOK, r.Status())
 		})
 }
