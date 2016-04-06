@@ -67,6 +67,7 @@ func ginDeleteHandler(c *gin.Context) {
 	})
 }
 
+// GinEngine is gin router.
 func GinEngine() *gin.Engine {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()

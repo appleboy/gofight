@@ -17,7 +17,7 @@ func TestBasicHelloWorld(t *testing.T) {
 		SetHeader(gofight.H{
 			"X-Version": version,
 		}).
-		Run(BasicEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
 			assert.Equal(t, version, rq.Header.Get("X-Version"))
 			assert.Equal(t, "Hello World", r.Body.String())

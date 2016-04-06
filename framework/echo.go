@@ -92,6 +92,7 @@ func echoDeleteHandler() echo.HandlerFunc {
 	}
 }
 
+// EchoEngine is echo router.
 func EchoEngine() *echo.Echo {
 	e := echo.New()
 

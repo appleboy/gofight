@@ -12,7 +12,7 @@ func TestGinHelloWorld(t *testing.T) {
 
 	r.GET("/").
 		SetDebug(true).
-		Run(GinEngine(), func(r gofight.HttpResponse, rq gofight.HttpRequest) {
+		Run(GinEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, "Hello World", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})

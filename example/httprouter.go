@@ -6,14 +6,15 @@ import (
 	"net/http"
 )
 
-func HttpRouterHelloHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func httpRouterHelloHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	fmt.Fprint(w, "Hello World")
 }
 
-func HttpRouterEngine() http.Handler {
+// HTTPRouterEngine is httprouter router.
+func HTTPRouterEngine() http.Handler {
 	r := httprouter.New()
 
-	r.GET("/", HttpRouterHelloHandler)
+	r.GET("/", httpRouterHelloHandler)
 
 	return r
 }

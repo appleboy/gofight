@@ -5,13 +5,14 @@ import (
 	"net/http"
 )
 
-func BasicHelloHandler(w http.ResponseWriter, r *http.Request) {
+func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello World")
 }
 
+// BasicEngine is basic router.
 func BasicEngine() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", BasicHelloHandler)
+	mux.HandleFunc("/", basicHelloHandler)
 
 	return mux
 }
