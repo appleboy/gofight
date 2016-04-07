@@ -54,6 +54,8 @@ import (
 
 // Media types
 const (
+	Version         = "1.0"
+	UserAgent       = "User-Agent"
 	ContentType     = "Content-Type"
 	ApplicationJSON = "application/json"
 	ApplicationForm = "application/x-www-form-urlencoded"
@@ -227,6 +229,9 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	if len(qs) > 0 {
 		req.URL.RawQuery = qs
 	}
+
+	// Auto add user agent
+	req.Header.Set(UserAgent, "Gofight-client/"+Version)
 
 	if rc.Method == "POST" || rc.Method == "PUT" {
 		if strings.HasPrefix(rc.Body, "{") {
