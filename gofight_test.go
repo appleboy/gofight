@@ -55,6 +55,8 @@ func TestGinHeader(t *testing.T) {
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 
 			assert.Equal(t, goVersion, rq.Header.Get("Go-Version"))
+			assert.Equal(t, "Gofight-client/"+Version, rq.Header.Get(UserAgent))
+			assert.Equal(t, "text/plain", rq.Header.Get(ContentType))
 			assert.Equal(t, "Hello World", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
