@@ -24,3 +24,17 @@ func TestBasicHelloWorld(t *testing.T) {
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
+
+func TestBasicHttpHelloWorld(t *testing.T) {
+	basicHttpHelloHandler()
+
+	r := gofight.New()
+
+	r.GET("/hello").
+		// trun on the debug mode.
+		SetDebug(true).
+		Run(http.DefaultServeMux, func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+			assert.Equal(t, "Hello World", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}

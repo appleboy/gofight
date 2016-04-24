@@ -9,6 +9,10 @@ func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello World")
 }
 
+func basicHttpHelloHandler() {
+  http.HandleFunc("/hello", basicHelloHandler)
+}
+
 // BasicEngine is basic router.
 func BasicEngine() http.Handler {
 	mux := http.NewServeMux()
