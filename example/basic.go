@@ -10,7 +10,7 @@ func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func basicHttpHelloHandler() {
-  http.HandleFunc("/hello", basicHelloHandler)
+	http.HandleFunc("/hello", basicHelloHandler)
 }
 
 // BasicEngine is basic router.
