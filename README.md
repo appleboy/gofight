@@ -60,7 +60,7 @@ func TestBasicHelloWorld(t *testing.T) {
   r := gofight.New()
 
   r.GET("/").
-    // trun on the debug mode.
+    // turn on the debug mode.
     SetDebug(true).
     Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
@@ -80,7 +80,7 @@ func TestBasicHelloWorld(t *testing.T) {
   version := "0.0.1"
 
   r.GET("/").
-    // trun on the debug mode.
+    // turn on the debug mode.
     SetDebug(true).
     SetHeader(gofight.H{
       "X-Version": version,
