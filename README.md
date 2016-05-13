@@ -177,6 +177,12 @@ func TestPostRawData(t *testing.T) {
 * Mux Framework: [mux.go](example/mux.go), [mux_test.go](example/mux_test.go)
 * HttpRouter Framework: [httprouter.go](example/httprouter.go), [httprouter_test.go](example/httprouter_test.go)
 
+## Testing
+
+```
+$ make
+```
+
 ## License
 
 Copyright 2016 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
