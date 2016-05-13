@@ -1,0 +1,100 @@
+hash: d703e41807b22400ba1b68eee426f106466477be9fce4c238186cd9c8c5d617a
+updated: 2016-05-13T10:52:41.426397967+08:00
+imports:
+- name: github.com/buger/jsonparser
+  version: f0ac9350516a2f00f02704daa15e5d1ed5b0b76b
+- name: github.com/davecgh/go-spew
+  version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
+  subpackages:
+  - spew
+- name: github.com/dgrijalva/jwt-go
+  version: 40bd0f3b4891a9d7f121bfb7b8e8b0525625e262
+- name: github.com/dustin/go-broadcast
+  version: 3bdf6d4a7164a50bc19d5f230e2981d87d2584f1
+- name: github.com/gin-gonic/gin
+  version: 542be2fe77724f800fcab7eb6c01a4e597fb8506
+  subpackages:
+  - binding
+  - render
+- name: github.com/golang/protobuf
+  version: 2402d76f3d41f928c7902a765dfc872356dd3aad
+  subpackages:
+  - proto
+  - proto/testdata
+- name: github.com/gorilla/context
+  version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
+- name: github.com/gorilla/mux
+  version: 9c19ed558d5df4da88e2ade9c8940d742aef0e7e
+- name: github.com/julienschmidt/httprouter
+  version: 77366a47451a56bb3ba682481eed85b64fea14e8
+- name: github.com/klauspost/compress
+  version: 14eb9c4951195779ecfbec34431a976de7335b0a
+  subpackages:
+  - flate
+  - gzip
+  - zlib
+- name: github.com/klauspost/cpuid
+  version: 09cded8978dc9e80714c4d85b0322337b0a1e5e0
+- name: github.com/klauspost/crc32
+  version: 19b0b332c9e4516a6370a0456e6182c3b5036720
+- name: github.com/labstack/echo
+  version: 1aa22ce09bc19fa8dd551736b2a6ddf67464f3c7
+  subpackages:
+  - test
+  - engine
+- name: github.com/labstack/gommon
+  version: b5f03e345acd2096591b6f738cb8d2b9b3231c50
+  subpackages:
+  - log
+  - bytes
+  - color
+- name: github.com/mailru/easyjson
+  version: 1c93a6ab1c8b49b17175176adc616291039ad373
+  subpackages:
+  - jlexer
+  - jwriter
+  - buffer
+- name: github.com/manucorporat/sse
+  version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
+- name: github.com/manucorporat/stats
+  version: 8f2d6ace262eba462e9beb552382c98be51d807b
+- name: github.com/mattn/go-colorable
+  version: e8a10ddc7d2a7fe255f6fd7f501070a4cb62c183
+- name: github.com/mattn/go-isatty
+  version: 56b76bdf51f7708750eac80fa38b952bb9f32639
+- name: github.com/pmezard/go-difflib
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  subpackages:
+  - difflib
+- name: github.com/pquerna/ffjson
+  version: fa49a9f5832ba121db144795c147fe8449124aeb
+  subpackages:
+  - fflib/v1
+  - fflib/v1/internal
+- name: github.com/stretchr/objx
+  version: cbeaeb16a013161a98496fad62933b1d21786672
+- name: github.com/stretchr/testify
+  version: 6cb3b85ef5a0efef77caef88363ec4d4b5c0976d
+  subpackages:
+  - assert
+  - http
+  - mock
+- name: github.com/ugorji/go
+  version: a396ed22fc049df733440d90efe17475e3929ccb
+  subpackages:
+  - codec
+- name: github.com/valyala/fasthttp
+  version: ecba84a7fe001c29e69a8c7550b40f1c684e0113
+  subpackages:
+  - expvarhandler
+- name: github.com/valyala/fasttemplate
+  version: 3b874956e03f1636d171bda64b130f9135f42cff
+- name: golang.org/x/net
+  version: f315505cf3349909cdf013ea56690da34e96a451
+  subpackages:
+  - context
+- name: gopkg.in/go-playground/validator.v8
+  version: c193cecd124b5cc722d7ee5538e945bdb3348435
+- name: gopkg.in/yaml.v2
+  version: a83829b6f1293c91addabc89d0571c246397bbf4
+devImports: []
