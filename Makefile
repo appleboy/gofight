@@ -11,8 +11,14 @@ update:
 example:
 	cd example && go test -v -cover -covermode=count -coverprofile=coverage.out .
 
+example_html: example
+	cd example && go tool cover -html=coverage.out
+
 test: example
 	go test -v -cover -covermode=count -coverprofile=coverage.out .
+
+test_html: test
+	go tool cover -html=coverage.out
 
 lint:
 	golint .
