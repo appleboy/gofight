@@ -12,10 +12,18 @@ API Handler Testing for Golang framework.
 * [x] [Mux](https://github.com/gorilla/mux)
 * [x] [HttpRouter](https://github.com/julienschmidt/httprouter)
 
-## Installation
+## Usage
 
+Downladn this package.
+
+```bash
+$ go get gopkg.in/appleboy/gofight.v1
 ```
-$ go get -u github.com/appleboy/gofight
+
+To import this package, add the following line to your code:
+
+```go
+import "gopkg.in/appleboy/gofight.v1"
 ```
 
 ## Usage
