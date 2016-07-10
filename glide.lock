@@ -1,18 +1,18 @@
 hash: d703e41807b22400ba1b68eee426f106466477be9fce4c238186cd9c8c5d617a
-updated: 2016-05-13T10:52:41.426397967+08:00
+updated: 2016-07-10T12:24:50.304931966+08:00
 imports:
 - name: github.com/buger/jsonparser
-  version: f0ac9350516a2f00f02704daa15e5d1ed5b0b76b
+  version: 183ade1ac7705adf72585f92410fc0912783217a
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
   subpackages:
   - spew
 - name: github.com/dgrijalva/jwt-go
-  version: 40bd0f3b4891a9d7f121bfb7b8e8b0525625e262
+  version: 01aeca54ebda6e0fbfafd0a524d234159c05ec20
 - name: github.com/dustin/go-broadcast
   version: 3bdf6d4a7164a50bc19d5f230e2981d87d2584f1
 - name: github.com/gin-gonic/gin
-  version: 542be2fe77724f800fcab7eb6c01a4e597fb8506
+  version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
   subpackages:
   - binding
   - render
@@ -22,9 +22,9 @@ imports:
   - proto
   - proto/testdata
 - name: github.com/gorilla/context
-  version: a8d44e7d8e4d532b6a27a02dd82abb31cc1b01bd
+  version: aed02d124ae4a0e94fea4541c8effd05bf0c8296
 - name: github.com/gorilla/mux
-  version: 9c19ed558d5df4da88e2ade9c8940d742aef0e7e
+  version: 9fa818a44c2bf1396a17f9d5a3c0f6dd39d2ff8e
 - name: github.com/julienschmidt/httprouter
   version: 77366a47451a56bb3ba682481eed85b64fea14e8
 - name: github.com/klauspost/compress
@@ -38,18 +38,19 @@ imports:
 - name: github.com/klauspost/crc32
   version: 19b0b332c9e4516a6370a0456e6182c3b5036720
 - name: github.com/labstack/echo
-  version: 1aa22ce09bc19fa8dd551736b2a6ddf67464f3c7
+  version: 451b2ccc9ffda7fd7fad2027b75d93b18ff87cbe
   subpackages:
   - test
   - engine
+  - log
 - name: github.com/labstack/gommon
-  version: b5f03e345acd2096591b6f738cb8d2b9b3231c50
+  version: 722aa12d41c236ce78ff48eac1cafe0107ecdc9d
   subpackages:
   - log
   - bytes
   - color
 - name: github.com/mailru/easyjson
-  version: 1c93a6ab1c8b49b17175176adc616291039ad373
+  version: 7acac2663abbf13bd349d76e3768a9e0a9d842f3
   subpackages:
   - jlexer
   - jwriter
@@ -59,7 +60,7 @@ imports:
 - name: github.com/manucorporat/stats
   version: 8f2d6ace262eba462e9beb552382c98be51d807b
 - name: github.com/mattn/go-colorable
-  version: e8a10ddc7d2a7fe255f6fd7f501070a4cb62c183
+  version: 9056b7a9f2d1f2d96498d6d146acd1f9d5ed3d59
 - name: github.com/mattn/go-isatty
   version: 56b76bdf51f7708750eac80fa38b952bb9f32639
 - name: github.com/pmezard/go-difflib
@@ -67,25 +68,28 @@ imports:
   subpackages:
   - difflib
 - name: github.com/pquerna/ffjson
-  version: fa49a9f5832ba121db144795c147fe8449124aeb
+  version: a16f62ecdaf7d13077d64d3cdb1cc43486119809
   subpackages:
   - fflib/v1
   - fflib/v1/internal
 - name: github.com/stretchr/objx
   version: cbeaeb16a013161a98496fad62933b1d21786672
 - name: github.com/stretchr/testify
-  version: 6cb3b85ef5a0efef77caef88363ec4d4b5c0976d
+  version: d77da356e56a7428ad25149ca77381849a6a5232
   subpackages:
   - assert
   - http
   - mock
 - name: github.com/ugorji/go
-  version: a396ed22fc049df733440d90efe17475e3929ccb
+  version: b94837a2404ab90efe9289e77a70694c355739cb
   subpackages:
   - codec
+- name: github.com/valyala/bytebufferpool
+  version: a517d2d1537f5b02e9f6c23d4794160c6c2bc157
 - name: github.com/valyala/fasthttp
-  version: ecba84a7fe001c29e69a8c7550b40f1c684e0113
+  version: 97d96cb3b7feaf22ce9b813313cd8ae20b3589b9
   subpackages:
+  - fasthttputil
   - expvarhandler
 - name: github.com/valyala/fasttemplate
   version: 3b874956e03f1636d171bda64b130f9135f42cff

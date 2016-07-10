@@ -1,24 +1,31 @@
-sudo: false
+sudo: required
 
 language: go
 
 go:
-  - 1.3
-  - 1.4
   - 1.5
   - 1.6
+  - 1.6.2
   - tip
 
 env:
   global:
     secure: fB4N5c2BfEoaNkpGDM1wPbB9zV4ZhQqsnWZ+wyj8iDWyHlOw3Ungqb3nMEuVQMn3Yeu/PMLeDxd2h2at3+k+8g3IlEdKHS+uMzATVtOwBxwXPjBAB/oROCZPj3QlEFP32Z5AgGK9+tgl/dGjlaRvJ+BTv3YL3UMxPoaxXmi8IN0F2Z48rNgnsdyvq/u3htUGl03YkFZgucVuZ8GGD3TDOoMylcyZ8jYDooQOfoOSh+c1hFj4+mFls4t5Nc9tfgtbhrtzU7SFUKvYe14ryCxVNC7WeyUvS32nrWIS52yhxiyYU0o1umzdVqK/CwKoGh4LetiwmzDMyqZDyzVvcuvAaJ7D2FTU/yJ8t5wb0uWtmCbb6i258voS79LbnCeTxMTBn+h3CFsPKwR+xoiue+2jXIUP4K1+bk8Bj0cSfAwSlY2xkVzB/EpEXhPKlY/cGDMXF5WPpzUyeNdOUMlOiiVJ68V/H7ZwxfWMrgFxmeLHRnrrJtIVPTLdbtigf0WFew48+WELo9lv6SVYy7Q+Y46A46nNBDKqbJtHT/AhHPgqmi0Bt+5NZ/q0DgQd7og/ISGy0tbFRUUcKNFEumGjndtv7eY6GCvMIyEPZXclzPdNrPqAdWDqNeP6cwBCljx7Fve50QDe/3KAwMLEMvux9Qn0KcgIMNCrhfnAGJqEKx8BZvc=
 
+before_install:
+  - sudo add-apt-repository ppa:masterminds/glide -y && sudo apt-get update
+  - sudo apt-get install -y --force-yes glide
+
 install:
-  - go get -t -v ./...
+  - export GO15VENDOREXPERIMENT=1
+  - glide install
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
 
 script:
-  - go test -v -covermode=count -coverprofile=coverage.out
-  - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=coverage.out
+  - go test -v -covermode=count -coverprofile=coverage.txt
+  - $(go env GOPATH | awk 'BEGIN{FS=":"} {print $1}')/bin/goveralls -coverprofile=coverage.txt
     -service=travis-ci -repotoken=$COVERALLS_TOKEN
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

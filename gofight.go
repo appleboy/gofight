@@ -38,6 +38,7 @@ package gofight
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/engine"
@@ -96,8 +97,14 @@ type RequestConfig struct {
 
 // TestRequest is testing url string if server is running
 func TestRequest(t *testing.T, url string) {
-	resp, err := http.Get(url)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+
+	resp, err := client.Get(url)
 	defer resp.Body.Close()
+
 	assert.NoError(t, err)
 
 	_, ioerr := ioutil.ReadAll(resp.Body)

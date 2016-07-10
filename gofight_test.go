@@ -13,20 +13,34 @@ import (
 
 var goVersion = runtime.Version()
 
-func TestURL(t *testing.T) {
+func TestHttpURL(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
+	router.GET("/example", func(c *gin.Context) { c.String(http.StatusOK, "it worked") })
 
 	go func() {
-		router.GET("/example", func(c *gin.Context) { c.String(http.StatusOK, "it worked") })
 		assert.NoError(t, router.Run())
 	}()
 	// have to wait for the goroutine to start and run the server
 	// otherwise the main thread will complete
 	time.Sleep(5 * time.Millisecond)
 
-	assert.Error(t, router.Run(":8080"))
 	TestRequest(t, "http://localhost:8080/example")
+}
+
+func TestHttpsURL(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.New()
+	router.GET("/example", func(c *gin.Context) { c.String(http.StatusOK, "it worked") })
+
+	go func() {
+		assert.NoError(t, router.RunTLS(":8088", "certificate/localhost.cert", "certificate/localhost.key"))
+	}()
+	// have to wait for the goroutine to start and run the server
+	// otherwise the main thread will complete
+	time.Sleep(5 * time.Millisecond)
+
+	TestRequest(t, "https://localhost:8088/example")
 }
 
 func TestGinHelloWorld(t *testing.T) {
