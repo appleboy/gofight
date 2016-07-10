@@ -1,5 +1,7 @@
 .PHONY: all example test
 
+TARGETS_NOVENDOR := $(shell glide novendor)
+
 all: install test
 
 install:
@@ -21,4 +23,5 @@ test_html: test
 	go tool cover -html=coverage.out && unlink coverage.out
 
 lint:
+	golint example
 	golint .
