@@ -11,16 +11,16 @@ update:
 	glide update --all-dependencies --resolve-current
 
 example:
-	cd example && go test -v -cover -covermode=count -coverprofile=coverage.out .
+	cd example && go test -v -cover -covermode=count -coverprofile=coverage.txt .
 
 example_html: example
-	cd example && go tool cover -html=coverage.out && unlink coverage.out
+	cd example && go tool cover -html=coverage.txt && unlink coverage.txt
 
 test: example
-	go test -v -cover -covermode=count -coverprofile=coverage.out .
+	go test -v -cover -covermode=count -coverprofile=coverage.txt .
 
 test_html: test
-	go tool cover -html=coverage.out && unlink coverage.out
+	go tool cover -html=coverage.txt && unlink coverage.txt
 
 lint:
 	golint example
