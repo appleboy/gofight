@@ -380,3 +380,23 @@ func TestEchoOptions(t *testing.T) {
 			assert.Equal(t, http.StatusOK, r.Status())
 		})
 }
+
+func TestSetQueryString(t *testing.T) {
+	r := New()
+
+	r.GET("/hello").
+		SetQUERY(H{
+			"a": "1",
+			"b": "2",
+		})
+
+	assert.Equal(t, "/hello?a=1&b=2", r.Path)
+
+	r.GET("/hello?foo=bar").
+		SetQUERY(H{
+			"a": "1",
+			"b": "2",
+		})
+
+	assert.Equal(t, "/hello?foo=bar&a=1&b=2", r.Path)
+}

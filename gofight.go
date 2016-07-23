@@ -14,6 +14,13 @@
 //      "X-Version": version,
 //    })
 //
+// Set query string: Using SetQUERY to generate query string data.
+//
+//    SetQUERY(gofight.H{
+//      "a": "1",
+//      "b": "2",
+//    })
+//
 // POST FORM Data: Using SetFORM to generate form data.
 //
 //    SetFORM(gofight.H{
@@ -208,6 +215,23 @@ func (rc *RequestConfig) SetFORM(body H) *RequestConfig {
 	}
 
 	rc.Body = f.Encode()
+
+	return rc
+}
+
+// SetQUERY supply query string.
+func (rc *RequestConfig) SetQUERY(query H) *RequestConfig {
+	f := make(url.Values)
+
+	for k, v := range query {
+		f.Set(k, v)
+	}
+
+	if strings.Contains(rc.Path, "?") {
+		rc.Path = rc.Path + "&" + f.Encode()
+	} else {
+		rc.Path = rc.Path + "?" + f.Encode()
+	}
 
 	return rc
 }

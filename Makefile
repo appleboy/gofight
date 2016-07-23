@@ -8,7 +8,7 @@ install:
 	glide install
 
 update:
-	glide update --all-dependencies --resolve-current
+	glide up
 
 example:
 	cd example && go test -v -cover -covermode=count -coverprofile=coverage.txt .

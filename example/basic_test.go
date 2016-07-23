@@ -26,7 +26,7 @@ func TestBasicHelloWorld(t *testing.T) {
 }
 
 func TestBasicHttpHelloWorld(t *testing.T) {
-	basicHttpHelloHandler()
+	basicHTTPHelloHandler()
 
 	r := gofight.New()
 

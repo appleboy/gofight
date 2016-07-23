@@ -177,6 +177,42 @@ func TestPostRawData(t *testing.T) {
 }
 ```
 
+### Set Query String
+
+Using `SetQuery` to generate raw data.
+
+```go
+func TestQueryString(t *testing.T) {
+  r := gofight.New()
+
+  r.GET("/hello").
+    SetQUERY(gofight.H{
+      "a": "1",
+      "b": "2",
+    }).
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
+}
+```
+
+or append exist query parameter.
+
+```go
+func TestQueryString(t *testing.T) {
+  r := gofight.New()
+
+  r.GET("/hello?foo=bar").
+    SetQUERY(gofight.H{
+      "a": "1",
+      "b": "2",
+    }).
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
+}
+```
+
 ## Example
 
 * Basic HTTP Router: [basic.go](example/basic.go), [basic_test.go](example/basic_test.go)
