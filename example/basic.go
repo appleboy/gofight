@@ -9,7 +9,7 @@ func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello World")
 }
 
-func basicHttpHelloHandler() {
+func basicHTTPHelloHandler() {
 	http.HandleFunc("/hello", basicHelloHandler)
 }
 
