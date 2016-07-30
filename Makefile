@@ -1,6 +1,7 @@
 .PHONY: all example test
 
 TARGETS_NOVENDOR := $(shell glide novendor)
+export PROJECT_PATH = /go/src/github.com/appleboy/gofight
 
 all: install test
 
@@ -11,17 +12,17 @@ update:
 	glide up
 
 example:
-	cd example && go test -v -cover -covermode=count -coverprofile=coverage.txt .
-
-example_html: example
-	cd example && go tool cover -html=coverage.txt && unlink coverage.txt
+	cd example && go test -v -cover .
 
 test: example
-	go test -v -cover -covermode=count -coverprofile=coverage.txt .
+	go test -v -cover .
 
-test_html: test
-	go tool cover -html=coverage.txt && unlink coverage.txt
+docker_test: clean
+	docker run --rm \
+		-v $(PWD):$(PROJECT_PATH) \
+		-w=$(PROJECT_PATH) \
+		appleboy/golang-testing \
+		sh -c "make install && coverage all"
 
-lint:
-	golint example
-	golint .
+clean:
+	rm -rf .cover
