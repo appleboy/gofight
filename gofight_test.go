@@ -97,7 +97,7 @@ func TestGinPostFormData(t *testing.T) {
 	r := New()
 
 	r.POST("/form").
-		SetFORM(H{
+		SetForm(H{
 			"a": "1",
 			"b": "2",
 		}).
@@ -385,7 +385,7 @@ func TestSetQueryString(t *testing.T) {
 	r := New()
 
 	r.GET("/hello").
-		SetQUERY(H{
+		SetQuery(H{
 			"a": "1",
 			"b": "2",
 		})
@@ -393,7 +393,7 @@ func TestSetQueryString(t *testing.T) {
 	assert.Equal(t, "/hello?a=1&b=2", r.Path)
 
 	r.GET("/hello?foo=bar").
-		SetQUERY(H{
+		SetQuery(H{
 			"a": "1",
 			"b": "2",
 		})

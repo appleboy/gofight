@@ -14,16 +14,16 @@
 //      "X-Version": version,
 //    })
 //
-// Set query string: Using SetQUERY to generate query string data.
+// Set query string: Using SetQuery to generate query string data.
 //
-//    SetQUERY(gofight.H{
+//    SetQuery(gofight.H{
 //      "a": "1",
 //      "b": "2",
 //    })
 //
-// POST FORM Data: Using SetFORM to generate form data.
+// POST FORM Data: Using SetForm to generate form data.
 //
-//    SetFORM(gofight.H{
+//    SetForm(gofight.H{
 //      "a": "1",
 //      "b": "2",
 //    })
@@ -206,8 +206,8 @@ func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
 	return rc
 }
 
-// SetFORM supply form body.
-func (rc *RequestConfig) SetFORM(body H) *RequestConfig {
+// SetForm supply form body.
+func (rc *RequestConfig) SetForm(body H) *RequestConfig {
 	f := make(url.Values)
 
 	for k, v := range body {
@@ -219,8 +219,8 @@ func (rc *RequestConfig) SetFORM(body H) *RequestConfig {
 	return rc
 }
 
-// SetQUERY supply query string.
-func (rc *RequestConfig) SetQUERY(query H) *RequestConfig {
+// SetQuery supply query string.
+func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
 	f := make(url.Values)
 
 	for k, v := range query {
