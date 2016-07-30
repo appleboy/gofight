@@ -186,7 +186,7 @@ func TestQueryString(t *testing.T) {
   r := gofight.New()
 
   r.GET("/hello").
-    SetQUERY(gofight.H{
+    SetQuery(gofight.H{
       "a": "1",
       "b": "2",
     }).
@@ -203,7 +203,7 @@ func TestQueryString(t *testing.T) {
   r := gofight.New()
 
   r.GET("/hello?foo=bar").
-    SetQUERY(gofight.H{
+    SetQuery(gofight.H{
       "a": "1",
       "b": "2",
     }).
