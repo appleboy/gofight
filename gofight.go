@@ -99,6 +99,7 @@ type RequestConfig struct {
 	Path    string
 	Body    string
 	Headers H
+	Cookies H
 	Debug   bool
 }
 
@@ -245,6 +246,15 @@ func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	return rc
 }
 
+// SetCookie supply cookies what you defined.
+func (rc *RequestConfig) SetCookie(cookies H) *RequestConfig {
+	if len(cookies) > 0 {
+		rc.Cookies = cookies
+	}
+
+	return rc
+}
+
 func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) {
 	qs := ""
 	if strings.Contains(rc.Path, "?") {
@@ -278,11 +288,18 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 		}
 	}
 
+	if len(rc.Cookies) > 0 {
+		for k, v := range rc.Cookies {
+			req.AddCookie(&http.Cookie{Name: k, Value: v})
+		}
+	}
+
 	if rc.Debug {
 		log.Printf("Request Method: %s", rc.Method)
 		log.Printf("Request Path: %s", rc.Path)
 		log.Printf("Request Body: %s", rc.Body)
 		log.Printf("Request Headers: %s", rc.Headers)
+		log.Printf("Request Cookies: %s", rc.Cookies)
 		log.Printf("Request Header: %s", req.Header)
 	}
 
