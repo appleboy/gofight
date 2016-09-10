@@ -76,6 +76,20 @@ func TestGinHeader(t *testing.T) {
 		})
 }
 
+func TestGinCookie(t *testing.T) {
+	r := New()
+
+	r.GET("/text").
+		SetCookie(H{
+			"foo": "bar",
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "foo=bar", rq.Header.Get("cookie"))
+		})
+}
+
 func TestGinQuery(t *testing.T) {
 	r := New()
 

@@ -213,6 +213,25 @@ func TestQueryString(t *testing.T) {
 }
 ```
 
+### Set Cookie String
+
+Using `SetCookie` to generate raw data.
+
+```go
+func TestQueryString(t *testing.T) {
+  r := gofight.New()
+
+  r.GET("/hello").
+    SetQuery(gofight.H{
+      "foo": "bar",
+    }).
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+      assert.Equal(t, http.StatusOK, r.Code)
+      assert.Equal(t, "foo=bar", rq.Header.Get("cookie"))
+    })
+}
+```
+
 ## Example
 
 * Basic HTTP Router: [basic.go](example/basic.go), [basic_test.go](example/basic_test.go)
