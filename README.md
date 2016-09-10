@@ -222,7 +222,7 @@ func TestQueryString(t *testing.T) {
   r := gofight.New()
 
   r.GET("/hello").
-    SetQuery(gofight.H{
+    SetCookie(gofight.H{
       "foo": "bar",
     }).
     Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
