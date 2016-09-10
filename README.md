@@ -223,12 +223,11 @@ func TestQueryString(t *testing.T) {
 
   r.GET("/hello").
     SetQuery(gofight.H{
-      "foo":   "bar",
-      "hello": "world",
+      "foo": "bar",
     }).
     Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
       assert.Equal(t, http.StatusOK, r.Code)
-      assert.Equal(t, "foo=bar; hello=world", rq.Header.Get("cookie"))
+      assert.Equal(t, "foo=bar", rq.Header.Get("cookie"))
     })
 }
 ```
