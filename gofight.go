@@ -14,6 +14,12 @@
 //      "X-Version": version,
 //    })
 //
+// Set Cookie: You can add custom cookie via SetCookie func.
+//
+//    SetCookie(gofight.H{
+//      "foo": "bar",
+//    })
+//
 // Set query string: Using SetQuery to generate query string data.
 //
 //    SetQuery(gofight.H{
