@@ -53,10 +53,6 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/engine"
-	"github.com/labstack/echo/test"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -64,6 +60,9 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+
+	"github.com/labstack/echo"
+	"github.com/stretchr/testify/assert"
 )
 
 // Media types
@@ -81,17 +80,11 @@ type HTTPResponse *httptest.ResponseRecorder
 // HTTPRequest is basic HTTP request type
 type HTTPRequest *http.Request
 
-// EchoHTTPResponse is HTTP response type for echo framework
-type EchoHTTPResponse *test.ResponseRecorder
-
-// EchoHTTPRequest is HTTP request type for echo framework
-type EchoHTTPRequest engine.Request
-
 // ResponseFunc response handling func type
 type ResponseFunc func(HTTPResponse, HTTPRequest)
 
 // EchoResponseFunc response handling func type for echo framework
-type EchoResponseFunc func(EchoHTTPResponse, EchoHTTPRequest)
+type EchoResponseFunc func(HTTPResponse, HTTPRequest)
 
 // H is HTTP Header Type
 type H map[string]string
@@ -323,31 +316,32 @@ func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 	response(w, req)
 }
 
-func (rc *RequestConfig) initEchoTest() (engine.Request, *test.ResponseRecorder) {
+func (rc *RequestConfig) initEchoTest() *http.Request {
 
-	rq := test.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
-	rec := test.NewResponseRecorder()
+	rq, _ := http.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
 
 	if rc.Method == "POST" || rc.Method == "PUT" {
 		if strings.HasPrefix(rc.Body, "{") {
-			rq.Header().Add(ContentType, ApplicationJSON)
+			rq.Header.Add(ContentType, ApplicationJSON)
 		} else {
-			rq.Header().Add(ContentType, ApplicationForm)
+			rq.Header.Add(ContentType, ApplicationForm)
 		}
 	}
 
 	for k, v := range rc.Headers {
-		rq.Header().Add(k, v)
+		rq.Header.Add(k, v)
 	}
 
-	return rq, rec
+	return rq
 }
 
 // RunEcho execute http request for echo framework
 func (rc *RequestConfig) RunEcho(e *echo.Echo, response EchoResponseFunc) {
 
-	rq, rec := rc.initEchoTest()
-	e.ServeHTTP(rq, rec)
+	rq := rc.initEchoTest()
+	rec := httptest.NewRecorder()
+
+	e.ServeHTTP(rec, rq)
 
 	response(rec, rq)
 }
