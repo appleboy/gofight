@@ -83,9 +83,6 @@ type HTTPRequest *http.Request
 // ResponseFunc response handling func type
 type ResponseFunc func(HTTPResponse, HTTPRequest)
 
-// EchoResponseFunc response handling func type for echo framework
-type EchoResponseFunc func(HTTPResponse, HTTPRequest)
-
 // H is HTTP Header Type
 type H map[string]string
 
@@ -336,7 +333,7 @@ func (rc *RequestConfig) initEchoTest() *http.Request {
 }
 
 // RunEcho execute http request for echo framework
-func (rc *RequestConfig) RunEcho(e *echo.Echo, response EchoResponseFunc) {
+func (rc *RequestConfig) RunEcho(e *echo.Echo, response ResponseFunc) {
 
 	rq := rc.initEchoTest()
 	rec := httptest.NewRecorder()
