@@ -23,7 +23,7 @@ imports:
 - name: github.com/julienschmidt/httprouter
   version: 77366a47451a56bb3ba682481eed85b64fea14e8
 - name: github.com/labstack/echo
-  version: 451b2ccc9ffda7fd7fad2027b75d93b18ff87cbe
+  version: c5a3575d4c4121ba7a01a9aa21637c712adec067
   subpackages:
   - test
   - engine

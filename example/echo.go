@@ -1,8 +1,9 @@
 package example
 
 import (
-	"github.com/labstack/echo"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
 func echoHelloHandler() echo.HandlerFunc {
@@ -17,7 +18,7 @@ func EchoEngine() *echo.Echo {
 	e := echo.New()
 
 	// Routes
-	e.Get("/", echoHelloHandler())
+	e.GET("/", echoHelloHandler())
 
 	return e
 }
