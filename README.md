@@ -17,13 +17,13 @@ API Handler Testing for Golang framework.
 Downladn this package.
 
 ```bash
-$ go get gopkg.in/appleboy/gofight.v1
+$ go get gopkg.in/appleboy/gofight.v2
 ```
 
 To import this package, add the following line to your code:
 
 ```go
-import "gopkg.in/appleboy/gofight.v1"
+import "gopkg.in/appleboy/gofight.v2"
 ```
 
 ## Usage
