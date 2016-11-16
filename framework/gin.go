@@ -1,8 +1,9 @@
 package framework
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
 // Binding from JSON

@@ -1,8 +1,9 @@
 package example
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
 func ginHelloHandler(c *gin.Context) {

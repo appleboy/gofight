@@ -8,8 +8,8 @@ import (
 
 	"github.com/appleboy/gofight/framework"
 	"github.com/buger/jsonparser"
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/gin-gonic/gin.v1"
 )
 
 var goVersion = runtime.Version()
