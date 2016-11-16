@@ -6,10 +6,7 @@ export PROJECT_PATH = /go/src/github.com/appleboy/gofight
 all: install test
 
 install:
-	glide install
-
-update:
-	glide up
+	go get -t -d -v ./...
 
 example:
 	cd example && go test -v -cover .
@@ -25,4 +22,4 @@ docker_test: clean
 		sh -c "make install && coverage all"
 
 clean:
-	rm -rf .cover
+	rm -rf .cover vendor

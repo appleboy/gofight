@@ -244,7 +244,7 @@ func TestEchoHelloWorld(t *testing.T) {
 
 	r.GET("/hello").
 		SetDebug(true).
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")
@@ -262,7 +262,7 @@ func TestEchoHeader(t *testing.T) {
 			"Content-Type": "text/plain",
 			"Go-Version":   goVersion,
 		}).
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 
 			assert.Equal(t, goVersion, rq.Header.Get("Go-Version"))
 			assert.Equal(t, r.Body.String(), "Hello World")
@@ -274,7 +274,7 @@ func TestEchoQuery(t *testing.T) {
 	r := New()
 
 	r.GET("/query?text=world&foo=bar").
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			hello, _ := jsonparser.GetString(data, "hello")
@@ -291,7 +291,7 @@ func TestEchoPostFormData(t *testing.T) {
 
 	r.POST("/form").
 		SetBody("a=1&b=2").
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			a, _ := jsonparser.GetString(data, "a")
@@ -311,7 +311,7 @@ func TestEchoPostJSONData(t *testing.T) {
 			"a": 1,
 			"b": 2,
 		}).
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			a, _ := jsonparser.GetInt(data, "a")
@@ -328,7 +328,7 @@ func TestEchoPut(t *testing.T) {
 
 	r.PUT("/update").
 		SetBody("c=1&d=2").
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			c, _ := jsonparser.GetString(data, "c")
@@ -344,7 +344,7 @@ func TestEchoDelete(t *testing.T) {
 	r := New()
 
 	r.DELETE("/delete").
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			hello, _ := jsonparser.GetString(data, "hello")
@@ -358,7 +358,7 @@ func TestEchoPatch(t *testing.T) {
 	r := New()
 
 	r.PATCH("/patch").
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")
@@ -372,7 +372,7 @@ func TestEchoHead(t *testing.T) {
 	r := New()
 
 	r.HEAD("/head").
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")
@@ -386,7 +386,7 @@ func TestEchoOptions(t *testing.T) {
 	r := New()
 
 	r.OPTIONS("/options").
-		RunEcho(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")

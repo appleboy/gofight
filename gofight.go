@@ -61,7 +61,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/labstack/echo"
+	// "github.com/labstack/echo"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -311,34 +311,4 @@ func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 	r.ServeHTTP(w, req)
 
 	response(w, req)
-}
-
-func (rc *RequestConfig) initEchoTest() *http.Request {
-
-	rq, _ := http.NewRequest(rc.Method, rc.Path, strings.NewReader(rc.Body))
-
-	if rc.Method == "POST" || rc.Method == "PUT" {
-		if strings.HasPrefix(rc.Body, "{") {
-			rq.Header.Add(ContentType, ApplicationJSON)
-		} else {
-			rq.Header.Add(ContentType, ApplicationForm)
-		}
-	}
-
-	for k, v := range rc.Headers {
-		rq.Header.Add(k, v)
-	}
-
-	return rq
-}
-
-// RunEcho execute http request for echo framework
-func (rc *RequestConfig) RunEcho(e *echo.Echo, response ResponseFunc) {
-
-	rq := rc.initEchoTest()
-	rec := httptest.NewRecorder()
-
-	e.ServeHTTP(rec, rq)
-
-	response(rec, rq)
 }
