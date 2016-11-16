@@ -1,14 +1,15 @@
 package gofight
 
 import (
-	"github.com/appleboy/gofight/framework"
-	"github.com/buger/jsonparser"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"runtime"
 	"testing"
 	"time"
+
+	"github.com/appleboy/gofight/framework"
+	"github.com/buger/jsonparser"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
 
 var goVersion = runtime.Version()
@@ -243,13 +244,13 @@ func TestEchoHelloWorld(t *testing.T) {
 
 	r.GET("/hello").
 		SetDebug(true).
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")
 
 			assert.Equal(t, "world", value)
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 
@@ -261,11 +262,11 @@ func TestEchoHeader(t *testing.T) {
 			"Content-Type": "text/plain",
 			"Go-Version":   goVersion,
 		}).
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 
-			assert.Equal(t, goVersion, rq.Header().Get("Go-Version"))
+			assert.Equal(t, goVersion, rq.Header.Get("Go-Version"))
 			assert.Equal(t, r.Body.String(), "Hello World")
-			assert.Equal(t, r.Status(), http.StatusOK)
+			assert.Equal(t, r.Code, http.StatusOK)
 		})
 }
 
@@ -273,7 +274,7 @@ func TestEchoQuery(t *testing.T) {
 	r := New()
 
 	r.GET("/query?text=world&foo=bar").
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			hello, _ := jsonparser.GetString(data, "hello")
@@ -281,7 +282,7 @@ func TestEchoQuery(t *testing.T) {
 
 			assert.Equal(t, "world", hello)
 			assert.Equal(t, "bar", foo)
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 
@@ -290,7 +291,7 @@ func TestEchoPostFormData(t *testing.T) {
 
 	r.POST("/form").
 		SetBody("a=1&b=2").
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			a, _ := jsonparser.GetString(data, "a")
@@ -298,7 +299,7 @@ func TestEchoPostFormData(t *testing.T) {
 
 			assert.Equal(t, "1", a)
 			assert.Equal(t, "2", b)
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 
@@ -310,7 +311,7 @@ func TestEchoPostJSONData(t *testing.T) {
 			"a": 1,
 			"b": 2,
 		}).
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			a, _ := jsonparser.GetInt(data, "a")
@@ -318,7 +319,7 @@ func TestEchoPostJSONData(t *testing.T) {
 
 			assert.Equal(t, 1, int(a))
 			assert.Equal(t, 2, int(b))
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 
@@ -327,7 +328,7 @@ func TestEchoPut(t *testing.T) {
 
 	r.PUT("/update").
 		SetBody("c=1&d=2").
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			c, _ := jsonparser.GetString(data, "c")
@@ -335,7 +336,7 @@ func TestEchoPut(t *testing.T) {
 
 			assert.Equal(t, "1", c)
 			assert.Equal(t, "2", d)
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 
@@ -343,13 +344,13 @@ func TestEchoDelete(t *testing.T) {
 	r := New()
 
 	r.DELETE("/delete").
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			hello, _ := jsonparser.GetString(data, "hello")
 
 			assert.Equal(t, "world", hello)
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 
@@ -357,13 +358,13 @@ func TestEchoPatch(t *testing.T) {
 	r := New()
 
 	r.PATCH("/patch").
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")
 
 			assert.Equal(t, "world", value)
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 
@@ -371,13 +372,13 @@ func TestEchoHead(t *testing.T) {
 	r := New()
 
 	r.HEAD("/head").
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")
 
 			assert.Equal(t, "world", value)
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 
@@ -385,13 +386,13 @@ func TestEchoOptions(t *testing.T) {
 	r := New()
 
 	r.OPTIONS("/options").
-		RunEcho(framework.EchoEngine(), func(r EchoHTTPResponse, rq EchoHTTPRequest) {
+		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
 			value, _ := jsonparser.GetString(data, "hello")
 
 			assert.Equal(t, "world", value)
-			assert.Equal(t, http.StatusOK, r.Status())
+			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
 

@@ -1,9 +1,10 @@
 package framework
 
 import (
-	"github.com/labstack/echo"
 	"log"
 	"net/http"
+
+	"github.com/labstack/echo"
 )
 
 type echoContent struct {
@@ -96,18 +97,18 @@ func echoDeleteHandler() echo.HandlerFunc {
 func EchoEngine() *echo.Echo {
 	e := echo.New()
 
-	e.Get("/hello", echoHelloHandler())
-	e.Get("/text", echoTextHandler())
-	e.Get("/query", echoQueryHandler())
+	e.GET("/hello", echoHelloHandler())
+	e.GET("/text", echoTextHandler())
+	e.GET("/query", echoQueryHandler())
 
-	e.Post("/form", echoPostFormHandler())
-	e.Post("/json", echoJSONHandler())
-	e.Put("/update", echoPutHandler())
-	e.Delete("/delete", echoDeleteHandler())
+	e.POST("/form", echoPostFormHandler())
+	e.POST("/json", echoJSONHandler())
+	e.PUT("/update", echoPutHandler())
+	e.DELETE("/delete", echoDeleteHandler())
 
-	e.Patch("/patch", echoHelloHandler())
-	e.Options("/options", echoHelloHandler())
-	e.Head("/head", echoHelloHandler())
+	e.PATCH("/patch", echoHelloHandler())
+	e.OPTIONS("/options", echoHelloHandler())
+	e.HEAD("/head", echoHelloHandler())
 
 	return e
 }
