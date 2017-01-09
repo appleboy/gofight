@@ -6,7 +6,7 @@ export PROJECT_PATH = /go/src/github.com/appleboy/gofight
 all: install test
 
 install:
-	go get -t -d -v ./...
+	glide install
 
 example:
 	cd example && go test -v -cover .

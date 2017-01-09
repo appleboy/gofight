@@ -1,0 +1,12 @@
+package: github.com/appleboy/gofight
+import:
+- package: github.com/gorilla/mux
+- package: github.com/julienschmidt/httprouter
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
+- package: gopkg.in/gin-gonic/gin.v1
+- package: github.com/labstack/echo
+  version: ^3.0.3
+testImport:
+- package: github.com/buger/jsonparser
