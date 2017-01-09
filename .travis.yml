@@ -6,9 +6,8 @@ services:
   - docker
 
 go:
-  - 1.5.4
-  - 1.6.3
-  - 1.7.3
+  - 1.6.4
+  - 1.7.4
   - tip
 
 env:
@@ -20,7 +19,6 @@ before_install:
   - curl https://glide.sh/get | sh
 
 install:
-  - export GO15VENDOREXPERIMENT=1
   - go get github.com/mattn/goveralls
   - make install
 
