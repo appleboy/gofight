@@ -14,7 +14,7 @@ API Handler Testing for Golang framework.
 
 ## Usage
 
-Downladn this package.
+Download this package.
 
 ```bash
 $ go get gopkg.in/appleboy/gofight.v2
@@ -130,7 +130,7 @@ func TestPostFormData(t *testing.T) {
 
 ### POST JSON Data
 
-Using `SetJSON` to generate json data.
+Using `SetJSON` to generate JSON data.
 
 ```go
 func TestPostJSONData(t *testing.T) {
