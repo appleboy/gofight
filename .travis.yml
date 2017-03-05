@@ -6,8 +6,9 @@ services:
   - docker
 
 go:
-  - 1.6.4
-  - 1.7.4
+  - 1.6.x
+  - 1.7.x
+  - 1.8.x
   - tip
 
 env:
