@@ -1,12 +1,8 @@
 .PHONY: all example test
 
-TARGETS_NOVENDOR := $(shell glide novendor)
 export PROJECT_PATH = /go/src/github.com/appleboy/gofight
 
-all: install test
-
-install:
-	glide install
+all: test
 
 example:
 	cd example && go test -v -cover .

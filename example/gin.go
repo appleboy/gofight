@@ -3,7 +3,7 @@ package example
 import (
 	"net/http"
 
-	"gopkg.in/gin-gonic/gin.v1"
+	"github.com/gin-gonic/gin"
 )
 
 func ginHelloHandler(c *gin.Context) {
