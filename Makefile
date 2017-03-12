@@ -18,4 +18,4 @@ docker_test: clean
 		sh -c "coverage all"
 
 clean:
-	rm -rf .cover vendor
+	rm -rf .cover
