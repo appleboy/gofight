@@ -15,7 +15,7 @@ docker_test: clean
 		-v $(PWD):$(PROJECT_PATH) \
 		-w=$(PROJECT_PATH) \
 		appleboy/golang-testing \
-		sh -c "make install && coverage all"
+		sh -c "coverage all"
 
 clean:
 	rm -rf .cover vendor
