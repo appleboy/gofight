@@ -104,14 +104,14 @@ func TestBasicHelloWorld(t *testing.T) {
 
 ### POST FORM Data
 
-Using `SetFORM` to generate form data.
+Using `SetForm` to generate form data.
 
 ```go
 func TestPostFormData(t *testing.T) {
   r := gofight.New()
 
   r.POST("/form").
-    SetFORM(gofight.H{
+    SetForm(gofight.H{
       "a": "1",
       "b": "2",
     }).
