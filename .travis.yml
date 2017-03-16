@@ -13,6 +13,8 @@ go:
 
 install:
   - echo "nothing"
+  - go get -u github.com/kardianos/govendor
+  - govendor sync
 
 script:
   - make test
