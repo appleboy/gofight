@@ -145,6 +145,7 @@ func TestGinPostJSONData(t *testing.T) {
 			assert.Equal(t, 1, int(a))
 			assert.Equal(t, 2, int(b))
 			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
 }
 
