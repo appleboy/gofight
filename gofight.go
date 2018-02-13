@@ -269,7 +269,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	// Auto add user agent
 	req.Header.Set(UserAgent, "Gofight-client/"+Version)
 
-	if rc.Method == "POST" || rc.Method == "PUT" {
+	if rc.Method == "POST" || rc.Method == "PUT" || rc.Method == "PATCH" {
 		if strings.HasPrefix(rc.Body, "{") {
 			req.Header.Set(ContentType, ApplicationJSON)
 		} else {
