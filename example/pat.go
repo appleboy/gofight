@@ -21,8 +21,8 @@ func patUserHandler(wr http.ResponseWriter, req *http.Request) {
 func PatEngine() *pat.Router {
 	r := pat.New()
 
-	r.Get("/", patHelloHandler)
 	r.Get("/user/{name}", patUserHandler)
+	r.Get("/", patHelloHandler)
 
 	return r
 }

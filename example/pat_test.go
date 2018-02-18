@@ -23,7 +23,7 @@ func TestPatHelloHandler(t *testing.T) {
 
 	r.GET("/user/appleboy").
 		SetDebug(true).
-		Run(GinEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(PatEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			assert.Equal(t, "Hello, appleboy", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
