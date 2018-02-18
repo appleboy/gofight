@@ -45,10 +45,16 @@
 			"revisionTime": "2016-08-17T18:46:32Z"
 		},
 		{
-			"checksumSHA1": "zmCk+lgIeiOf0Ng9aFP9aFy8ksE=",
+			"checksumSHA1": "gzYAE/UJ+G7yTqkdJAMActxDdxw=",
 			"path": "github.com/gorilla/mux",
-			"revision": "599cba5e7b6137d46ddf58fb1765f5d928e69604",
-			"revisionTime": "2017-02-28T22:43:54Z"
+			"revision": "c0091a029979286890368b4c7b301261e448e242",
+			"revisionTime": "2018-01-20T07:58:19Z"
+		},
+		{
+			"checksumSHA1": "OThbs8YdhxqAIEEaUHtOxM0hhOA=",
+			"path": "github.com/gorilla/pat",
+			"revision": "199c85a7f6d1ed2ecd6f071892d312c00d43b031",
+			"revisionTime": "2018-01-18T22:20:23Z"
 		},
 		{
 			"checksumSHA1": "Y3U6on66N0BszKXYvb2Q+qpG6f4=",
