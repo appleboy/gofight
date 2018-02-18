@@ -11,6 +11,7 @@ API Handler Testing for Golang Web framework.
 * [x] [Echo](https://github.com/labstack/echo) support [v3.0.0](https://github.com/labstack/echo/releases/tag/v3.0.0) up
 * [x] [Mux](https://github.com/gorilla/mux)
 * [x] [HttpRouter](https://github.com/julienschmidt/httprouter)
+* [x] [Pat](https://github.com/gorilla/pat)
 
 ## Usage
 
