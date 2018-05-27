@@ -52,6 +52,21 @@ func ginJSONHandler(c *gin.Context) {
 	}
 }
 
+type ginUserContent struct {
+	Username string `json:account`
+	Password string `json:password`
+}
+
+func ginUserHandler(c *gin.Context) {
+	var json ginUserContent
+	if c.ShouldBind(&json) == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"username": json.Username,
+			"password": json.Password,
+		})
+	}
+}
+
 func ginPutHandler(c *gin.Context) {
 	foo := c.PostForm("c")
 	bar := c.PostForm("d")
@@ -79,6 +94,7 @@ func GinEngine() *gin.Engine {
 
 	r.POST("/form", ginPostFormHandler)
 	r.POST("/json", ginJSONHandler)
+	r.POST("/user", ginUserHandler)
 	r.PUT("/update", ginPutHandler)
 	r.DELETE("/delete", ginDeleteHandler)
 
