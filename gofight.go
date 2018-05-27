@@ -106,7 +106,11 @@ func TestRequest(t *testing.T, url string) {
 	client := &http.Client{Transport: tr}
 
 	resp, err := client.Get(url)
-	defer resp.Body.Close()
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Println("close body err:", err)
+		}
+	}()
 
 	assert.NoError(t, err)
 
