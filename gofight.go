@@ -202,6 +202,15 @@ func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
 	return rc
 }
 
+// SetJSONInterface supply JSON body
+func (rc *RequestConfig) SetJSONInterface(body interface{}) *RequestConfig {
+	if b, err := json.Marshal(body); err == nil {
+		rc.Body = string(b)
+	}
+
+	return rc
+}
+
 // SetForm supply form body.
 func (rc *RequestConfig) SetForm(body H) *RequestConfig {
 	f := make(url.Values)
