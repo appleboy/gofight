@@ -416,3 +416,29 @@ func TestSetQueryString(t *testing.T) {
 
 	assert.Equal(t, "/hello?foo=bar&a=1&b=2", r.Path)
 }
+
+type User struct {
+	Username string `json:account`
+	Password string `json:password`
+}
+
+func TestSetJSONInterface(t *testing.T) {
+	r := New()
+
+	r.POST("/user").
+		SetJSONInterface(User{
+			Username: "foo",
+			Password: "bar",
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			username, _ := jsonparser.GetString(data, "username")
+			password, _ := jsonparser.GetString(data, "password")
+
+			assert.Equal(t, "foo", username)
+			assert.Equal(t, "bar", password)
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+		})
+}
