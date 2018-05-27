@@ -59,7 +59,7 @@ type ginUserContent struct {
 
 func ginUserHandler(c *gin.Context) {
 	var json ginUserContent
-	if c.ShouldBindJSON(&json) == nil {
+	if c.ShouldBind(&json) == nil {
 		c.JSON(http.StatusOK, gin.H{
 			"username": json.Username,
 			"password": json.Password,
