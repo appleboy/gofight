@@ -1,10 +1,11 @@
 package example
 
 import (
-	"github.com/appleboy/gofight"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/appleboy/gofight"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBasicHelloWorld(t *testing.T) {
@@ -25,6 +26,9 @@ func TestBasicHelloWorld(t *testing.T) {
 		})
 }
 
+func basicHTTPHelloHandler() {
+	http.HandleFunc("/hello", basicHelloHandler)
+}
 func TestBasicHttpHelloWorld(t *testing.T) {
 	basicHTTPHelloHandler()
 
