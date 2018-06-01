@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/appleboy/gofight/framework"
-	"github.com/buger/jsonparser"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/tidwall/gjson"
 )
 
 var goVersion = runtime.Version()
@@ -51,10 +51,8 @@ func TestGinHelloWorld(t *testing.T) {
 		SetDebug(true).
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
-
-			value, _ := jsonparser.GetString(data, "hello")
-
-			assert.Equal(t, "world", value)
+			value := gjson.GetBytes(data, "hello")
+			assert.Equal(t, "world", value.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -68,7 +66,6 @@ func TestGinHeader(t *testing.T) {
 			"Go-Version":   goVersion,
 		}).
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
-
 			assert.Equal(t, goVersion, rq.Header.Get("Go-Version"))
 			assert.Equal(t, "Gofight-client/"+Version, rq.Header.Get(UserAgent))
 			assert.Equal(t, "text/plain", rq.Header.Get(ContentType))
@@ -85,7 +82,6 @@ func TestGinCookie(t *testing.T) {
 			"foo": "bar",
 		}).
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
-
 			assert.Equal(t, http.StatusOK, r.Code)
 			assert.Equal(t, "foo=bar", rq.Header.Get("cookie"))
 		})
@@ -96,14 +92,12 @@ func TestGinQuery(t *testing.T) {
 
 	r.GET("/query?text=world&foo=bar").
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
-
 			data := []byte(r.Body.String())
+			value := gjson.GetBytes(data, "hello")
+			foo := gjson.GetBytes(data, "foo")
 
-			hello, _ := jsonparser.GetString(data, "hello")
-			foo, _ := jsonparser.GetString(data, "foo")
-
-			assert.Equal(t, "world", hello)
-			assert.Equal(t, "bar", foo)
+			assert.Equal(t, "world", value.String())
+			assert.Equal(t, "bar", foo.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -118,12 +112,11 @@ func TestGinPostFormData(t *testing.T) {
 		}).
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			a := gjson.GetBytes(data, "a")
+			b := gjson.GetBytes(data, "b")
 
-			a, _ := jsonparser.GetString(data, "a")
-			b, _ := jsonparser.GetString(data, "b")
-
-			assert.Equal(t, "1", a)
-			assert.Equal(t, "2", b)
+			assert.Equal(t, "1", a.String())
+			assert.Equal(t, "2", b.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -138,12 +131,11 @@ func TestGinPostJSONData(t *testing.T) {
 		}).
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			a := gjson.GetBytes(data, "a")
+			b := gjson.GetBytes(data, "b")
 
-			a, _ := jsonparser.GetInt(data, "a")
-			b, _ := jsonparser.GetInt(data, "b")
-
-			assert.Equal(t, 1, int(a))
-			assert.Equal(t, 2, int(b))
+			assert.Equal(t, int64(1), a.Int())
+			assert.Equal(t, int64(2), b.Int())
 			assert.Equal(t, http.StatusOK, r.Code)
 			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
@@ -156,12 +148,11 @@ func TestGinPut(t *testing.T) {
 		SetBody("c=1&d=2").
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			c := gjson.GetBytes(data, "c")
+			d := gjson.GetBytes(data, "d")
 
-			c, _ := jsonparser.GetString(data, "c")
-			d, _ := jsonparser.GetString(data, "d")
-
-			assert.Equal(t, "1", c)
-			assert.Equal(t, "2", d)
+			assert.Equal(t, "1", c.String())
+			assert.Equal(t, "2", d.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -172,10 +163,9 @@ func TestGinDelete(t *testing.T) {
 	r.DELETE("/delete").
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			hello := gjson.GetBytes(data, "hello")
 
-			hello, _ := jsonparser.GetString(data, "hello")
-
-			assert.Equal(t, "world", hello)
+			assert.Equal(t, "world", hello.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -190,12 +180,11 @@ func TestGinPatch(t *testing.T) {
 		}).
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			a := gjson.GetBytes(data, "a")
+			b := gjson.GetBytes(data, "b")
 
-			a, _ := jsonparser.GetInt(data, "a")
-			b, _ := jsonparser.GetInt(data, "b")
-
-			assert.Equal(t, 1, int(a))
-			assert.Equal(t, 2, int(b))
+			assert.Equal(t, int64(1), a.Int())
+			assert.Equal(t, int64(2), b.Int())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -210,12 +199,11 @@ func TestGinHead(t *testing.T) {
 		}).
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			a := gjson.GetBytes(data, "a")
+			b := gjson.GetBytes(data, "b")
 
-			a, _ := jsonparser.GetInt(data, "a")
-			b, _ := jsonparser.GetInt(data, "b")
-
-			assert.Equal(t, 1, int(a))
-			assert.Equal(t, 2, int(b))
+			assert.Equal(t, int64(1), a.Int())
+			assert.Equal(t, int64(2), b.Int())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -230,12 +218,11 @@ func TestGinOptions(t *testing.T) {
 		}).
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			a := gjson.GetBytes(data, "a")
+			b := gjson.GetBytes(data, "b")
 
-			a, _ := jsonparser.GetInt(data, "a")
-			b, _ := jsonparser.GetInt(data, "b")
-
-			assert.Equal(t, 1, int(a))
-			assert.Equal(t, 2, int(b))
+			assert.Equal(t, int64(1), a.Int())
+			assert.Equal(t, int64(2), b.Int())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -247,10 +234,9 @@ func TestEchoHelloWorld(t *testing.T) {
 		SetDebug(true).
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			hello := gjson.GetBytes(data, "hello")
 
-			value, _ := jsonparser.GetString(data, "hello")
-
-			assert.Equal(t, "world", value)
+			assert.Equal(t, "world", hello.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -277,12 +263,11 @@ func TestEchoQuery(t *testing.T) {
 	r.GET("/query?text=world&foo=bar").
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			value := gjson.GetBytes(data, "hello")
+			foo := gjson.GetBytes(data, "foo")
 
-			hello, _ := jsonparser.GetString(data, "hello")
-			foo, _ := jsonparser.GetString(data, "foo")
-
-			assert.Equal(t, "world", hello)
-			assert.Equal(t, "bar", foo)
+			assert.Equal(t, "world", value.String())
+			assert.Equal(t, "bar", foo.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -294,12 +279,11 @@ func TestEchoPostFormData(t *testing.T) {
 		SetBody("a=1&b=2").
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			a := gjson.GetBytes(data, "a")
+			b := gjson.GetBytes(data, "b")
 
-			a, _ := jsonparser.GetString(data, "a")
-			b, _ := jsonparser.GetString(data, "b")
-
-			assert.Equal(t, "1", a)
-			assert.Equal(t, "2", b)
+			assert.Equal(t, "1", a.String())
+			assert.Equal(t, "2", b.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -314,12 +298,11 @@ func TestEchoPostJSONData(t *testing.T) {
 		}).
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			a := gjson.GetBytes(data, "a")
+			b := gjson.GetBytes(data, "b")
 
-			a, _ := jsonparser.GetInt(data, "a")
-			b, _ := jsonparser.GetInt(data, "b")
-
-			assert.Equal(t, 1, int(a))
-			assert.Equal(t, 2, int(b))
+			assert.Equal(t, int64(1), a.Int())
+			assert.Equal(t, int64(2), b.Int())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -331,12 +314,11 @@ func TestEchoPut(t *testing.T) {
 		SetBody("c=1&d=2").
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			c := gjson.GetBytes(data, "c")
+			d := gjson.GetBytes(data, "d")
 
-			c, _ := jsonparser.GetString(data, "c")
-			d, _ := jsonparser.GetString(data, "d")
-
-			assert.Equal(t, "1", c)
-			assert.Equal(t, "2", d)
+			assert.Equal(t, "1", c.String())
+			assert.Equal(t, "2", d.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -347,10 +329,9 @@ func TestEchoDelete(t *testing.T) {
 	r.DELETE("/delete").
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			hello := gjson.GetBytes(data, "hello")
 
-			hello, _ := jsonparser.GetString(data, "hello")
-
-			assert.Equal(t, "world", hello)
+			assert.Equal(t, "world", hello.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -361,10 +342,9 @@ func TestEchoPatch(t *testing.T) {
 	r.PATCH("/patch").
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			hello := gjson.GetBytes(data, "hello")
 
-			value, _ := jsonparser.GetString(data, "hello")
-
-			assert.Equal(t, "world", value)
+			assert.Equal(t, "world", hello.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -375,10 +355,9 @@ func TestEchoHead(t *testing.T) {
 	r.HEAD("/head").
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			hello := gjson.GetBytes(data, "hello")
 
-			value, _ := jsonparser.GetString(data, "hello")
-
-			assert.Equal(t, "world", value)
+			assert.Equal(t, "world", hello.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -389,10 +368,9 @@ func TestEchoOptions(t *testing.T) {
 	r.OPTIONS("/options").
 		Run(framework.EchoEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
+			hello := gjson.GetBytes(data, "hello")
 
-			value, _ := jsonparser.GetString(data, "hello")
-
-			assert.Equal(t, "world", value)
+			assert.Equal(t, "world", hello.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
@@ -433,11 +411,11 @@ func TestSetJSONInterface(t *testing.T) {
 		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			data := []byte(r.Body.String())
 
-			username, _ := jsonparser.GetString(data, "username")
-			password, _ := jsonparser.GetString(data, "password")
+			username := gjson.GetBytes(data, "username")
+			password := gjson.GetBytes(data, "password")
 
-			assert.Equal(t, "foo", username)
-			assert.Equal(t, "bar", password)
+			assert.Equal(t, "foo", username.String())
+			assert.Equal(t, "bar", password.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
