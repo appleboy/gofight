@@ -60,6 +60,7 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -72,6 +73,10 @@ const (
 	ApplicationJSON = "application/json"
 	ApplicationForm = "application/x-www-form-urlencoded"
 )
+
+// Timeout for http client
+// see https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
+var Timeout = time.Second * 10
 
 // HTTPResponse is basic HTTP response type
 type HTTPResponse *httptest.ResponseRecorder
@@ -103,7 +108,10 @@ func TestRequest(t *testing.T, url string) {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	client := &http.Client{Transport: tr}
+	client := &http.Client{
+		Timeout:   Timeout,
+		Transport: tr,
+	}
 
 	resp, err := client.Get(url)
 	defer func() {
@@ -318,9 +326,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 
 // Run execute http request
 func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
-
 	req, w := rc.initTest()
 	r.ServeHTTP(w, req)
-
 	response(w, req)
 }

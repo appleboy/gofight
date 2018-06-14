@@ -2,6 +2,7 @@ package framework
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -53,9 +54,9 @@ func ginJSONHandler(c *gin.Context) {
 }
 
 type ginUserContent struct {
-	// Username ...
+	// Username user name
 	Username string `json:account`
-	// Password ...
+	// Password account password
 	Password string `json:password`
 }
 
@@ -85,6 +86,13 @@ func ginDeleteHandler(c *gin.Context) {
 	})
 }
 
+func gintTimeoutHandler(c *gin.Context) {
+	time.Sleep(10 * time.Second)
+	c.JSON(http.StatusOK, gin.H{
+		"hello": "world",
+	})
+}
+
 // GinEngine is gin router.
 func GinEngine() *gin.Engine {
 	gin.SetMode(gin.TestMode)
@@ -93,6 +101,7 @@ func GinEngine() *gin.Engine {
 	r.GET("/hello", ginHelloHandler)
 	r.GET("/text", ginTextHandler)
 	r.GET("/query", ginQueryHandler)
+	r.GET("/timeout", gintTimeoutHandler)
 
 	r.POST("/form", ginPostFormHandler)
 	r.POST("/json", ginJSONHandler)
