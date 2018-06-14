@@ -396,8 +396,10 @@ func TestSetQueryString(t *testing.T) {
 }
 
 type User struct {
-	Username string `json:account`
-	Password string `json:password`
+	// Username user name
+	Username string `json:"account"`
+	// Password account password
+	Password string `json:"password"`
 }
 
 func TestSetJSONInterface(t *testing.T) {
