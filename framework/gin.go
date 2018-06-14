@@ -53,7 +53,9 @@ func ginJSONHandler(c *gin.Context) {
 }
 
 type ginUserContent struct {
+	// Username ...
 	Username string `json:account`
+	// Password ...
 	Password string `json:password`
 }
 
