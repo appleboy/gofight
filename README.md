@@ -234,6 +234,38 @@ func TestQueryString(t *testing.T) {
 }
 ```
 
+### Set JSON Struct
+
+```go
+type User struct {
+	// Username user name
+	Username string `json:"account"`
+	// Password account password
+	Password string `json:"password"`
+}
+
+func TestSetJSONInterface(t *testing.T) {
+	r := New()
+
+	r.POST("/user").
+		SetJSONInterface(User{
+			Username: "foo",
+			Password: "bar",
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			username := gjson.GetBytes(data, "username")
+			password := gjson.GetBytes(data, "password")
+
+			assert.Equal(t, "foo", username.String())
+			assert.Equal(t, "bar", password.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+		})
+}
+```
+
 ## Example
 
 * Basic HTTP Router: [basic.go](example/basic.go), [basic_test.go](example/basic_test.go)
