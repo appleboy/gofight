@@ -339,6 +339,6 @@ $ make
 
 ## License
 
-Copyright 2016 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
+Copyright 2018 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
 
 Licensed under the MIT License.
