@@ -266,6 +266,63 @@ func TestSetJSONInterface(t *testing.T) {
 }
 ```
 
+### Upload Single file and parameter
+
+The following is route using gin
+
+```go
+func gintFileUploadHandler(c *gin.Context) {
+	ip := c.ClientIP()
+	file, err := c.FormFile("test")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	foo := c.PostForm("foo")
+	bar := c.PostForm("bar")
+	c.JSON(http.StatusOK, gin.H{
+		"hello":    "world",
+		"filename": file.Filename,
+		"foo":      foo,
+		"bar":      bar,
+		"ip":       ip,
+	})
+}
+```
+
+Write the testing:
+
+```go
+func TestUploadFile(t *testing.T) {
+	r := New()
+
+	r.POST("/upload").
+		SetFileFromPath("fixtures/hello.txt", "test", H{
+			"foo": "bar",
+			"bar": "foo",
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			hello := gjson.GetBytes(data, "hello")
+			filename := gjson.GetBytes(data, "filename")
+			foo := gjson.GetBytes(data, "foo")
+			bar := gjson.GetBytes(data, "bar")
+			ip := gjson.GetBytes(data, "ip")
+
+			assert.Equal(t, "world", hello.String())
+			assert.Equal(t, "hello.txt", filename.String())
+			assert.Equal(t, "bar", foo.String())
+			assert.Equal(t, "foo", bar.String())
+			assert.Equal(t, "", ip.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+		})
+}
+```
+
 ## Example
 
 * Basic HTTP Router: [basic.go](example/basic.go), [basic_test.go](example/basic_test.go)
