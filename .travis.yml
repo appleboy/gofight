@@ -11,10 +11,10 @@ go:
   - 1.8.x
   - 1.9.x
   - 1.10.x
-  - tip
+  - 1.11.x
+  - mast
 
 install:
-  - echo "nothing"
   - go get -u github.com/kardianos/govendor
   - govendor sync
 
