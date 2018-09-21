@@ -93,6 +93,24 @@ func gintTimeoutHandler(c *gin.Context) {
 	})
 }
 
+func gintFileUploadHandler(c *gin.Context) {
+	file, err := c.FormFile("test")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	foo := c.PostForm("foo")
+	bar := c.PostForm("bar")
+	c.JSON(http.StatusOK, gin.H{
+		"hello":    "world",
+		"filename": file.Filename,
+		"foo":      foo,
+		"bar":      bar,
+	})
+}
+
 // GinEngine is gin router.
 func GinEngine() *gin.Engine {
 	gin.SetMode(gin.TestMode)
@@ -112,6 +130,7 @@ func GinEngine() *gin.Engine {
 	r.PATCH("/patch", ginJSONHandler)
 	r.HEAD("/head", ginJSONHandler)
 	r.OPTIONS("/options", ginJSONHandler)
+	r.POST("/upload", gintFileUploadHandler)
 
 	return r
 }

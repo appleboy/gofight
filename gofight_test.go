@@ -422,3 +422,28 @@ func TestSetJSONInterface(t *testing.T) {
 			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})
 }
+
+func TestUploadFile(t *testing.T) {
+	r := New()
+
+	r.POST("/upload").
+		SetFileFromPath("fixtures/hello.txt", "test", H{
+			"foo": "bar",
+			"bar": "foo",
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			hello := gjson.GetBytes(data, "hello")
+			filename := gjson.GetBytes(data, "filename")
+			foo := gjson.GetBytes(data, "foo")
+			bar := gjson.GetBytes(data, "bar")
+
+			assert.Equal(t, "world", hello.String())
+			assert.Equal(t, "hello.txt", filename.String())
+			assert.Equal(t, "bar", foo.String())
+			assert.Equal(t, "foo", bar.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+		})
+}
