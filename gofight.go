@@ -60,6 +60,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -249,15 +250,11 @@ func (rc *RequestConfig) SetFileFromPath(path, filename string, params ...H) *Re
 	if err != nil {
 		log.Fatal(err)
 	}
-	fi, err := file.Stat()
-	if err != nil {
-		log.Fatal(err)
-	}
 	file.Close()
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile(filename, fi.Name())
+	part, err := writer.CreateFormFile(filename, filepath.Base(path))
 	if err != nil {
 		log.Fatal(err)
 	}
