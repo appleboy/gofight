@@ -55,9 +55,11 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -95,12 +97,13 @@ type D map[string]interface{}
 
 // RequestConfig provide user input request structure
 type RequestConfig struct {
-	Method  string
-	Path    string
-	Body    string
-	Headers H
-	Cookies H
-	Debug   bool
+	Method      string
+	Path        string
+	Body        string
+	Headers     H
+	Cookies     H
+	Debug       bool
+	ContentType string
 }
 
 // TestRequest is testing url string if server is running
@@ -236,6 +239,47 @@ func (rc *RequestConfig) SetForm(body H) *RequestConfig {
 	return rc
 }
 
+// SetFileFromPath upload new file.
+func (rc *RequestConfig) SetFileFromPath(path, filename string, params ...H) *RequestConfig {
+	file, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fileContents, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fi, err := file.Stat()
+	if err != nil {
+		log.Fatal(err)
+	}
+	file.Close()
+
+	body := new(bytes.Buffer)
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(filename, fi.Name())
+	if err != nil {
+		log.Fatal(err)
+	}
+	part.Write(fileContents)
+
+	if len(params) > 0 {
+		for key, val := range params[0] {
+			_ = writer.WriteField(key, val)
+		}
+	}
+
+	err = writer.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rc.ContentType = writer.FormDataContentType()
+	rc.Body = body.String()
+
+	return rc
+}
+
 // SetQuery supply query string.
 func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
 	f := make(url.Values)
@@ -296,6 +340,10 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 		} else {
 			req.Header.Set(ContentType, ApplicationForm)
 		}
+	}
+
+	if rc.ContentType != "" {
+		req.Header.Set(ContentType, rc.ContentType)
 	}
 
 	if len(rc.Headers) > 0 {
