@@ -438,11 +438,13 @@ func TestUploadFile(t *testing.T) {
 			filename := gjson.GetBytes(data, "filename")
 			foo := gjson.GetBytes(data, "foo")
 			bar := gjson.GetBytes(data, "bar")
+			ip := gjson.GetBytes(data, "ip")
 
 			assert.Equal(t, "world", hello.String())
 			assert.Equal(t, "hello.txt", filename.String())
 			assert.Equal(t, "bar", foo.String())
 			assert.Equal(t, "foo", bar.String())
+			assert.Equal(t, "", ip.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
 		})

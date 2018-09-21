@@ -94,6 +94,7 @@ func gintTimeoutHandler(c *gin.Context) {
 }
 
 func gintFileUploadHandler(c *gin.Context) {
+	ip := c.ClientIP()
 	file, err := c.FormFile("test")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -108,6 +109,7 @@ func gintFileUploadHandler(c *gin.Context) {
 		"filename": file.Filename,
 		"foo":      foo,
 		"bar":      bar,
+		"ip":       ip,
 	})
 }
 
