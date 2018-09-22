@@ -248,7 +248,7 @@ func (rc *RequestConfig) SetFileFromPath(path, filename string, params ...H) *Re
 		log.Fatal(err)
 	}
 
-	file.Close()
+	defer file.Close()
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
