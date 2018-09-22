@@ -427,7 +427,7 @@ func TestUploadFile(t *testing.T) {
 	r := New()
 
 	r.POST("/upload").
-		SetFileFromPath("fixtures/hello.txt", "test", H{
+		SetFileFromPath("testdata/hello.txt", "test", H{
 			"foo": "bar",
 			"bar": "foo",
 		}).
