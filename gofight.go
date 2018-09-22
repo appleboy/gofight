@@ -53,6 +53,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
@@ -246,10 +247,7 @@ func (rc *RequestConfig) SetFileFromPath(path, filename string, params ...H) *Re
 	if err != nil {
 		log.Fatal(err)
 	}
-	fileContents, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Fatal(err)
-	}
+
 	file.Close()
 
 	body := new(bytes.Buffer)
@@ -258,7 +256,7 @@ func (rc *RequestConfig) SetFileFromPath(path, filename string, params ...H) *Re
 	if err != nil {
 		log.Fatal(err)
 	}
-	part.Write(fileContents)
+	_, err = io.Copy(part, file)
 
 	if len(params) > 0 {
 		for key, val := range params[0] {
