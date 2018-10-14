@@ -299,7 +299,16 @@ func TestUploadFile(t *testing.T) {
 	r := New()
 
 	r.POST("/upload").
-		SetFileFromPath("fixtures/hello.txt", "test", H{
+		SetFileFromPath([]UploadFile{
+			{
+				Path: "./testdata/hello.txt",
+				Name: "hello",
+			},
+			{
+				Path: "./testdata/world.txt",
+				Name: "world",
+			},
+		}, H{
 			"foo": "bar",
 			"bar": "foo",
 		}).
@@ -307,13 +316,13 @@ func TestUploadFile(t *testing.T) {
 			data := []byte(r.Body.String())
 
 			hello := gjson.GetBytes(data, "hello")
-			filename := gjson.GetBytes(data, "filename")
+			world := gjson.GetBytes(data, "world")
 			foo := gjson.GetBytes(data, "foo")
 			bar := gjson.GetBytes(data, "bar")
 			ip := gjson.GetBytes(data, "ip")
 
-			assert.Equal(t, "world", hello.String())
-			assert.Equal(t, "hello.txt", filename.String())
+			assert.Equal(t, "hello.txt", hello.String())
+			assert.Equal(t, "world.txt", world.String())
 			assert.Equal(t, "bar", foo.String())
 			assert.Equal(t, "foo", bar.String())
 			assert.Equal(t, "", ip.String())
