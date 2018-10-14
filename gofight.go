@@ -108,6 +108,12 @@ type RequestConfig struct {
 	ContentType string
 }
 
+// UploadFile for upload file struct
+type UploadFile struct {
+	Path string
+	Name string
+}
+
 // TestRequest is testing url string if server is running
 func TestRequest(t *testing.T, url string) {
 	tr := &http.Transport{
@@ -242,21 +248,27 @@ func (rc *RequestConfig) SetForm(body H) *RequestConfig {
 }
 
 // SetFileFromPath upload new file.
-func (rc *RequestConfig) SetFileFromPath(path, filename string, params ...H) *RequestConfig {
-	file, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer file.Close()
-
+func (rc *RequestConfig) SetFileFromPath(uploads []UploadFile, params ...H) *RequestConfig {
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile(filename, filepath.Base(path))
-	if err != nil {
-		log.Fatal(err)
+
+	for _, f := range uploads {
+		file, err := os.Open(f.Path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		defer file.Close()
+		part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = io.Copy(part, file)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
-	_, err = io.Copy(part, file)
 
 	if len(params) > 0 {
 		for key, val := range params[0] {
@@ -264,7 +276,7 @@ func (rc *RequestConfig) SetFileFromPath(path, filename string, params ...H) *Re
 		}
 	}
 
-	err = writer.Close()
+	err := writer.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
