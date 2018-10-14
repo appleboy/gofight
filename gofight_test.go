@@ -454,8 +454,8 @@ func TestUploadFile(t *testing.T) {
 			helloSize := gjson.GetBytes(data, "helloSize")
 			worldSize := gjson.GetBytes(data, "worldSize")
 
-			assert.Equal(t, int64(6), helloSize.Int())
-			assert.Equal(t, int64(6), worldSize.Int())
+			assert.Equal(t, "world\n", helloSize.String())
+			assert.Equal(t, "hello\n", worldSize.String())
 			assert.Equal(t, "hello.txt", hello.String())
 			assert.Equal(t, "world.txt", world.String())
 			assert.Equal(t, "bar", foo.String())
@@ -507,8 +507,8 @@ func TestUploadFileByContent(t *testing.T) {
 			helloSize := gjson.GetBytes(data, "helloSize")
 			worldSize := gjson.GetBytes(data, "worldSize")
 
-			assert.Equal(t, int64(6), helloSize.Int())
-			assert.Equal(t, int64(6), worldSize.Int())
+			assert.Equal(t, "world\n", helloSize.String())
+			assert.Equal(t, "hello\n", worldSize.String())
 			assert.Equal(t, "hello.txt", hello.String())
 			assert.Equal(t, "world.txt", world.String())
 			assert.Equal(t, "bar", foo.String())
