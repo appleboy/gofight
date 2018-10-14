@@ -110,8 +110,9 @@ type RequestConfig struct {
 
 // UploadFile for upload file struct
 type UploadFile struct {
-	Path string
-	Name string
+	Path    string
+	Name    string
+	Content []byte
 }
 
 // TestRequest is testing url string if server is running
@@ -253,20 +254,31 @@ func (rc *RequestConfig) SetFileFromPath(uploads []UploadFile, params ...H) *Req
 	writer := multipart.NewWriter(body)
 
 	for _, f := range uploads {
-		file, err := os.Open(f.Path)
-		if err != nil {
-			log.Fatal(err)
-		}
+		reader := bytes.NewReader(f.Content)
+		if reader.Size() == 0 {
+			file, err := os.Open(f.Path)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-		defer file.Close()
-		part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
-		if err != nil {
-			log.Fatal(err)
-		}
-		_, err = io.Copy(part, file)
-
-		if err != nil {
-			log.Fatal(err)
+			defer file.Close()
+			part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
+			if err != nil {
+				log.Fatal(err)
+			}
+			_, err = io.Copy(part, file)
+			if err != nil {
+				log.Fatal(err)
+			}
+		} else {
+			part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
+			if err != nil {
+				log.Fatal(err)
+			}
+			_, err = reader.WriteTo(part)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 

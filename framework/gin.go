@@ -102,6 +102,11 @@ func gintFileUploadHandler(c *gin.Context) {
 		})
 		return
 	}
+
+	helloFile, _ := hello.Open()
+	helloBytes := make([]byte, 6)
+	helloFile.Read(helloBytes)
+
 	world, err := c.FormFile("world")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -109,14 +114,21 @@ func gintFileUploadHandler(c *gin.Context) {
 		})
 		return
 	}
+
+	worldFile, _ := world.Open()
+	worldBytes := make([]byte, 6)
+	worldFile.Read(worldBytes)
+
 	foo := c.PostForm("foo")
 	bar := c.PostForm("bar")
 	c.JSON(http.StatusOK, gin.H{
-		"hello": hello.Filename,
-		"world": world.Filename,
-		"foo":   foo,
-		"bar":   bar,
-		"ip":    ip,
+		"hello":     hello.Filename,
+		"world":     world.Filename,
+		"foo":       foo,
+		"bar":       bar,
+		"ip":        ip,
+		"helloSize": string(helloBytes),
+		"worldSize": string(worldBytes),
 	})
 }
 

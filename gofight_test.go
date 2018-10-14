@@ -1,6 +1,8 @@
 package gofight
 
 import (
+	"io/ioutil"
+	"log"
 	"net/http"
 	"runtime"
 	"testing"
@@ -449,7 +451,64 @@ func TestUploadFile(t *testing.T) {
 			foo := gjson.GetBytes(data, "foo")
 			bar := gjson.GetBytes(data, "bar")
 			ip := gjson.GetBytes(data, "ip")
+			helloSize := gjson.GetBytes(data, "helloSize")
+			worldSize := gjson.GetBytes(data, "worldSize")
 
+			assert.Equal(t, "world\n", helloSize.String())
+			assert.Equal(t, "hello\n", worldSize.String())
+			assert.Equal(t, "hello.txt", hello.String())
+			assert.Equal(t, "world.txt", world.String())
+			assert.Equal(t, "bar", foo.String())
+			assert.Equal(t, "foo", bar.String())
+			assert.Equal(t, "", ip.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+		})
+}
+
+func TestUploadFileByContent(t *testing.T) {
+	r := New()
+
+	helloContent, err := ioutil.ReadFile("./testdata/hello.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	worldContent, err := ioutil.ReadFile("./testdata/world.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r.POST("/upload").
+		SetDebug(true).
+		SetFileFromPath([]UploadFile{
+			{
+				Path:    "./testdata/hello.txt",
+				Name:    "hello",
+				Content: helloContent,
+			},
+			{
+				Path:    "./testdata/world.txt",
+				Name:    "world",
+				Content: worldContent,
+			},
+		}, H{
+			"foo": "bar",
+			"bar": "foo",
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			hello := gjson.GetBytes(data, "hello")
+			world := gjson.GetBytes(data, "world")
+			foo := gjson.GetBytes(data, "foo")
+			bar := gjson.GetBytes(data, "bar")
+			ip := gjson.GetBytes(data, "ip")
+			helloSize := gjson.GetBytes(data, "helloSize")
+			worldSize := gjson.GetBytes(data, "worldSize")
+
+			assert.Equal(t, "world\n", helloSize.String())
+			assert.Equal(t, "hello\n", worldSize.String())
 			assert.Equal(t, "hello.txt", hello.String())
 			assert.Equal(t, "world.txt", world.String())
 			assert.Equal(t, "bar", foo.String())
