@@ -483,12 +483,12 @@ func TestUploadFileByContent(t *testing.T) {
 		SetDebug(true).
 		SetFileFromPath([]UploadFile{
 			{
-				Path:    "./testdata/hello.txt",
+				Path:    "hello.txt",
 				Name:    "hello",
 				Content: helloContent,
 			},
 			{
-				Path:    "./testdata/world.txt",
+				Path:    "world.txt",
 				Name:    "world",
 				Content: worldContent,
 			},
