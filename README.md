@@ -266,28 +266,47 @@ func TestSetJSONInterface(t *testing.T) {
 }
 ```
 
-### Upload Single file and parameter
+### Upload multiple file with absolute path and parameter
 
 The following is route using gin
 
 ```go
 func gintFileUploadHandler(c *gin.Context) {
 	ip := c.ClientIP()
-	file, err := c.FormFile("test")
+	hello, err := c.FormFile("hello")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
+
+	helloFile, _ := hello.Open()
+	helloBytes := make([]byte, 6)
+	helloFile.Read(helloBytes)
+
+	world, err := c.FormFile("world")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	worldFile, _ := world.Open()
+	worldBytes := make([]byte, 6)
+	worldFile.Read(worldBytes)
+
 	foo := c.PostForm("foo")
 	bar := c.PostForm("bar")
 	c.JSON(http.StatusOK, gin.H{
-		"hello":    "world",
-		"filename": file.Filename,
-		"foo":      foo,
-		"bar":      bar,
-		"ip":       ip,
+		"hello":     hello.Filename,
+		"world":     world.Filename,
+		"foo":       foo,
+		"bar":       bar,
+		"ip":        ip,
+		"helloSize": string(helloBytes),
+		"worldSize": string(worldBytes),
 	})
 }
 ```
@@ -299,6 +318,7 @@ func TestUploadFile(t *testing.T) {
 	r := New()
 
 	r.POST("/upload").
+		SetDebug(true).
 		SetFileFromPath([]UploadFile{
 			{
 				Path: "./testdata/hello.txt",
@@ -320,7 +340,68 @@ func TestUploadFile(t *testing.T) {
 			foo := gjson.GetBytes(data, "foo")
 			bar := gjson.GetBytes(data, "bar")
 			ip := gjson.GetBytes(data, "ip")
+			helloSize := gjson.GetBytes(data, "helloSize")
+			worldSize := gjson.GetBytes(data, "worldSize")
 
+			assert.Equal(t, "world\n", helloSize.String())
+			assert.Equal(t, "hello\n", worldSize.String())
+			assert.Equal(t, "hello.txt", hello.String())
+			assert.Equal(t, "world.txt", world.String())
+			assert.Equal(t, "bar", foo.String())
+			assert.Equal(t, "foo", bar.String())
+			assert.Equal(t, "", ip.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+		})
+}
+```
+
+### Upload multiple file with content `[]byte` path and parameter
+
+```go
+func TestUploadFileByContent(t *testing.T) {
+	r := New()
+
+	helloContent, err := ioutil.ReadFile("./testdata/hello.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	worldContent, err := ioutil.ReadFile("./testdata/world.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r.POST("/upload").
+		SetDebug(true).
+		SetFileFromPath([]UploadFile{
+			{
+				Path:    "hello.txt",
+				Name:    "hello",
+				Content: helloContent,
+			},
+			{
+				Path:    "world.txt",
+				Name:    "world",
+				Content: worldContent,
+			},
+		}, H{
+			"foo": "bar",
+			"bar": "foo",
+		}).
+		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
+
+			hello := gjson.GetBytes(data, "hello")
+			world := gjson.GetBytes(data, "world")
+			foo := gjson.GetBytes(data, "foo")
+			bar := gjson.GetBytes(data, "bar")
+			ip := gjson.GetBytes(data, "ip")
+			helloSize := gjson.GetBytes(data, "helloSize")
+			worldSize := gjson.GetBytes(data, "worldSize")
+
+			assert.Equal(t, "world\n", helloSize.String())
+			assert.Equal(t, "hello\n", worldSize.String())
 			assert.Equal(t, "hello.txt", hello.String())
 			assert.Equal(t, "world.txt", world.String())
 			assert.Equal(t, "bar", foo.String())
