@@ -239,7 +239,7 @@ func TestQueryString(t *testing.T) {
 ```go
 type User struct {
 	// Username user name
-	Username string `json:"account"`
+	Username string `json:"username"`
 	// Password account password
 	Password string `json:"password"`
 }
