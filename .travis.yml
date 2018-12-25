@@ -29,7 +29,6 @@ install:
 
 script:
   - make test
-  - make docker_test
 
 after_success:
   - bash <(curl -s https://codecov.io/bash) -f .cover/coverage.txt
