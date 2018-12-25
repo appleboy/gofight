@@ -12,11 +12,22 @@ go:
   - 1.9.x
   - 1.10.x
   - 1.11.x
-  - mast
+  - master
+
+matrix:
+  fast_finish: true
+  include:
+  - go: 1.11.x
+    env: GO111MODULE=on
+
+before_install:
+  - if [[ "${GO111MODULE}" = "on" ]]; then mkdir "${HOME}/go"; export GOPATH="${HOME}/go"; fi
 
 install:
+  - if [[ "${GO111MODULE}" = "on" ]]; then go mod download; else make install; fi
   - go get -u github.com/kardianos/govendor
-  - govendor sync
+  - go get -u github.com/kardianos/govendor
+  - if [[ "${GO111MODULE}" = "on" ]]; then go mod download; else govendor sync; fi
 
 script:
   - make test
