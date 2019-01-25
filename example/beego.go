@@ -1,4 +1,4 @@
-package example1
+package example
 
 import (
 	"github.com/astaxie/beego"
