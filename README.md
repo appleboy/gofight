@@ -12,6 +12,7 @@ API Handler Testing for Golang Web framework.
 * [x] [Mux](https://github.com/gorilla/mux)
 * [x] [HttpRouter](https://github.com/julienschmidt/httprouter)
 * [x] [Pat](https://github.com/gorilla/pat)
+* [x] [beego](https://github.com/astaxie/beego)
 
 ## Usage
 
@@ -420,6 +421,7 @@ func TestUploadFileByContent(t *testing.T) {
 * Echo Framework: [echo.go](example/echo.go), [echo_test.go](example/echo_test.go)
 * Mux Framework: [mux.go](example/mux.go), [mux_test.go](example/mux_test.go)
 * HttpRouter Framework: [httprouter.go](example/httprouter.go), [httprouter_test.go](example/httprouter_test.go)
+* Beego Framework: [beego.go](example/beego.go), [beego_test.go](example/beego_test.go)
 
 ## Testing
 
