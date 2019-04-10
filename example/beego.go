@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego"
 )
 
+// UserController for beego router
 type UserController struct {
 	beego.Controller
 }
