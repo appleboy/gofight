@@ -14,7 +14,6 @@ import (
 func TestSayHelloWorld(t *testing.T) {
 	uri := "/say"
 
-	
 	// LoadAppConfig allow developer to apply a config file
 	// beego.LoadAppConfig("ini", "../conf/app.conf")
 	c := beego.NewControllerRegister()
