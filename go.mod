@@ -1,6 +1,7 @@
 module github.com/appleboy/gofight
 
 require (
+	github.com/astaxie/beego v1.11.1
 	github.com/davecgh/go-spew v1.1.0 // indirect
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v1.3.0
@@ -24,11 +25,9 @@ require (
 	github.com/ugorji/go v0.0.0-20180407103000-f3cacc17c85e // indirect
 	github.com/valyala/bytebufferpool v0.0.0-20160817181652-e746df99fe4a // indirect
 	github.com/valyala/fasttemplate v0.0.0-20170224212429-dcecefd839c4 // indirect
-	golang.org/x/crypto v0.0.0-20170307004051-728b753d0135 // indirect
-	golang.org/x/net v0.0.0-20170308210134-a6577fac2d73 // indirect
 	golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 // indirect
 	golang.org/x/sys v0.0.0-20180525142821-c11f84a56e43 // indirect
+	golang.org/x/text v0.3.0 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
-	gopkg.in/yaml.v2 v2.2.1 // indirect
 )
