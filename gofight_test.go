@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/appleboy/gofight/framework"
+	"github.com/appleboy/gofight/v2/framework"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/tidwall/gjson"

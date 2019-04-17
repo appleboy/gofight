@@ -24,13 +24,13 @@ API Handler Testing for Golang Web framework.
 Download this package.
 
 ```bash
-$ go get github.com/appleboy/gofight
+$ go get github.com/appleboy/gofight/v2
 ```
 
 To import this package, add the following line to your code:
 
 ```go
-import "github.com/appleboy/gofight"
+import "github.com/appleboy/gofight/v2"
 ```
 
 ## Usage
@@ -43,19 +43,19 @@ Main Program:
 package main
 
 import (
-  "io"
-  "net/http"
+	"io"
+	"net/http"
 )
 
 func BasicHelloHandler(w http.ResponseWriter, r *http.Request) {
-  io.WriteString(w, "Hello World")
+	io.WriteString(w, "Hello World")
 }
 
 func BasicEngine() http.Handler {
-  mux := http.NewServeMux()
-  mux.HandleFunc("/", BasicHelloHandler)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", BasicHelloHandler)
 
-  return mux
+	return mux
 }
 ```
 
@@ -65,23 +65,24 @@ Testing:
 package main
 
 import (
-  "github.com/appleboy/gofight"
-  "github.com/stretchr/testify/assert"
-  "net/http"
-  "testing"
+	"net/http"
+	"testing"
+
+	"github.com/appleboy/gofight/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBasicHelloWorld(t *testing.T) {
-  r := gofight.New()
+	r := gofight.New()
 
-  r.GET("/").
-    // turn on the debug mode.
-    SetDebug(true).
-    Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+	r.GET("/").
+		// turn on the debug mode.
+		SetDebug(true).
+		Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-      assert.Equal(t, "Hello World", r.Body.String())
-      assert.Equal(t, http.StatusOK, r.Code)
-    })
+			assert.Equal(t, "Hello World", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
 }
 ```
 
@@ -91,21 +92,21 @@ You can add custom header via `SetHeader` func.
 
 ```go
 func TestBasicHelloWorld(t *testing.T) {
-  r := gofight.New()
-  version := "0.0.1"
+	r := gofight.New()
+	version := "0.0.1"
 
-  r.GET("/").
-    // turn on the debug mode.
-    SetDebug(true).
-    SetHeader(gofight.H{
-      "X-Version": version,
-    }).
-    Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+	r.GET("/").
+		// turn on the debug mode.
+		SetDebug(true).
+		SetHeader(gofight.H{
+			"X-Version": version,
+		}).
+		Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-      assert.Equal(t, version, rq.Header.Get("X-Version"))
-      assert.Equal(t, "Hello World", r.Body.String())
-      assert.Equal(t, http.StatusOK, r.Code)
-    })
+			assert.Equal(t, version, rq.Header.Get("X-Version"))
+			assert.Equal(t, "Hello World", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
 }
 ```
 
@@ -115,23 +116,23 @@ Using `SetForm` to generate form data.
 
 ```go
 func TestPostFormData(t *testing.T) {
-  r := gofight.New()
+	r := gofight.New()
 
-  r.POST("/form").
-    SetForm(gofight.H{
-      "a": "1",
-      "b": "2",
-    }).
-    Run(BasicEngine(), func(r HTTPResponse, rq HTTPRequest) {
-      data := []byte(r.Body.String())
+	r.POST("/form").
+		SetForm(gofight.H{
+			"a": "1",
+			"b": "2",
+		}).
+		Run(BasicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
 
-      a, _ := jsonparser.GetString(data, "a")
-      b, _ := jsonparser.GetString(data, "b")
+			a, _ := jsonparser.GetString(data, "a")
+			b, _ := jsonparser.GetString(data, "b")
 
-      assert.Equal(t, "1", a)
-      assert.Equal(t, "2", b)
-      assert.Equal(t, http.StatusOK, r.Code)
-    })
+			assert.Equal(t, "1", a)
+			assert.Equal(t, "2", b)
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
 }
 ```
 
@@ -141,24 +142,24 @@ Using `SetJSON` to generate JSON data.
 
 ```go
 func TestPostJSONData(t *testing.T) {
-  r := gofight.New()
+	r := gofight.New()
 
-  r.POST("/json").
-    SetJSON(gofight.D{
-      "a": 1,
-      "b": 2,
-    }).
-    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-      data := []byte(r.Body.String())
+	r.POST("/json").
+		SetJSON(gofight.D{
+			"a": 1,
+			"b": 2,
+		}).
+		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
 
-      a, _ := jsonparser.GetInt(data, "a")
-      b, _ := jsonparser.GetInt(data, "b")
+			a, _ := jsonparser.GetInt(data, "a")
+			b, _ := jsonparser.GetInt(data, "b")
 
-      assert.Equal(t, 1, int(a))
-      assert.Equal(t, 2, int(b))
-      assert.Equal(t, http.StatusOK, r.Code)
-      assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
-    })
+			assert.Equal(t, 1, int(a))
+			assert.Equal(t, 2, int(b))
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+		})
 }
 ```
 
@@ -168,20 +169,20 @@ Using `SetBody` to generate raw data.
 
 ```go
 func TestPostRawData(t *testing.T) {
-  r := gofight.New()
+	r := gofight.New()
 
-  r.POST("/raw").
-    SetBody("a=1&b=1").
-    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-      data := []byte(r.Body.String())
+	r.POST("/raw").
+		SetBody("a=1&b=1").
+		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+			data := []byte(r.Body.String())
 
-      a, _ := jsonparser.GetString(data, "a")
-      b, _ := jsonparser.GetString(data, "b")
+			a, _ := jsonparser.GetString(data, "a")
+			b, _ := jsonparser.GetString(data, "b")
 
-      assert.Equal(t, "1", a)
-      assert.Equal(t, "2", b)
-      assert.Equal(t, http.StatusOK, r.Code)
-    })
+			assert.Equal(t, "1", a)
+			assert.Equal(t, "2", b)
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
 }
 ```
 
@@ -191,16 +192,16 @@ Using `SetQuery` to generate raw data.
 
 ```go
 func TestQueryString(t *testing.T) {
-  r := gofight.New()
+	r := gofight.New()
 
-  r.GET("/hello").
-    SetQuery(gofight.H{
-      "a": "1",
-      "b": "2",
-    }).
-    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-      assert.Equal(t, http.StatusOK, r.Code)
-    })
+	r.GET("/hello").
+		SetQuery(gofight.H{
+			"a": "1",
+			"b": "2",
+		}).
+		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
 }
 ```
 
@@ -208,16 +209,16 @@ or append exist query parameter.
 
 ```go
 func TestQueryString(t *testing.T) {
-  r := gofight.New()
+	r := gofight.New()
 
-  r.GET("/hello?foo=bar").
-    SetQuery(gofight.H{
-      "a": "1",
-      "b": "2",
-    }).
-    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-      assert.Equal(t, http.StatusOK, r.Code)
-    })
+	r.GET("/hello?foo=bar").
+		SetQuery(gofight.H{
+			"a": "1",
+			"b": "2",
+		}).
+		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
 }
 ```
 
@@ -227,16 +228,16 @@ Using `SetCookie` to generate raw data.
 
 ```go
 func TestQueryString(t *testing.T) {
-  r := gofight.New()
+	r := gofight.New()
 
-  r.GET("/hello").
-    SetCookie(gofight.H{
-      "foo": "bar",
-    }).
-    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-      assert.Equal(t, http.StatusOK, r.Code)
-      assert.Equal(t, "foo=bar", rq.Header.Get("cookie"))
-    })
+	r.GET("/hello").
+		SetCookie(gofight.H{
+			"foo": "bar",
+		}).
+		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+			assert.Equal(t, http.StatusOK, r.Code)
+			assert.Equal(t, "foo=bar", rq.Header.Get("cookie"))
+		})
 }
 ```
 
@@ -306,11 +307,11 @@ func gintFileUploadHandler(c *gin.Context) {
 	foo := c.PostForm("foo")
 	bar := c.PostForm("bar")
 	c.JSON(http.StatusOK, gin.H{
-		"hello":     hello.Filename,
-		"world":     world.Filename,
-		"foo":       foo,
-		"bar":       bar,
-		"ip":        ip,
+		"hello":		 hello.Filename,
+		"world":		 world.Filename,
+		"foo":			 foo,
+		"bar":			 bar,
+		"ip":				ip,
 		"helloSize": string(helloBytes),
 		"worldSize": string(worldBytes),
 	})
@@ -382,13 +383,13 @@ func TestUploadFileByContent(t *testing.T) {
 		SetDebug(true).
 		SetFileFromPath([]UploadFile{
 			{
-				Path:    "hello.txt",
-				Name:    "hello",
+				Path:		"hello.txt",
+				Name:		"hello",
 				Content: helloContent,
 			},
 			{
-				Path:    "world.txt",
-				Name:    "world",
+				Path:		"world.txt",
+				Name:		"world",
 				Content: worldContent,
 			},
 		}, H{
@@ -436,6 +437,6 @@ $ make
 
 ## License
 
-Copyright 2018 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
+Copyright 2019 Bo-Yi Wu [@appleboy](https://twitter.com/appleboy).
 
 Licensed under the MIT License.

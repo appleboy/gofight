@@ -5,10 +5,9 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/appleboy/gofight/v2"
 	"github.com/astaxie/beego"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/appleboy/gofight"
 )
 
 func TestSayHelloWorld(t *testing.T) {
