@@ -2,7 +2,7 @@ kind: pipeline
 name: lint
 
 clone:
-  depth: 50
+  depth: 1
 
 steps:
 - name: testing
@@ -10,6 +10,7 @@ steps:
   pull: true
   environment:
     GO111MODULE: on
+    GOPROXY: https://proxy.golang.org
   commands:
   - make vet
   - make lint
@@ -26,7 +27,7 @@ kind: pipeline
 name: testing
 
 clone:
-  depth: 50
+  depth: 1
 
 steps:
 - name: testing
@@ -34,6 +35,7 @@ steps:
   pull: true
   environment:
     GO111MODULE: on
+    GOPROXY: https://proxy.golang.org
   commands:
   - make test
 
