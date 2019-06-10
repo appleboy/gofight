@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/appleboy/gofight/v2"
-
 	"github.com/astaxie/beego"
 	"github.com/stretchr/testify/assert"
 )
