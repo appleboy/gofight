@@ -6,11 +6,8 @@ clone:
 
 steps:
 - name: testing
-  image: golang:1.12
+  image: golang:1.13
   pull: true
-  environment:
-    GO111MODULE: on
-    GOPROXY: https://proxy.golang.org
   commands:
   - make vet
   - make lint
@@ -31,11 +28,8 @@ clone:
 
 steps:
 - name: testing
-  image: golang:1.12
+  image: golang:1.13
   pull: true
-  environment:
-    GO111MODULE: on
-    GOPROXY: https://proxy.golang.org
   commands:
   - make test
 
