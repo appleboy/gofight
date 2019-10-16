@@ -82,6 +82,26 @@ const (
 // see https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
 var Timeout = time.Second * 10
 
+type TestResponseRecorder struct {
+	*httptest.ResponseRecorder
+	closeChannel chan bool
+}
+
+func (r *TestResponseRecorder) CloseNotify() <-chan bool {
+	return r.closeChannel
+}
+
+func (r *TestResponseRecorder) closeClient() {
+	r.closeChannel <- true
+}
+
+func CreateTestResponseRecorder() *TestResponseRecorder {
+	return &TestResponseRecorder{
+		httptest.NewRecorder(),
+		make(chan bool, 1),
+	}
+}
+
 // HTTPResponse is basic HTTP response type
 type HTTPResponse *httptest.ResponseRecorder
 
@@ -334,7 +354,7 @@ func (rc *RequestConfig) SetCookie(cookies H) *RequestConfig {
 	return rc
 }
 
-func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) {
+func (rc *RequestConfig) initTest() (*http.Request, *TestResponseRecorder) {
 	qs := ""
 	if strings.Contains(rc.Path, "?") {
 		ss := strings.Split(rc.Path, "?")
@@ -386,9 +406,9 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 		log.Printf("Request Header: %s", req.Header)
 	}
 
-	w := httptest.NewRecorder()
+	res := CreateTestResponseRecorder()
 
-	return req, w
+	return req, res
 }
 
 // Run execute http request
