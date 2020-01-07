@@ -1,4 +1,4 @@
-module github.com/appleboy/gofight/v2
+module github.com/nickkeers/gofight/v2
 
 go 1.12
 
