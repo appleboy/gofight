@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	gitea.com/lunny/tango v0.6.1
-	github.com/astaxie/beego v1.11.1
+	github.com/astaxie/beego v1.12.0
 	github.com/gin-gonic/gin v1.4.0
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.7.2
