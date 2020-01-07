@@ -51,10 +51,8 @@ package gofight
 
 import (
 	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -63,10 +61,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
 // Media types
@@ -113,30 +108,6 @@ type UploadFile struct {
 	Path    string
 	Name    string
 	Content []byte
-}
-
-// TestRequest is testing url string if server is running
-func TestRequest(t *testing.T, url string) {
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client := &http.Client{
-		Timeout:   Timeout,
-		Transport: tr,
-	}
-
-	resp, err := client.Get(url)
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			log.Println("close body err:", err)
-		}
-	}()
-
-	assert.NoError(t, err)
-
-	_, ioerr := ioutil.ReadAll(resp.Body)
-	assert.NoError(t, ioerr)
-	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
 }
 
 // New supply initial structure
