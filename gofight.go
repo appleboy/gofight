@@ -61,7 +61,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 // Media types
@@ -72,10 +71,6 @@ const (
 	ApplicationJSON = "application/json"
 	ApplicationForm = "application/x-www-form-urlencoded"
 )
-
-// Timeout for http client
-// see https://medium.com/@nate510/don-t-use-go-s-default-http-client-4804cb19f779
-var Timeout = time.Second * 10
 
 // HTTPResponse is basic HTTP response type
 type HTTPResponse *httptest.ResponseRecorder
