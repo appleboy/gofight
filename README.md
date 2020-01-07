@@ -422,18 +422,12 @@ func TestUploadFileByContent(t *testing.T) {
 
 ## Example
 
-* Basic HTTP Router: [basic.go](example/basic.go), [basic_test.go](example/basic_test.go)
-* Gin Framework: [gin.go](example/gin.go), [gin_test.go](example/gin_test.go)
-* Echo Framework: [echo.go](example/echo.go), [echo_test.go](example/echo_test.go)
-* Mux Framework: [mux.go](example/mux.go), [mux_test.go](example/mux_test.go)
-* HttpRouter Framework: [httprouter.go](example/httprouter.go), [httprouter_test.go](example/httprouter_test.go)
-* Beego Framework: [beego.go](example/beego.go), [beego_test.go](example/beego_test.go)
-
-## Testing
-
-```
-$ make
-```
+* Basic HTTP Router: [basic.go](_example/basic.go), [basic_test.go](_example/basic_test.go)
+* Gin Framework: [gin.go](_example/gin.go), [gin_test.go](_example/gin_test.go)
+* Echo Framework: [echo.go](_example/echo.go), [echo_test.go](_example/echo_test.go)
+* Mux Framework: [mux.go](_example/mux.go), [mux_test.go](_example/mux_test.go)
+* HttpRouter Framework: [httprouter.go](_example/httprouter.go), [httprouter_test.go](_example/httprouter_test.go)
+* Beego Framework: [beego.go](_example/beego.go), [beego_test.go](_example/beego_test.go)
 
 ## License
 

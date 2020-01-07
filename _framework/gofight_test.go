@@ -1,6 +1,7 @@
 package gofight
 
 import (
+	"crypto/tls"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,6 +16,30 @@ import (
 )
 
 var goVersion = runtime.Version()
+
+// TestRequest is testing url string if server is running
+func TestRequest(t *testing.T, url string) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{
+		Timeout:   Timeout,
+		Transport: tr,
+	}
+
+	resp, err := client.Get(url)
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			log.Println("close body err:", err)
+		}
+	}()
+
+	assert.NoError(t, err)
+
+	_, ioerr := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, ioerr)
+	assert.Equal(t, "200 OK", resp.Status, "should get a 200")
+}
 
 func TestHttpURL(t *testing.T) {
 	gin.SetMode(gin.TestMode)
