@@ -282,6 +282,26 @@ func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
 	return rc
 }
 
+// SetQueryD supply query string, support query using string array input.
+func (rc *RequestConfig) SetQueryD(query D) *RequestConfig {
+	var buf strings.Builder
+	buf.WriteString("?")
+	for k, v := range query {
+		switch v.(type) {
+		case string:
+			buf.WriteString(k + "=" + v.(string))
+			buf.WriteString("&")
+		case []string:
+			for _, info := range v.([]string) {
+				buf.WriteString(k + "=" + info)
+				buf.WriteString("&")
+			}
+		}
+	}
+	rc.Path = rc.Path + buf.String()[:len(buf.String())-1]
+	return rc
+}
+
 // SetBody supply raw body.
 func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	if len(body) > 0 {
