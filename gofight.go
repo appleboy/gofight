@@ -265,6 +265,13 @@ func (rc *RequestConfig) SetFileFromPath(uploads []UploadFile, params ...H) *Req
 	return rc
 }
 
+// SetPath supply new request path to deal with path variable request
+// ex. /reqpath/:book/:apple , usage: r.POST("/reqpath/").SetPath("book1/apple2")...
+func (rc *RequestConfig) SetPath(str string) *RequestConfig {
+	rc.Path += str
+	return rc
+}
+
 // SetQuery supply query string.
 func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
 	f := make(url.Values)
@@ -283,6 +290,7 @@ func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
 }
 
 // SetQueryD supply query string, support query using string array input.
+// ex. /reqpath/?Ids[]=E&Ids[]=M usage: IDArray:=[]string{"E","M"} r.GET("reqpath").SetQueryD(gofight.D{`Ids[]`: IDArray}) 
 func (rc *RequestConfig) SetQueryD(query D) *RequestConfig {
 	var buf strings.Builder
 	buf.WriteString("?")
