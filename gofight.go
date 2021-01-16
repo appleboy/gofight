@@ -394,6 +394,7 @@ func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 	response(w, req)
 }
 
+// RunX is introduced to support FiberEngine
 func (rc *RequestConfig) RunX(app *fiber.App, response ResponseFunc) {
 	req, w := rc.initTest()
 	resp, err1 := app.Test(req)
