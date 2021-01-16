@@ -52,7 +52,9 @@ package gofight
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/gofiber/fiber/v2"
 	"io"
+	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -265,6 +267,34 @@ func (rc *RequestConfig) SetFileFromPath(uploads []UploadFile, params ...H) *Req
 	return rc
 }
 
+// SetPath supply new request path to deal with path variable request
+// ex. /reqpath/:book/:apple , usage: r.POST("/reqpath/").SetPath("book1/apple2")...
+func (rc *RequestConfig) SetPath(str string) *RequestConfig {
+	rc.Path += str
+	return rc
+}
+
+// SetQueryD supply query string, support query using string array input.
+// ex. /reqpath/?Ids[]=E&Ids[]=M usage: IDArray:=[]string{"E","M"} r.GET("reqpath").SetQueryD(gofight.D{`Ids[]`: IDArray})
+func (rc *RequestConfig) SetQueryD(query D) *RequestConfig {
+	var buf strings.Builder
+	buf.WriteString("?")
+	for k, v := range query {
+		switch v.(type) {
+		case string:
+			buf.WriteString(k + "=" + v.(string))
+			buf.WriteString("&")
+		case []string:
+			for _, info := range v.([]string) {
+				buf.WriteString(k + "=" + info)
+				buf.WriteString("&")
+			}
+		}
+	}
+	rc.Path = rc.Path + buf.String()[:len(buf.String())-1]
+	return rc
+}
+
 // SetQuery supply query string.
 func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
 	f := make(url.Values)
@@ -362,4 +392,16 @@ func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 	req, w := rc.initTest()
 	r.ServeHTTP(w, req)
 	response(w, req)
+}
+
+func (rc *RequestConfig) RunX(app *fiber.App, response ResponseFunc) {
+	req, w := rc.initTest()
+	resp, err1 := app.Test(req)
+	w.Code = resp.StatusCode
+	w.HeaderMap = resp.Header.Clone()
+	body, _ := ioutil.ReadAll(resp.Body)
+	w.Body.Write(body)
+	if err1 == nil {
+		response(w, req)
+	}
 }
