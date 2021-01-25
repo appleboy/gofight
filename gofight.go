@@ -52,7 +52,6 @@ package gofight
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gofiber/fiber/v2"
 	"io"
 	"io/ioutil"
 	"log"
@@ -63,6 +62,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // Media types
@@ -399,7 +400,7 @@ func (rc *RequestConfig) RunX(app *fiber.App, response ResponseFunc) {
 	req, w := rc.initTest()
 	resp, err1 := app.Test(req)
 	w.Code = resp.StatusCode
-	w.HeaderMap = resp.Header.Clone()
+	w.Result().Header = resp.Header.Clone()
 	body, _ := ioutil.ReadAll(resp.Body)
 	w.Body.Write(body)
 	if err1 == nil {
