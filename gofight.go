@@ -375,6 +375,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	}
 
 	if rc.Debug {
+		log.Printf("Request QueryString: %s", qs)
 		log.Printf("Request Method: %s", rc.Method)
 		log.Printf("Request Path: %s", rc.Path)
 		log.Printf("Request Body: %s", rc.Body)

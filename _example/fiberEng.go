@@ -10,12 +10,19 @@ func FiberEngine() *fiber.App {
 	// Fiber instance
 	e := fiber.New()
 	// Routes
-	e.Get("/", fiberRoute)
+	e.Get("/helloCouple", fiberRoute)
 	return e
 }
 
 func fiberRoute(c *fiber.Ctx) error {
-	msg := fmt.Sprintf("God Love the World ! 👴 %s is %s years old~", c.Query("name"), c.Query("age"))
-	c.Status(200).SendString(msg) // =>God Love the World ! 👴 john is 75 years old~
+	names := c.Context().QueryArgs().PeekMulti("names")
+	ages := c.Context().QueryArgs().PeekMulti("ages")
+	msg := ""
+	for i := range names {
+		msg += fmt.Sprintf("God Love the World ! 👴 %s is %s years old~\n", string(names[i]), string(ages[i]))
+	}
+	c.Status(200).SendString(msg)
+	// =>God Love the World ! 👴 john is 75 years old~
+	//   God Love the World ! 👴 mary is 25 years old~
 	return nil
 }
