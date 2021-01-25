@@ -2,11 +2,12 @@ package example
 
 import (
 	"fmt"
+	"net/http"
+	"testing"
+
 	"github.com/appleboy/gofight/v2"
 	"github.com/astaxie/beego"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"testing"
 )
 
 func TestSayHelloWorld(t *testing.T) {
