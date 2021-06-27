@@ -19,7 +19,6 @@ func TestBasicHelloWorld(t *testing.T) {
 			"X-Version": version,
 		}).
 		Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
-
 			assert.Equal(t, version, rq.Header.Get("X-Version"))
 			assert.Equal(t, "Hello World", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
@@ -29,6 +28,7 @@ func TestBasicHelloWorld(t *testing.T) {
 func basicHTTPHelloHandler() {
 	http.HandleFunc("/hello", basicHelloHandler)
 }
+
 func TestBasicHttpHelloWorld(t *testing.T) {
 	basicHTTPHelloHandler()
 

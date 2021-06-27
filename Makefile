@@ -1,7 +1,7 @@
 .PHONY: test
 
 GO ?= go
-GOFMT ?= gofmt "-s"
+GOFMT ?= gofumpt -l -s
 PACKAGES ?= $(shell $(GO) list ./...)
 GOFILES := $(shell find . -name "*.go" -type f)
 

@@ -1,14 +1,14 @@
 package example
 
 import (
-	"github.com/appleboy/gofight/v2"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"
+
+	"github.com/appleboy/gofight/v2"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFiberEngine(t *testing.T) {
-
 	tests := []struct {
 		name string
 		path string

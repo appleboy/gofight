@@ -1,8 +1,9 @@
 package example
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func muxHelloHandler(w http.ResponseWriter, r *http.Request) {

@@ -110,7 +110,6 @@ type UploadFile struct {
 
 // New supply initial structure
 func New() *RequestConfig {
-
 	return &RequestConfig{}
 }
 
