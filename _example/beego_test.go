@@ -15,13 +15,13 @@ func TestSayHelloWorld(t *testing.T) {
 
 	// LoadAppConfig allow developer to apply a config file
 	// beego.LoadAppConfig("ini", "../conf/app.conf")
-	c := beego.NewControllerRegister()
-	c.Add(uri, &UserController{}, "get:SayHelloWorld")
+	c := beego.NewApp()
+	c.Handlers.Add(uri, &UserController{}, "get:SayHelloWorld")
 
 	r := gofight.New()
 	r.GET(uri).
 		SetDebug(true).
-		Run(c, func(rp gofight.HTTPResponse, rq gofight.HTTPRequest) {
+		Run(c.Handlers, func(rp gofight.HTTPResponse, rq gofight.HTTPRequest) {
 			fmt.Println(rp.Code)
 			assert.Equal(t, "Hello, World", rp.Body.String())
 			assert.Equal(t, http.StatusOK, rp.Code)
