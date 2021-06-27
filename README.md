@@ -19,7 +19,7 @@ API Handler Testing for Golang Web framework.
 * [x] [Pat](https://github.com/gorilla/pat)
 * [x] [beego](https://github.com/astaxie/beego)
 
-## Usage
+## Install
 
 Download this package.
 

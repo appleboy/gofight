@@ -53,7 +53,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -62,8 +61,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 // Media types
@@ -396,15 +393,15 @@ func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 	response(w, req)
 }
 
-// RunX is introduced to support FiberEngine
-func (rc *RequestConfig) RunX(app *fiber.App, response ResponseFunc) {
-	req, w := rc.initTest()
-	resp, err1 := app.Test(req)
-	w.Code = resp.StatusCode
-	w.Result().Header = resp.Header.Clone()
-	body, _ := ioutil.ReadAll(resp.Body)
-	w.Body.Write(body)
-	if err1 == nil {
-		response(w, req)
-	}
-}
+// // RunX is introduced to support FiberEngine
+// func (rc *RequestConfig) RunX(app *fiber.App, response ResponseFunc) {
+// 	req, w := rc.initTest()
+// 	resp, err1 := app.Test(req)
+// 	w.Code = resp.StatusCode
+// 	w.Result().Header = resp.Header.Clone()
+// 	body, _ := ioutil.ReadAll(resp.Body)
+// 	w.Body.Write(body)
+// 	if err1 == nil {
+// 		response(w, req)
+// 	}
+// }
