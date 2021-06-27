@@ -392,16 +392,3 @@ func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 	r.ServeHTTP(w, req)
 	response(w, req)
 }
-
-// // RunX is introduced to support FiberEngine
-// func (rc *RequestConfig) RunX(app *fiber.App, response ResponseFunc) {
-// 	req, w := rc.initTest()
-// 	resp, err1 := app.Test(req)
-// 	w.Code = resp.StatusCode
-// 	w.Result().Header = resp.Header.Clone()
-// 	body, _ := ioutil.ReadAll(resp.Body)
-// 	w.Body.Write(body)
-// 	if err1 == nil {
-// 		response(w, req)
-// 	}
-// }
