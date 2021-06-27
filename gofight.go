@@ -311,6 +311,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	body := bytes.NewBufferString(rc.Body)
 
 	req, _ := http.NewRequest(rc.Method, rc.Path, body)
+	req.RequestURI = req.URL.RequestURI()
 
 	if len(qs) > 0 {
 		req.URL.RawQuery = qs
