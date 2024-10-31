@@ -24,7 +24,7 @@ API Handler Testing for Golang Web framework.
 Download this package.
 
 ```bash
-$ go get github.com/appleboy/gofight/v2
+go get github.com/appleboy/gofight/v2
 ```
 
 To import this package, add the following line to your code:
@@ -43,19 +43,19 @@ Main Program:
 package main
 
 import (
-	"io"
-	"net/http"
+  "io"
+  "net/http"
 )
 
 func BasicHelloHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Hello World")
+  io.WriteString(w, "Hello World")
 }
 
 func BasicEngine() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", BasicHelloHandler)
+  mux := http.NewServeMux()
+  mux.HandleFunc("/", BasicHelloHandler)
 
-	return mux
+  return mux
 }
 ```
 
@@ -65,24 +65,24 @@ Testing:
 package main
 
 import (
-	"net/http"
-	"testing"
+  "net/http"
+  "testing"
 
-	"github.com/appleboy/gofight/v2"
-	"github.com/stretchr/testify/assert"
+  "github.com/appleboy/gofight/v2"
+  "github.com/stretchr/testify/assert"
 )
 
 func TestBasicHelloWorld(t *testing.T) {
-	r := gofight.New()
+  r := gofight.New()
 
-	r.GET("/").
-		// turn on the debug mode.
-		SetDebug(true).
-		Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+  r.GET("/").
+    // turn on the debug mode.
+    SetDebug(true).
+    Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-			assert.Equal(t, "Hello World", r.Body.String())
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
+      assert.Equal(t, "Hello World", r.Body.String())
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
 }
 ```
 
@@ -92,21 +92,21 @@ You can add custom header via `SetHeader` func.
 
 ```go
 func TestBasicHelloWorld(t *testing.T) {
-	r := gofight.New()
-	version := "0.0.1"
+  r := gofight.New()
+  version := "0.0.1"
 
-	r.GET("/").
-		// turn on the debug mode.
-		SetDebug(true).
-		SetHeader(gofight.H{
-			"X-Version": version,
-		}).
-		Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
+  r.GET("/").
+    // turn on the debug mode.
+    SetDebug(true).
+    SetHeader(gofight.H{
+      "X-Version": version,
+    }).
+    Run(BasicEngine(), func(r gofight.HTTPResponse, rq gofight.HTTPRequest) {
 
-			assert.Equal(t, version, rq.Header.Get("X-Version"))
-			assert.Equal(t, "Hello World", r.Body.String())
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
+      assert.Equal(t, version, rq.Header.Get("X-Version"))
+      assert.Equal(t, "Hello World", r.Body.String())
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
 }
 ```
 
@@ -116,23 +116,23 @@ Using `SetForm` to generate form data.
 
 ```go
 func TestPostFormData(t *testing.T) {
-	r := gofight.New()
+  r := gofight.New()
 
-	r.POST("/form").
-		SetForm(gofight.H{
-			"a": "1",
-			"b": "2",
-		}).
-		Run(BasicEngine(), func(r HTTPResponse, rq HTTPRequest) {
-			data := []byte(r.Body.String())
+  r.POST("/form").
+    SetForm(gofight.H{
+      "a": "1",
+      "b": "2",
+    }).
+    Run(BasicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+      data := []byte(r.Body.String())
 
-			a, _ := jsonparser.GetString(data, "a")
-			b, _ := jsonparser.GetString(data, "b")
+      a, _ := jsonparser.GetString(data, "a")
+      b, _ := jsonparser.GetString(data, "b")
 
-			assert.Equal(t, "1", a)
-			assert.Equal(t, "2", b)
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
+      assert.Equal(t, "1", a)
+      assert.Equal(t, "2", b)
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
 }
 ```
 
@@ -142,24 +142,24 @@ Using `SetJSON` to generate JSON data.
 
 ```go
 func TestPostJSONData(t *testing.T) {
-	r := gofight.New()
+  r := gofight.New()
 
-	r.POST("/json").
-		SetJSON(gofight.D{
-			"a": 1,
-			"b": 2,
-		}).
-		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-			data := []byte(r.Body.String())
+  r.POST("/json").
+    SetJSON(gofight.D{
+      "a": 1,
+      "b": 2,
+    }).
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+      data := []byte(r.Body.String())
 
-			a, _ := jsonparser.GetInt(data, "a")
-			b, _ := jsonparser.GetInt(data, "b")
+      a, _ := jsonparser.GetInt(data, "a")
+      b, _ := jsonparser.GetInt(data, "b")
 
-			assert.Equal(t, 1, int(a))
-			assert.Equal(t, 2, int(b))
-			assert.Equal(t, http.StatusOK, r.Code)
-			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
-		})
+      assert.Equal(t, 1, int(a))
+      assert.Equal(t, 2, int(b))
+      assert.Equal(t, http.StatusOK, r.Code)
+      assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+    })
 }
 ```
 
@@ -169,20 +169,20 @@ Using `SetBody` to generate raw data.
 
 ```go
 func TestPostRawData(t *testing.T) {
-	r := gofight.New()
+  r := gofight.New()
 
-	r.POST("/raw").
-		SetBody("a=1&b=1").
-		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-			data := []byte(r.Body.String())
+  r.POST("/raw").
+    SetBody("a=1&b=1").
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+      data := []byte(r.Body.String())
 
-			a, _ := jsonparser.GetString(data, "a")
-			b, _ := jsonparser.GetString(data, "b")
+      a, _ := jsonparser.GetString(data, "a")
+      b, _ := jsonparser.GetString(data, "b")
 
-			assert.Equal(t, "1", a)
-			assert.Equal(t, "2", b)
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
+      assert.Equal(t, "1", a)
+      assert.Equal(t, "2", b)
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
 }
 ```
 
@@ -192,16 +192,16 @@ Using `SetQuery` to generate raw data.
 
 ```go
 func TestQueryString(t *testing.T) {
-	r := gofight.New()
+  r := gofight.New()
 
-	r.GET("/hello").
-		SetQuery(gofight.H{
-			"a": "1",
-			"b": "2",
-		}).
-		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
+  r.GET("/hello").
+    SetQuery(gofight.H{
+      "a": "1",
+      "b": "2",
+    }).
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
 }
 ```
 
@@ -209,16 +209,16 @@ or append exist query parameter.
 
 ```go
 func TestQueryString(t *testing.T) {
-	r := gofight.New()
+  r := gofight.New()
 
-	r.GET("/hello?foo=bar").
-		SetQuery(gofight.H{
-			"a": "1",
-			"b": "2",
-		}).
-		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-			assert.Equal(t, http.StatusOK, r.Code)
-		})
+  r.GET("/hello?foo=bar").
+    SetQuery(gofight.H{
+      "a": "1",
+      "b": "2",
+    }).
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+      assert.Equal(t, http.StatusOK, r.Code)
+    })
 }
 ```
 
@@ -228,16 +228,16 @@ Using `SetCookie` to generate raw data.
 
 ```go
 func TestQueryString(t *testing.T) {
-	r := gofight.New()
+  r := gofight.New()
 
-	r.GET("/hello").
-		SetCookie(gofight.H{
-			"foo": "bar",
-		}).
-		Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
-			assert.Equal(t, http.StatusOK, r.Code)
-			assert.Equal(t, "foo=bar", rq.Header.Get("cookie"))
-		})
+  r.GET("/hello").
+    SetCookie(gofight.H{
+      "foo": "bar",
+    }).
+    Run(BasicEngine, func(r HTTPResponse, rq HTTPRequest) {
+      assert.Equal(t, http.StatusOK, r.Code)
+      assert.Equal(t, "foo=bar", rq.Header.Get("cookie"))
+    })
 }
 ```
 
@@ -245,31 +245,31 @@ func TestQueryString(t *testing.T) {
 
 ```go
 type User struct {
-	// Username user name
-	Username string `json:"username"`
-	// Password account password
-	Password string `json:"password"`
+  // Username user name
+  Username string `json:"username"`
+  // Password account password
+  Password string `json:"password"`
 }
 
 func TestSetJSONInterface(t *testing.T) {
-	r := New()
+  r := New()
 
-	r.POST("/user").
-		SetJSONInterface(User{
-			Username: "foo",
-			Password: "bar",
-		}).
-		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
-			data := []byte(r.Body.String())
+  r.POST("/user").
+    SetJSONInterface(User{
+      Username: "foo",
+      Password: "bar",
+    }).
+    Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+      data := []byte(r.Body.String())
 
-			username := gjson.GetBytes(data, "username")
-			password := gjson.GetBytes(data, "password")
+      username := gjson.GetBytes(data, "username")
+      password := gjson.GetBytes(data, "password")
 
-			assert.Equal(t, "foo", username.String())
-			assert.Equal(t, "bar", password.String())
-			assert.Equal(t, http.StatusOK, r.Code)
-			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
-		})
+      assert.Equal(t, "foo", username.String())
+      assert.Equal(t, "bar", password.String())
+      assert.Equal(t, http.StatusOK, r.Code)
+      assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+    })
 }
 ```
 
@@ -279,42 +279,42 @@ The following is route using gin
 
 ```go
 func gintFileUploadHandler(c *gin.Context) {
-	ip := c.ClientIP()
-	hello, err := c.FormFile("hello")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+  ip := c.ClientIP()
+  hello, err := c.FormFile("hello")
+  if err != nil {
+    c.JSON(http.StatusBadRequest, gin.H{
+      "error": err.Error(),
+    })
+    return
+  }
 
-	helloFile, _ := hello.Open()
-	helloBytes := make([]byte, 6)
-	helloFile.Read(helloBytes)
+  helloFile, _ := hello.Open()
+  helloBytes := make([]byte, 6)
+  helloFile.Read(helloBytes)
 
-	world, err := c.FormFile("world")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+  world, err := c.FormFile("world")
+  if err != nil {
+    c.JSON(http.StatusBadRequest, gin.H{
+      "error": err.Error(),
+    })
+    return
+  }
 
-	worldFile, _ := world.Open()
-	worldBytes := make([]byte, 6)
-	worldFile.Read(worldBytes)
+  worldFile, _ := world.Open()
+  worldBytes := make([]byte, 6)
+  worldFile.Read(worldBytes)
 
-	foo := c.PostForm("foo")
-	bar := c.PostForm("bar")
-	c.JSON(http.StatusOK, gin.H{
-		"hello":		 hello.Filename,
-		"world":		 world.Filename,
-		"foo":			 foo,
-		"bar":			 bar,
-		"ip":				ip,
-		"helloSize": string(helloBytes),
-		"worldSize": string(worldBytes),
-	})
+  foo := c.PostForm("foo")
+  bar := c.PostForm("bar")
+  c.JSON(http.StatusOK, gin.H{
+    "hello":     hello.Filename,
+    "world":     world.Filename,
+    "foo":       foo,
+    "bar":       bar,
+    "ip":        ip,
+    "helloSize": string(helloBytes),
+    "worldSize": string(worldBytes),
+  })
 }
 ```
 
@@ -322,44 +322,44 @@ Write the testing:
 
 ```go
 func TestUploadFile(t *testing.T) {
-	r := New()
+  r := New()
 
-	r.POST("/upload").
-		SetDebug(true).
-		SetFileFromPath([]UploadFile{
-			{
-				Path: "./testdata/hello.txt",
-				Name: "hello",
-			},
-			{
-				Path: "./testdata/world.txt",
-				Name: "world",
-			},
-		}, H{
-			"foo": "bar",
-			"bar": "foo",
-		}).
-		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
-			data := []byte(r.Body.String())
+  r.POST("/upload").
+    SetDebug(true).
+    SetFileFromPath([]UploadFile{
+      {
+        Path: "./testdata/hello.txt",
+        Name: "hello",
+      },
+      {
+        Path: "./testdata/world.txt",
+        Name: "world",
+      },
+    }, H{
+      "foo": "bar",
+      "bar": "foo",
+    }).
+    Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+      data := []byte(r.Body.String())
 
-			hello := gjson.GetBytes(data, "hello")
-			world := gjson.GetBytes(data, "world")
-			foo := gjson.GetBytes(data, "foo")
-			bar := gjson.GetBytes(data, "bar")
-			ip := gjson.GetBytes(data, "ip")
-			helloSize := gjson.GetBytes(data, "helloSize")
-			worldSize := gjson.GetBytes(data, "worldSize")
+      hello := gjson.GetBytes(data, "hello")
+      world := gjson.GetBytes(data, "world")
+      foo := gjson.GetBytes(data, "foo")
+      bar := gjson.GetBytes(data, "bar")
+      ip := gjson.GetBytes(data, "ip")
+      helloSize := gjson.GetBytes(data, "helloSize")
+      worldSize := gjson.GetBytes(data, "worldSize")
 
-			assert.Equal(t, "world\n", helloSize.String())
-			assert.Equal(t, "hello\n", worldSize.String())
-			assert.Equal(t, "hello.txt", hello.String())
-			assert.Equal(t, "world.txt", world.String())
-			assert.Equal(t, "bar", foo.String())
-			assert.Equal(t, "foo", bar.String())
-			assert.Equal(t, "", ip.String())
-			assert.Equal(t, http.StatusOK, r.Code)
-			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
-		})
+      assert.Equal(t, "world\n", helloSize.String())
+      assert.Equal(t, "hello\n", worldSize.String())
+      assert.Equal(t, "hello.txt", hello.String())
+      assert.Equal(t, "world.txt", world.String())
+      assert.Equal(t, "bar", foo.String())
+      assert.Equal(t, "foo", bar.String())
+      assert.Equal(t, "", ip.String())
+      assert.Equal(t, http.StatusOK, r.Code)
+      assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+    })
 }
 ```
 
@@ -367,56 +367,56 @@ func TestUploadFile(t *testing.T) {
 
 ```go
 func TestUploadFileByContent(t *testing.T) {
-	r := New()
+  r := New()
 
-	helloContent, err := ioutil.ReadFile("./testdata/hello.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
+  helloContent, err := ioutil.ReadFile("./testdata/hello.txt")
+  if err != nil {
+    log.Fatal(err)
+  }
 
-	worldContent, err := ioutil.ReadFile("./testdata/world.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
+  worldContent, err := ioutil.ReadFile("./testdata/world.txt")
+  if err != nil {
+    log.Fatal(err)
+  }
 
-	r.POST("/upload").
-		SetDebug(true).
-		SetFileFromPath([]UploadFile{
-			{
-				Path:		"hello.txt",
-				Name:		"hello",
-				Content: helloContent,
-			},
-			{
-				Path:		"world.txt",
-				Name:		"world",
-				Content: worldContent,
-			},
-		}, H{
-			"foo": "bar",
-			"bar": "foo",
-		}).
-		Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
-			data := []byte(r.Body.String())
+  r.POST("/upload").
+    SetDebug(true).
+    SetFileFromPath([]UploadFile{
+      {
+        Path:    "hello.txt",
+        Name:    "hello",
+        Content: helloContent,
+      },
+      {
+        Path:    "world.txt",
+        Name:    "world",
+        Content: worldContent,
+      },
+    }, H{
+      "foo": "bar",
+      "bar": "foo",
+    }).
+    Run(framework.GinEngine(), func(r HTTPResponse, rq HTTPRequest) {
+      data := []byte(r.Body.String())
 
-			hello := gjson.GetBytes(data, "hello")
-			world := gjson.GetBytes(data, "world")
-			foo := gjson.GetBytes(data, "foo")
-			bar := gjson.GetBytes(data, "bar")
-			ip := gjson.GetBytes(data, "ip")
-			helloSize := gjson.GetBytes(data, "helloSize")
-			worldSize := gjson.GetBytes(data, "worldSize")
+      hello := gjson.GetBytes(data, "hello")
+      world := gjson.GetBytes(data, "world")
+      foo := gjson.GetBytes(data, "foo")
+      bar := gjson.GetBytes(data, "bar")
+      ip := gjson.GetBytes(data, "ip")
+      helloSize := gjson.GetBytes(data, "helloSize")
+      worldSize := gjson.GetBytes(data, "worldSize")
 
-			assert.Equal(t, "world\n", helloSize.String())
-			assert.Equal(t, "hello\n", worldSize.String())
-			assert.Equal(t, "hello.txt", hello.String())
-			assert.Equal(t, "world.txt", world.String())
-			assert.Equal(t, "bar", foo.String())
-			assert.Equal(t, "foo", bar.String())
-			assert.Equal(t, "", ip.String())
-			assert.Equal(t, http.StatusOK, r.Code)
-			assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
-		})
+      assert.Equal(t, "world\n", helloSize.String())
+      assert.Equal(t, "hello\n", worldSize.String())
+      assert.Equal(t, "hello.txt", hello.String())
+      assert.Equal(t, "world.txt", world.String())
+      assert.Equal(t, "bar", foo.String())
+      assert.Equal(t, "foo", bar.String())
+      assert.Equal(t, "", ip.String())
+      assert.Equal(t, http.StatusOK, r.Code)
+      assert.Equal(t, "application/json; charset=utf-8", r.HeaderMap.Get("Content-Type"))
+    })
 }
 ```
 
