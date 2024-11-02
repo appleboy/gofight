@@ -96,6 +96,7 @@ type RequestConfig struct {
 	Cookies     H
 	Debug       bool
 	ContentType string
+	Context     context.Context
 }
 
 // UploadFile for upload file struct
@@ -107,12 +108,31 @@ type UploadFile struct {
 
 // New supply initial structure
 func New() *RequestConfig {
-	return &RequestConfig{}
+	return &RequestConfig{
+		Context: context.Background(),
+	}
 }
 
 // SetDebug supply enable debug mode.
 func (rc *RequestConfig) SetDebug(enable bool) *RequestConfig {
 	rc.Debug = enable
+
+	return rc
+}
+
+// SetContext sets the context for the RequestConfig.
+// This allows the request to be aware of deadlines, cancellation signals, and other request-scoped values.
+// It returns the updated RequestConfig instance.
+//
+// Parameters:
+//
+//	ctx - the context to be set for the RequestConfig
+//
+// Returns:
+//
+//	*RequestConfig - the updated RequestConfig instance with the new context
+func (rc *RequestConfig) SetContext(ctx context.Context) *RequestConfig {
+	rc.Context = ctx
 
 	return rc
 }
@@ -338,7 +358,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 
 	body := bytes.NewBufferString(rc.Body)
 
-	req, _ := http.NewRequestWithContext(context.Background(), rc.Method, rc.Path, body)
+	req, _ := http.NewRequestWithContext(rc.Context, rc.Method, rc.Path, body)
 	req.RequestURI = req.URL.RequestURI()
 
 	if len(qs) > 0 {
