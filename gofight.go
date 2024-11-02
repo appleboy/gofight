@@ -2,55 +2,55 @@
 //
 // Details about the gofight project are found in github page:
 //
-//     https://github.com/appleboy/gofight
+//	https://github.com/appleboy/gofight
 //
 // Installation:
 //
-//    $ go get -u github.com/appleboy/gofight
+//	$ go get -u github.com/appleboy/gofight
 //
 // Set Header: You can add custom header via SetHeader func.
 //
-//    SetHeader(gofight.H{
-//      "X-Version": version,
-//    })
+//	SetHeader(gofight.H{
+//	  "X-Version": version,
+//	})
 //
 // Set Cookie: You can add custom cookie via SetCookie func.
 //
-//    SetCookie(gofight.H{
-//      "foo": "bar",
-//    })
+//	SetCookie(gofight.H{
+//	  "foo": "bar",
+//	})
 //
 // Set query string: Using SetQuery to generate query string data.
 //
-//    SetQuery(gofight.H{
-//      "a": "1",
-//      "b": "2",
-//    })
+//	SetQuery(gofight.H{
+//	  "a": "1",
+//	  "b": "2",
+//	})
 //
 // POST FORM Data: Using SetForm to generate form data.
 //
-//    SetForm(gofight.H{
-//      "a": "1",
-//      "b": "2",
-//    })
+//	SetForm(gofight.H{
+//	  "a": "1",
+//	  "b": "2",
+//	})
 //
 // POST JSON Data: Using SetJSON to generate json data.
 //
-//    SetJSON(gofight.H{
-//      "a": "1",
-//      "b": "2",
-//    })
+//	SetJSON(gofight.H{
+//	  "a": "1",
+//	  "b": "2",
+//	})
 //
 // POST RAW Data: Using SetBody to generate raw data.
 //
-//    SetBody("a=1&b=1")
+//	SetBody("a=1&b=1")
 //
 // For more details, see the documentation and example.
-//
 package gofight
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"log"
@@ -272,23 +272,24 @@ func (rc *RequestConfig) SetPath(str string) *RequestConfig {
 }
 
 // SetQueryD supply query string, support query using string array input.
-// ex. /reqpath/?Ids[]=E&Ids[]=M usage: IDArray:=[]string{"E","M"} r.GET("reqpath").SetQueryD(gofight.D{`Ids[]`: IDArray})
+// ex. /reqpath/?Ids[]=E&Ids[]=M usage:
+// IDArray:=[]string{"E","M"} r.GET("reqpath").SetQueryD(gofight.D{`Ids[]`: IDArray})
 func (rc *RequestConfig) SetQueryD(query D) *RequestConfig {
 	var buf strings.Builder
 	buf.WriteString("?")
 	for k, v := range query {
-		switch v.(type) {
+		switch v := v.(type) {
 		case string:
-			buf.WriteString(k + "=" + v.(string))
+			buf.WriteString(k + "=" + v)
 			buf.WriteString("&")
 		case []string:
-			for _, info := range v.([]string) {
+			for _, info := range v {
 				buf.WriteString(k + "=" + info)
 				buf.WriteString("&")
 			}
 		}
 	}
-	rc.Path = rc.Path + buf.String()[:len(buf.String())-1]
+	rc.Path += buf.String()[:len(buf.String())-1]
 	return rc
 }
 
@@ -337,7 +338,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 
 	body := bytes.NewBufferString(rc.Body)
 
-	req, _ := http.NewRequest(rc.Method, rc.Path, body)
+	req, _ := http.NewRequestWithContext(context.Background(), rc.Method, rc.Path, body)
 	req.RequestURI = req.URL.RequestURI()
 
 	if len(qs) > 0 {
