@@ -9,7 +9,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const version = "0.0.1"
+
 func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
+	// add header in response.
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("X-Version", version)
 	_, _ = io.WriteString(w, "Hello World")
 }
 
@@ -84,5 +89,15 @@ func TestSetContextWithTimeout(t *testing.T) {
 			default:
 				t.Error("expected context to be done")
 			}
+		})
+}
+
+func TestGetHeaderFromResponse(t *testing.T) {
+	version := "0.0.1"
+	r := New()
+	r.GET("/").
+		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			assert.Equal(t, version, r.Header().Get("X-Version"))
+			assert.Equal(t, "Hello World", r.Body.String())
 		})
 }
