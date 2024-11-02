@@ -223,26 +223,26 @@ func (rc *RequestConfig) SetFileFromPath(uploads []UploadFile, params ...H) *Req
 		if reader.Size() == 0 {
 			file, err := os.Open(f.Path)
 			if err != nil {
-				log.Fatal(err)
+				return rc
 			}
 
 			defer file.Close()
 			part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
 			if err != nil {
-				log.Fatal(err)
+				return rc
 			}
 			_, err = io.Copy(part, file)
 			if err != nil {
-				log.Fatal(err)
+				return rc
 			}
 		} else {
 			part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
 			if err != nil {
-				log.Fatal(err)
+				return rc
 			}
 			_, err = reader.WriteTo(part)
 			if err != nil {
-				log.Fatal(err)
+				return rc
 			}
 		}
 	}
@@ -255,7 +255,7 @@ func (rc *RequestConfig) SetFileFromPath(uploads []UploadFile, params ...H) *Req
 
 	err := writer.Close()
 	if err != nil {
-		log.Fatal(err)
+		return rc
 	}
 
 	rc.ContentType = writer.FormDataContentType()
