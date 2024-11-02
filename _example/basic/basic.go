@@ -6,7 +6,10 @@ import (
 )
 
 func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "Hello World")
+	// add header in response.
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("X-Version", "0.0.1")
+	_, _ = io.WriteString(w, "Hello World")
 }
 
 // BasicEngine is basic router.
