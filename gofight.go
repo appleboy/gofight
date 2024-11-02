@@ -72,13 +72,22 @@ const (
 	ApplicationForm = "application/x-www-form-urlencoded"
 )
 
-// HTTPResponse is basic HTTP response type
-type HTTPResponse *httptest.ResponseRecorder
+// HTTPResponse wraps the httptest.ResponseRecorder to provide additional
+// functionality or to simplify the response handling in tests.
+type HTTPResponse struct {
+	*httptest.ResponseRecorder
+}
 
-// HTTPRequest is basic HTTP request type
-type HTTPRequest *http.Request
+// HTTPRequest is a wrapper around the standard http.Request.
+// It embeds the http.Request struct, allowing you to use all the methods
+// and fields of http.Request while also providing the ability to extend
+// its functionality with additional methods or fields if needed.
+type HTTPRequest struct {
+	*http.Request
+}
 
-// ResponseFunc response handling func type
+// ResponseFunc is a type alias for a function that takes an HTTPResponse and an HTTPRequest as parameters.
+// It is used to define a callback function that can handle or process HTTP responses and requests.
 type ResponseFunc func(HTTPResponse, HTTPRequest)
 
 // H is HTTP Header Type
@@ -407,9 +416,23 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	return req, w
 }
 
-// Run execute http request
+// Run executes the HTTP request using the provided http.Handler and processes
+// the response using the given ResponseFunc. It initializes the test request
+// and response writer, serves the HTTP request, and then passes the HTTP
+// response and request to the response function.
+//
+// Parameters:
+//   - r: The http.Handler that will handle the HTTP request.
+//   - response: A function that processes the HTTP response and request.
 func (rc *RequestConfig) Run(r http.Handler, response ResponseFunc) {
 	req, w := rc.initTest()
 	r.ServeHTTP(w, req)
-	response(w, req)
+	response(
+		HTTPResponse{
+			w,
+		},
+		HTTPRequest{
+			req,
+		},
+	)
 }

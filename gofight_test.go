@@ -1,6 +1,7 @@
 package gofight
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"testing"
@@ -51,5 +52,37 @@ func TestBasicHttpHelloWorld(t *testing.T) {
 		Run(http.DefaultServeMux, func(r HTTPResponse, rq HTTPRequest) {
 			assert.Equal(t, "Hello World", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestSetContext(t *testing.T) {
+	r := New()
+	type contextKey string
+	const key contextKey = "key"
+	ctx := context.WithValue(context.Background(), key, "value")
+
+	r.GET("/").
+		SetContext(ctx).
+		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			assert.Equal(t, "value", rq.Context().Value(contextKey("key")))
+			assert.Equal(t, "Hello World", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestSetContextWithTimeout(t *testing.T) {
+	r := New()
+	ctx, cancel := context.WithTimeout(context.Background(), 0)
+	defer cancel()
+
+	r.GET("/").
+		SetContext(ctx).
+		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			select {
+			case <-rq.Context().Done():
+				assert.Equal(t, context.DeadlineExceeded, rq.Context().Err())
+			default:
+				t.Error("expected context to be done")
+			}
 		})
 }
