@@ -101,3 +101,24 @@ func TestGetHeaderFromResponse(t *testing.T) {
 			assert.Equal(t, "Hello World", r.Body.String())
 		})
 }
+
+func TestSetBody(t *testing.T) {
+	r := New()
+	body := "a=1&b=2"
+
+	r.POST("/").
+		SetBody(body).
+		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			// Read the content of the io.Reader
+			bodyBytes, err := io.ReadAll(rq.Body)
+			if err != nil {
+				t.Fatalf("Failed to read body: %v", err)
+			}
+
+			// Convert the byte slice to a string
+			bodyString := string(bodyBytes)
+			assert.Equal(t, body, bodyString)
+			assert.Equal(t, "Hello World", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
