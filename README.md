@@ -419,12 +419,10 @@ func TestUploadFileByContent(t *testing.T) {
 
 ## Example
 
-* Basic HTTP Router: [basic.go](_example/basic.go), [basic_test.go](_example/basic_test.go)
-* Gin Framework: [gin.go](_example/gin.go), [gin_test.go](_example/gin_test.go)
-* Echo Framework: [echo.go](_example/echo.go), [echo_test.go](_example/echo_test.go)
-* Mux Framework: [mux.go](_example/mux.go), [mux_test.go](_example/mux_test.go)
-* HttpRouter Framework: [httprouter.go](_example/httprouter.go), [httprouter_test.go](_example/httprouter_test.go)
-* Beego Framework: [beego.go](_example/beego.go), [beego_test.go](_example/beego_test.go)
+* Basic HTTP Router: [example](./_example/basic)
+* Gin Framework: [example](./_example/gin)
+* Echo Framework: [example](./_example/echo)
+* Mux Framework: [example](./_example/mux)
 
 ## License
 
