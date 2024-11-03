@@ -339,7 +339,14 @@ func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
 	return rc
 }
 
-// SetBody supply raw body.
+// SetBody sets the body of the request if the provided body string is not empty.
+// It returns the updated RequestConfig instance.
+//
+// Parameters:
+//   - body: A string representing the body content to be set.
+//
+// Returns:
+//   - *RequestConfig: The updated RequestConfig instance.
 func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	if len(body) > 0 {
 		rc.Body = body
@@ -348,7 +355,15 @@ func (rc *RequestConfig) SetBody(body string) *RequestConfig {
 	return rc
 }
 
-// SetCookie supply cookies what you defined.
+// SetCookie sets the cookies for the request configuration.
+// It takes a map of cookies and assigns it to the Cookies field of the RequestConfig
+// if the provided map is not empty.
+//
+// Parameters:
+//   - cookies: A map of cookies to be set.
+//
+// Returns:
+//   - A pointer to the updated RequestConfig.
 func (rc *RequestConfig) SetCookie(cookies H) *RequestConfig {
 	if len(cookies) > 0 {
 		rc.Cookies = cookies
