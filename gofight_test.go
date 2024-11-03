@@ -34,11 +34,23 @@ func basicQueryHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = io.WriteString(w, foo)
 }
 
+func basicFormHandler(w http.ResponseWriter, r *http.Request) {
+	// get form from request.
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	foo := r.Form.Get("foo")
+	_, _ = io.WriteString(w, foo)
+}
+
 func basicEngine() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", basicHelloHandler)
 	mux.HandleFunc("/cookie", basicCookieHandler)
 	mux.HandleFunc("/query", basicQueryHandler)
+	mux.HandleFunc("/form", basicFormHandler)
 
 	return mux
 }
@@ -195,6 +207,22 @@ func TestSetQueryWithExistingQuery(t *testing.T) {
 			assert.Equal(t, "4", rq.URL.Query().Get("d"))
 			assert.Equal(t, "testing", rq.URL.Query().Get("foo"))
 			assert.Equal(t, "testing", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestSetForm(t *testing.T) {
+	r := New()
+	formData := H{
+		"a":   "1",
+		"b":   "2",
+		"foo": "bar",
+	}
+
+	r.POST("/form").
+		SetForm(formData).
+		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			assert.Equal(t, "bar", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }

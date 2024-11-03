@@ -229,7 +229,17 @@ func (rc *RequestConfig) SetJSONInterface(body interface{}) *RequestConfig {
 	return rc
 }
 
-// SetForm supply form body.
+// SetForm sets the form data for the request configuration.
+// It takes a map of string keys and values, converts it to url.Values,
+// and encodes it as a URL-encoded form string, which is then assigned to the Body field.
+//
+// Parameters:
+//
+//	body (H): A map containing the form data to be set.
+//
+// Returns:
+//
+//	*RequestConfig: The updated request configuration.
 func (rc *RequestConfig) SetForm(body H) *RequestConfig {
 	f := make(url.Values)
 
