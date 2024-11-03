@@ -28,10 +28,17 @@ func basicCookieHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = io.WriteString(w, foo.Value)
 }
 
+func basicQueryHandler(w http.ResponseWriter, r *http.Request) {
+	// get query from request.
+	foo := r.URL.Query().Get("foo")
+	_, _ = io.WriteString(w, foo)
+}
+
 func basicEngine() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", basicHelloHandler)
 	mux.HandleFunc("/cookie", basicCookieHandler)
+	mux.HandleFunc("/query", basicQueryHandler)
 
 	return mux
 }
@@ -153,6 +160,41 @@ func TestSetCookie(t *testing.T) {
 			assert.Equal(t, "qux", cookieBaz.Value)
 
 			assert.Equal(t, "bar", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestSetQuery(t *testing.T) {
+	r := New()
+	query := H{
+		"foo": "bar",
+	}
+
+	r.GET("/query").
+		SetQuery(query).
+		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			assert.Equal(t, "bar", rq.URL.Query().Get("foo"))
+			assert.Equal(t, "bar", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestSetQueryWithExistingQuery(t *testing.T) {
+	r := New()
+	query := H{
+		"c": "3",
+		"d": "4",
+	}
+
+	r.GET("/query?a=1&b=2&foo=testing").
+		SetQuery(query).
+		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			assert.Equal(t, "1", rq.URL.Query().Get("a"))
+			assert.Equal(t, "2", rq.URL.Query().Get("b"))
+			assert.Equal(t, "3", rq.URL.Query().Get("c"))
+			assert.Equal(t, "4", rq.URL.Query().Get("d"))
+			assert.Equal(t, "testing", rq.URL.Query().Get("foo"))
+			assert.Equal(t, "testing", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
