@@ -18,9 +18,20 @@ func basicHelloHandler(w http.ResponseWriter, r *http.Request) {
 	_, _ = io.WriteString(w, "Hello World")
 }
 
+func basicCookieHandler(w http.ResponseWriter, r *http.Request) {
+	// get cookie from request.
+	foo, err := r.Cookie("foo")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	_, _ = io.WriteString(w, foo.Value)
+}
+
 func basicEngine() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", basicHelloHandler)
+	mux.HandleFunc("/cookie", basicCookieHandler)
 
 	return mux
 }
@@ -119,6 +130,29 @@ func TestSetBody(t *testing.T) {
 			bodyString := string(bodyBytes)
 			assert.Equal(t, body, bodyString)
 			assert.Equal(t, "Hello World", r.Body.String())
+			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+func TestSetCookie(t *testing.T) {
+	r := New()
+	cookies := H{
+		"foo": "bar",
+		"baz": "qux",
+	}
+
+	r.GET("/cookie").
+		SetCookie(cookies).
+		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
+			cookieFoo, err := rq.Cookie("foo")
+			assert.NoError(t, err)
+			assert.Equal(t, "bar", cookieFoo.Value)
+
+			cookieBaz, err := rq.Cookie("baz")
+			assert.NoError(t, err)
+			assert.Equal(t, "qux", cookieBaz.Value)
+
+			assert.Equal(t, "bar", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
 		})
 }
