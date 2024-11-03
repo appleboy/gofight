@@ -322,7 +322,19 @@ func (rc *RequestConfig) SetQueryD(query D) *RequestConfig {
 	return rc
 }
 
-// SetQuery supply query string.
+// SetQuery sets the query parameters for the request configuration.
+// It takes a map of query parameters and their values, and appends them
+// to the existing path of the request configuration. If the path already
+// contains query parameters, the new parameters are appended with an '&'.
+// Otherwise, they are appended with a '?'.
+//
+// Parameters:
+//
+//	query (H): A map containing the query parameters and their values.
+//
+// Returns:
+//
+//	*RequestConfig: The updated request configuration with the query parameters set.
 func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
 	f := make(url.Values)
 
