@@ -434,7 +434,11 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 
 	if len(rc.Cookies) > 0 {
 		for k, v := range rc.Cookies {
-			req.AddCookie(&http.Cookie{Name: k, Value: v})
+			req.AddCookie(&http.Cookie{
+				Name:     k,
+				Value:    v,
+				HttpOnly: true,
+			})
 		}
 	}
 
