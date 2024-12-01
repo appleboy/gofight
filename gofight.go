@@ -438,6 +438,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 				Name:     k,
 				Value:    v,
 				HttpOnly: true,
+				Secure:   false,
 			})
 		}
 	}
