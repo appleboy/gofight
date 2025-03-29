@@ -23,9 +23,8 @@ jobs:
           go-version-file: go.mod
           check-latest: true
       - name: Setup golangci-lint
-        uses: golangci/golangci-lint-action@v6
+        uses: golangci/golangci-lint-action@v7
         with:
-          version: v1.60
           args: --verbose
 
       # This step uses the Bearer GitHub Action to scan for sensitive data in the codebase.
