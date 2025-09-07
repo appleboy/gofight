@@ -95,7 +95,7 @@ type ResponseFunc func(HTTPResponse, HTTPRequest)
 type H map[string]string
 
 // D is HTTP Data Type
-type D map[string]interface{}
+type D map[string]any
 
 // RequestConfig provide user input request structure
 type RequestConfig struct {
@@ -211,7 +211,7 @@ func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
 }
 
 // SetJSONInterface supply JSON body
-func (rc *RequestConfig) SetJSONInterface(body interface{}) *RequestConfig {
+func (rc *RequestConfig) SetJSONInterface(body any) *RequestConfig {
 	b, err := json.Marshal(body)
 	if err != nil {
 		// Log error but continue to maintain backward compatibility
@@ -348,18 +348,18 @@ func (rc *RequestConfig) SetQueryD(query D) *RequestConfig {
 			if !first {
 				buf.WriteString("&")
 			}
-			buf.WriteString(k)
+			buf.WriteString(url.QueryEscape(k))
 			buf.WriteString("=")
-			buf.WriteString(v)
+			buf.WriteString(url.QueryEscape(v))
 			first = false
 		case []string:
 			for _, info := range v {
 				if !first {
 					buf.WriteString("&")
 				}
-				buf.WriteString(k)
+				buf.WriteString(url.QueryEscape(k))
 				buf.WriteString("=")
-				buf.WriteString(info)
+				buf.WriteString(url.QueryEscape(info))
 				first = false
 			}
 		}
@@ -493,9 +493,9 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 		log.Printf("Request Method: %s", rc.Method)
 		log.Printf("Request Path: %s", rc.Path)
 		log.Printf("Request Body: %s", rc.Body)
-		log.Printf("Request Headers: %s", rc.Headers)
-		log.Printf("Request Cookies: %s", rc.Cookies)
-		log.Printf("Request Header: %s", req.Header)
+		log.Printf("Request Headers: %+v", rc.Headers)
+		log.Printf("Request Cookies: %+v", rc.Cookies)
+		log.Printf("Request Header: %+v", req.Header)
 	}
 
 	w := httptest.NewRecorder()
