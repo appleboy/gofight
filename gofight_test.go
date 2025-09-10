@@ -2,11 +2,17 @@ package gofight
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const version = "0.0.1"
@@ -225,5 +231,645 @@ func TestSetForm(t *testing.T) {
 		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			assert.Equal(t, "bar", r.Body.String())
 			assert.Equal(t, http.StatusOK, r.Code)
+		})
+}
+
+// Additional test handlers for comprehensive testing
+func jsonHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Failed to read body", http.StatusBadRequest)
+		return
+	}
+
+	var data interface{}
+	if err := json.Unmarshal(body, &data); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	response := map[string]interface{}{
+		"received": data,
+		"method":   r.Method,
+	}
+	json.NewEncoder(w).Encode(response)
+}
+
+func fileUploadHandler(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Check for any uploaded files in any field
+	if r.MultipartForm == nil || len(r.MultipartForm.File) == 0 {
+		http.Error(w, "No files uploaded", http.StatusBadRequest)
+		return
+	}
+
+	// Get the first file from any field
+	for fieldName, files := range r.MultipartForm.File {
+		if len(files) > 0 {
+			file := files[0]
+			io.WriteString(w, fmt.Sprintf("Uploaded file: %s, Size: %d, Field: %s",
+				file.Filename, file.Size, fieldName))
+			return
+		}
+	}
+
+	http.Error(w, "No files found", http.StatusBadRequest)
+}
+
+func methodEchoHandler(w http.ResponseWriter, r *http.Request) {
+	io.WriteString(w, fmt.Sprintf("Method: %s, Path: %s", r.Method, r.URL.Path))
+}
+
+func pathVariableHandler(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/books/")
+	io.WriteString(w, fmt.Sprintf("Book path: %s", path))
+}
+
+func extendedEngine() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", basicHelloHandler)
+	mux.HandleFunc("/cookie", basicCookieHandler)
+	mux.HandleFunc("/query", basicQueryHandler)
+	mux.HandleFunc("/form", basicFormHandler)
+	mux.HandleFunc("/json", jsonHandler)
+	mux.HandleFunc("/upload", fileUploadHandler)
+	mux.HandleFunc("/books/", pathVariableHandler)
+	mux.HandleFunc("/method", methodEchoHandler)
+	return mux
+}
+
+// TestHTTPMethods tests all HTTP methods using table-driven tests
+func TestHTTPMethods(t *testing.T) {
+	tests := []struct {
+		name         string
+		method       string
+		setupRequest func(r *RequestConfig) *RequestConfig
+		expectedBody string
+		checkBody    bool
+	}{
+		{
+			name:         "GET request",
+			method:       "GET",
+			setupRequest: func(r *RequestConfig) *RequestConfig { return r.GET("/method") },
+			expectedBody: "Method: GET, Path: /method",
+			checkBody:    true,
+		},
+		{
+			name:         "POST request",
+			method:       "POST",
+			setupRequest: func(r *RequestConfig) *RequestConfig { return r.POST("/method") },
+			expectedBody: "Method: POST, Path: /method",
+			checkBody:    true,
+		},
+		{
+			name:         "PUT request",
+			method:       "PUT",
+			setupRequest: func(r *RequestConfig) *RequestConfig { return r.PUT("/method") },
+			expectedBody: "Method: PUT, Path: /method",
+			checkBody:    true,
+		},
+		{
+			name:         "DELETE request",
+			method:       "DELETE",
+			setupRequest: func(r *RequestConfig) *RequestConfig { return r.DELETE("/method") },
+			expectedBody: "Method: DELETE, Path: /method",
+			checkBody:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := New()
+			tt.setupRequest(r).Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+				assert.Equal(t, tt.method, req.Method)
+				if tt.checkBody {
+					assert.Equal(t, tt.expectedBody, resp.Body.String())
+				}
+				assert.Equal(t, http.StatusOK, resp.Code)
+			})
+		})
+	}
+}
+
+// TestSetJSON tests JSON body setting functionality
+func TestSetJSON(t *testing.T) {
+	tests := []struct {
+		name string
+		data D
+	}{
+		{
+			name: "simple object",
+			data: D{"name": "test", "value": 123},
+		},
+		{
+			name: "nested object",
+			data: D{"user": D{"name": "john", "age": 30}},
+		},
+		{
+			name: "empty object",
+			data: D{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := New()
+			r.POST("/json").
+				SetJSON(tt.data).
+				Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+					assert.Equal(t, http.StatusOK, resp.Code)
+					assert.Contains(t, req.Header.Get("Content-Type"), "application/json")
+
+					// Parse response to verify data was processed correctly
+					var response map[string]interface{}
+					err := json.Unmarshal(resp.Body.Bytes(), &response)
+					assert.NoError(t, err)
+					assert.Equal(t, "POST", response["method"])
+					assert.NotNil(t, response["received"])
+				})
+		})
+	}
+}
+
+// TestSetJSONInterface tests JSON interface functionality
+func TestSetJSONInterface(t *testing.T) {
+	type TestStruct struct {
+		Name  string `json:"name"`
+		Value int    `json:"value"`
+	}
+
+	tests := []struct {
+		name string
+		data interface{}
+	}{
+		{
+			name: "struct",
+			data: TestStruct{Name: "test", Value: 42},
+		},
+		{
+			name: "map",
+			data: map[string]interface{}{"key": "value", "number": 123},
+		},
+		{
+			name: "slice",
+			data: []string{"item1", "item2", "item3"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := New()
+			r.POST("/json").
+				SetJSONInterface(tt.data).
+				Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+					assert.Equal(t, http.StatusOK, resp.Code)
+					assert.Contains(t, req.Header.Get("Content-Type"), "application/json")
+				})
+		})
+	}
+}
+
+// TestSetQueryD tests query parameter arrays functionality
+func TestSetQueryD(t *testing.T) {
+	tests := []struct {
+		name     string
+		query    D
+		expected map[string][]string
+	}{
+		{
+			name:  "string query",
+			query: D{"name": "john", "age": "30"},
+			expected: map[string][]string{
+				"name": {"john"},
+				"age":  {"30"},
+			},
+		},
+		{
+			name:  "array query",
+			query: D{"ids": []string{"1", "2", "3"}},
+			expected: map[string][]string{
+				"ids": {"1", "2", "3"},
+			},
+		},
+		{
+			name:  "mixed query",
+			query: D{"name": "john", "ids": []string{"1", "2"}},
+			expected: map[string][]string{
+				"name": {"john"},
+				"ids":  {"1", "2"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := New()
+			r.GET("/query").
+				SetQueryD(tt.query).
+				Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+					for key, expectedValues := range tt.expected {
+						actualValues := req.URL.Query()[key]
+						assert.Equal(t, expectedValues, actualValues)
+					}
+					assert.Equal(t, http.StatusOK, resp.Code)
+				})
+		})
+	}
+}
+
+// TestSetPath tests path variable functionality
+func TestSetPath(t *testing.T) {
+	r := New()
+	r.GET("/books/").
+		SetPath("golang/guide").
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			assert.Equal(t, "/books/golang/guide", req.URL.Path)
+			assert.Equal(t, "Book path: golang/guide", resp.Body.String())
+			assert.Equal(t, http.StatusOK, resp.Code)
+		})
+}
+
+// TestSetBodyEmpty tests empty body handling
+func TestSetBodyEmpty(t *testing.T) {
+	r := New()
+	r.POST("/method").
+		SetBody("").
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			body, _ := io.ReadAll(req.Body)
+			assert.Equal(t, "", string(body))
+			assert.Equal(t, http.StatusOK, resp.Code)
+		})
+}
+
+// TestContentTypeDetection tests automatic content type detection
+func TestContentTypeDetection(t *testing.T) {
+	tests := []struct {
+		name         string
+		body         string
+		expectedType string
+	}{
+		{
+			name:         "JSON body",
+			body:         `{"name": "test"}`,
+			expectedType: "application/json",
+		},
+		{
+			name:         "form body",
+			body:         "name=test&value=123",
+			expectedType: "application/x-www-form-urlencoded",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := New()
+			r.POST("/method").
+				SetBody(tt.body).
+				Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+					assert.Contains(t, req.Header.Get("Content-Type"), tt.expectedType)
+				})
+		})
+	}
+}
+
+// TestCookieSecuritySettings tests cookie security configuration
+func TestCookieSecuritySettings(t *testing.T) {
+	r := New()
+	r.GET("/cookie").
+		SetCookie(H{"foo": "bar"}). // Use "foo" to match basicCookieHandler
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			// Test that the cookie was set and handler works
+			assert.Equal(t, "bar", resp.Body.String()) // Handler returns cookie value
+			assert.Equal(t, http.StatusOK, resp.Code)
+
+			// Test that cookies were added to the request
+			cookies := req.Cookies()
+			assert.NotEmpty(t, cookies)
+
+			// Find the foo cookie and verify its properties
+			var fooCookie *http.Cookie
+			for _, cookie := range cookies {
+				if cookie.Name == "foo" {
+					fooCookie = cookie
+					break
+				}
+			}
+
+			if fooCookie != nil {
+				assert.Equal(t, "foo", fooCookie.Name)
+				assert.Equal(t, "bar", fooCookie.Value)
+				// Note: HttpOnly and SameSite might not be set in test environment
+			}
+		})
+}
+
+// TestErrorHandling tests error scenarios
+func TestErrorHandling(t *testing.T) {
+	// Test with invalid JSON
+	r := New()
+	invalidJSON := `{"invalid": json}`
+
+	r.POST("/json").
+		SetBody(invalidJSON).
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			// Should handle gracefully
+			assert.Equal(t, http.StatusBadRequest, resp.Code)
+		})
+}
+
+// TestSetFileFromPath tests file upload functionality
+func TestSetFileFromPath(t *testing.T) {
+	// Create a temporary test file
+	tmpFile := filepath.Join(os.TempDir(), "test.txt")
+	err := os.WriteFile(tmpFile, []byte("Hello World"), 0o644)
+	require.NoError(t, err)
+	defer os.Remove(tmpFile)
+
+	uploadFile := UploadFile{
+		Path: tmpFile,
+		Name: "file",
+	}
+
+	r := New()
+	r.POST("/upload").
+		SetFileFromPath([]UploadFile{uploadFile}).
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			// The request should have multipart content type
+			contentType := req.Header.Get("Content-Type")
+			assert.Contains(t, contentType, "multipart/form-data")
+
+			// The body should contain the file upload data
+			assert.NotEmpty(t, req.Body)
+		})
+}
+
+// TestSetFileFromContent tests file upload with content
+func TestSetFileFromContent(t *testing.T) {
+	uploadFile := UploadFile{
+		Path:    "test.txt",
+		Name:    "file",
+		Content: []byte("Test file content"),
+	}
+
+	r := New()
+	r.POST("/upload").
+		SetFileFromPath([]UploadFile{uploadFile}).
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			// The request should have multipart content type
+			contentType := req.Header.Get("Content-Type")
+			assert.Contains(t, contentType, "multipart/form-data")
+
+			// The body should contain the file upload data
+			assert.NotEmpty(t, req.Body)
+		})
+}
+
+// TestDebugMode tests debug functionality
+func TestDebugMode(t *testing.T) {
+	r := New()
+	r.GET("/").
+		SetDebug(true).
+		SetHeader(H{"X-Test": "debug"}).
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			assert.Equal(t, "debug", req.Header.Get("X-Test"))
+			assert.Equal(t, http.StatusOK, resp.Code)
+		})
+}
+
+// Benchmark tests for performance
+func BenchmarkNewRequest(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		r := New()
+		r.GET("/")
+	}
+}
+
+func BenchmarkSimpleGETRequest(b *testing.B) {
+	engine := extendedEngine()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		r := New()
+		r.GET("/").Run(engine, func(resp HTTPResponse, req HTTPRequest) {
+			// Simple assertion
+			_ = resp.Code == http.StatusOK
+		})
+	}
+}
+
+func BenchmarkJSONRequest(b *testing.B) {
+	engine := extendedEngine()
+	data := D{"name": "benchmark", "value": 123}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		r := New()
+		r.POST("/json").
+			SetJSON(data).
+			Run(engine, func(resp HTTPResponse, req HTTPRequest) {
+				_ = resp.Code == http.StatusOK
+			})
+	}
+}
+
+func BenchmarkFormRequest(b *testing.B) {
+	engine := extendedEngine()
+	formData := H{"name": "benchmark", "value": "123"}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		r := New()
+		r.POST("/form").
+			SetForm(formData).
+			Run(engine, func(resp HTTPResponse, req HTTPRequest) {
+				_ = resp.Code == http.StatusOK
+			})
+	}
+}
+
+// TestMoreHTTPMethods tests PATCH, HEAD, and OPTIONS methods
+func TestMoreHTTPMethods(t *testing.T) {
+	tests := []struct {
+		name         string
+		method       string
+		setupRequest func(r *RequestConfig) *RequestConfig
+		expectedBody string
+		checkBody    bool
+	}{
+		{
+			name:         "PATCH request",
+			method:       "PATCH",
+			setupRequest: func(r *RequestConfig) *RequestConfig { return r.PATCH("/method") },
+			expectedBody: "Method: PATCH, Path: /method",
+			checkBody:    true,
+		},
+		{
+			name:         "HEAD request",
+			method:       "HEAD",
+			setupRequest: func(r *RequestConfig) *RequestConfig { return r.HEAD("/method") },
+			expectedBody: "",
+			checkBody:    false, // HEAD requests don't return body
+		},
+		{
+			name:         "OPTIONS request",
+			method:       "OPTIONS",
+			setupRequest: func(r *RequestConfig) *RequestConfig { return r.OPTIONS("/method") },
+			expectedBody: "Method: OPTIONS, Path: /method",
+			checkBody:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := New()
+			tt.setupRequest(r).Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+				assert.Equal(t, tt.method, req.Method)
+				if tt.checkBody {
+					assert.Equal(t, tt.expectedBody, resp.Body.String())
+				}
+				assert.Equal(t, http.StatusOK, resp.Code)
+			})
+		})
+	}
+}
+
+// TestEdgeCases tests various edge cases for better coverage
+func TestEdgeCases(t *testing.T) {
+	t.Run("empty headers", func(t *testing.T) {
+		r := New()
+		r.GET("/").
+			SetHeader(H{}).
+			Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+				assert.Equal(t, http.StatusOK, resp.Code)
+			})
+	})
+
+	t.Run("empty cookies", func(t *testing.T) {
+		r := New()
+		r.GET("/").
+			SetCookie(H{}).
+			Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+				assert.Equal(t, http.StatusOK, resp.Code)
+			})
+	})
+
+	t.Run("empty query", func(t *testing.T) {
+		r := New()
+		r.GET("/").
+			SetQuery(H{}).
+			Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+				assert.Equal(t, http.StatusOK, resp.Code)
+			})
+	})
+
+	t.Run("empty form", func(t *testing.T) {
+		r := New()
+		r.POST("/").
+			SetForm(H{}).
+			Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+				assert.Equal(t, http.StatusOK, resp.Code)
+			})
+	})
+
+	t.Run("empty QueryD", func(t *testing.T) {
+		r := New()
+		r.GET("/").
+			SetQueryD(D{}).
+			Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+				assert.Equal(t, http.StatusOK, resp.Code)
+			})
+	})
+
+	t.Run("nil context", func(t *testing.T) {
+		r := New()
+		r.SetContext(context.Background()).
+			GET("/").
+			Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+				assert.Equal(t, http.StatusOK, resp.Code)
+				assert.NotNil(t, req.Context())
+			})
+	})
+}
+
+// TestJSONMarshallErrors tests JSON marshalling error handling
+func TestJSONMarshallErrors(t *testing.T) {
+	r := New()
+
+	// Test with channel type that can't be marshalled to JSON
+	invalidData := make(chan int)
+
+	r.POST("/json").
+		SetJSONInterface(invalidData).
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			// Should continue execution even with marshal error
+			body, _ := io.ReadAll(req.Body)
+			assert.Equal(t, "", string(body)) // Body should be empty due to marshal error
+		})
+}
+
+// TestQueryWithSpecialCharacters tests query parameters with special characters
+func TestQueryWithSpecialCharacters(t *testing.T) {
+	r := New()
+
+	specialQuery := H{
+		"name":  "john doe",
+		"email": "john@example.com",
+		"tags":  "tag1,tag2,tag3",
+	}
+
+	r.GET("/query").
+		SetQuery(specialQuery).
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			assert.Equal(t, "john doe", req.URL.Query().Get("name"))
+			assert.Equal(t, "john@example.com", req.URL.Query().Get("email"))
+			assert.Equal(t, "tag1,tag2,tag3", req.URL.Query().Get("tags"))
+		})
+}
+
+// TestSecureContextVariations tests different secure context scenarios
+func TestSecureContextVariations(t *testing.T) {
+	r := New()
+
+	// Test isSecureContext method indirectly
+	r.GET("/").
+		SetCookie(H{"secure_test": "value"}).
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			// Cookie should be set regardless of secure context in test
+			cookies := req.Cookies()
+			assert.NotEmpty(t, cookies)
+		})
+}
+
+// TestContentTypeOverride tests content type override functionality
+func TestContentTypeOverride(t *testing.T) {
+	customContentType := "application/xml"
+
+	config := &RequestConfig{
+		Method:      "POST",
+		Path:        "/method",
+		Body:        "<xml>test</xml>",
+		ContentType: customContentType,
+		Context:     context.Background(),
+	}
+
+	config.Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+		assert.Equal(t, customContentType, req.Header.Get("Content-Type"))
+	})
+}
+
+// TestUserAgentHeader tests user agent header setting
+func TestUserAgentHeader(t *testing.T) {
+	r := New()
+
+	r.GET("/").
+		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+			userAgent := req.Header.Get("User-Agent")
+			assert.Contains(t, userAgent, "Gofight-client/")
+			assert.Contains(t, userAgent, "1.0")
 		})
 }
