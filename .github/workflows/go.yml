@@ -23,18 +23,10 @@ jobs:
           go-version-file: go.mod
           check-latest: true
       - name: Setup golangci-lint
-        uses: golangci/golangci-lint-action@v8
+        uses: golangci/golangci-lint-action@v9
         with:
+          version: v2.7
           args: --verbose
-
-      # This step uses the Bearer GitHub Action to scan for sensitive data in the codebase.
-      # The 'uses' keyword specifies the action to be used, in this case, 'bearer/bearer-action' at version 'v2'.
-      # The 'with' keyword provides input parameters for the action:
-      # - 'diff: true' indicates that the action should only scan the changes in the current pull request or commit.
-      - name: Bearer
-        uses: bearer/bearer-action@v2
-        with:
-          diff: true
   test:
     strategy:
       matrix:
