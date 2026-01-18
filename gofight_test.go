@@ -873,3 +873,110 @@ func TestUserAgentHeader(t *testing.T) {
 			assert.Contains(t, userAgent, "1.0")
 		})
 }
+
+// Handler for testing multiple response headers
+func multipleHeadersHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("X-Custom-Header", "custom-value")
+	w.Header().Set("X-API-Version", "v2.0")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Add("X-Multiple", "value1")
+	w.Header().Add("X-Multiple", "value2")
+	w.WriteHeader(http.StatusOK)
+	_, _ = io.WriteString(w, "Headers set")
+}
+
+// TestHTTPResponseHeaders tests comprehensive HTTPResponse header functionality
+func TestHTTPResponseHeaders(t *testing.T) {
+	// Create a custom engine with the headers handler
+	mux := http.NewServeMux()
+	mux.HandleFunc("/headers", multipleHeadersHandler)
+
+	tests := []struct {
+		name         string
+		handler      http.Handler
+		checkHeaders func(t *testing.T, resp HTTPResponse)
+	}{
+		{
+			name:    "single header",
+			handler: mux,
+			checkHeaders: func(t *testing.T, resp HTTPResponse) {
+				assert.Equal(t, "custom-value", resp.Header().Get("X-Custom-Header"))
+			},
+		},
+		{
+			name:    "multiple different headers",
+			handler: mux,
+			checkHeaders: func(t *testing.T, resp HTTPResponse) {
+				assert.Equal(t, "custom-value", resp.Header().Get("X-Custom-Header"))
+				assert.Equal(t, "v2.0", resp.Header().Get("X-API-Version"))
+				assert.Equal(t, "no-cache", resp.Header().Get("Cache-Control"))
+			},
+		},
+		{
+			name:    "multiple values for same header",
+			handler: mux,
+			checkHeaders: func(t *testing.T, resp HTTPResponse) {
+				values := resp.Header()["X-Multiple"]
+				assert.Equal(t, 2, len(values))
+				assert.Contains(t, values, "value1")
+				assert.Contains(t, values, "value2")
+			},
+		},
+		{
+			name:    "header case insensitivity",
+			handler: mux,
+			checkHeaders: func(t *testing.T, resp HTTPResponse) {
+				// HTTP headers are case-insensitive
+				assert.Equal(t, "custom-value", resp.Header().Get("x-custom-header"))
+				assert.Equal(t, "custom-value", resp.Header().Get("X-CUSTOM-HEADER"))
+				assert.Equal(t, "custom-value", resp.Header().Get("X-Custom-Header"))
+			},
+		},
+		{
+			name:    "non-existent header returns empty string",
+			handler: mux,
+			checkHeaders: func(t *testing.T, resp HTTPResponse) {
+				assert.Equal(t, "", resp.Header().Get("X-Non-Existent"))
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := New()
+			r.GET("/headers").
+				Run(tt.handler, func(resp HTTPResponse, req HTTPRequest) {
+					assert.Equal(t, http.StatusOK, resp.Code)
+					tt.checkHeaders(t, resp)
+				})
+		})
+	}
+}
+
+// TestHTTPResponseHeaderMethods tests various header methods on HTTPResponse
+func TestHTTPResponseHeaderMethods(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/headers", multipleHeadersHandler)
+
+	r := New()
+	r.GET("/headers").
+		Run(mux, func(resp HTTPResponse, req HTTPRequest) {
+			// Test Header() returns non-nil map
+			assert.NotNil(t, resp.Header())
+
+			// Test Values() method for multiple header values
+			multipleValues := resp.Header().Values("X-Multiple")
+			assert.Equal(t, 2, len(multipleValues))
+			assert.Equal(t, "value1", multipleValues[0])
+			assert.Equal(t, "value2", multipleValues[1])
+
+			// Test direct map access
+			headerMap := resp.Header()
+			assert.Contains(t, headerMap, "X-Custom-Header")
+			assert.Equal(t, []string{"custom-value"}, headerMap["X-Custom-Header"])
+
+			// Test Content-Type from standard response
+			assert.NotEmpty(t, resp.Header().Get("Content-Type"))
+		})
+}
