@@ -1,0 +1,7 @@
+# Trivy Configuration
+# https://aquasecurity.github.io/trivy/latest/docs/configuration/
+
+# Skip specific files from scanning
+scan:
+  skip-files:
+    - certificate/localhost.key
