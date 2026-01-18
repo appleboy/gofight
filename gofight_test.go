@@ -253,7 +253,7 @@ func jsonHandler(w http.ResponseWriter, r *http.Request) {
 		"received": data,
 		"method":   r.Method,
 	}
-	json.NewEncoder(w).Encode(response)
+	_ = json.NewEncoder(w).Encode(response)
 }
 
 func fileUploadHandler(w http.ResponseWriter, r *http.Request) {
@@ -272,7 +272,7 @@ func fileUploadHandler(w http.ResponseWriter, r *http.Request) {
 	for fieldName, files := range r.MultipartForm.File {
 		if len(files) > 0 {
 			file := files[0]
-			io.WriteString(w, fmt.Sprintf("Uploaded file: %s, Size: %d, Field: %s",
+			_, _ = io.WriteString(w, fmt.Sprintf("Uploaded file: %s, Size: %d, Field: %s",
 				file.Filename, file.Size, fieldName))
 			return
 		}
@@ -282,12 +282,12 @@ func fileUploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func methodEchoHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, fmt.Sprintf("Method: %s, Path: %s", r.Method, r.URL.Path))
+	_, _ = io.WriteString(w, fmt.Sprintf("Method: %s, Path: %s", r.Method, r.URL.Path))
 }
 
 func pathVariableHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/books/")
-	io.WriteString(w, fmt.Sprintf("Book path: %s", path))
+	_, _ = io.WriteString(w, fmt.Sprintf("Book path: %s", path))
 }
 
 func extendedEngine() http.Handler {
@@ -586,7 +586,7 @@ func TestErrorHandling(t *testing.T) {
 func TestSetFileFromPath(t *testing.T) {
 	// Create a temporary test file
 	tmpFile := filepath.Join(os.TempDir(), "test.txt")
-	err := os.WriteFile(tmpFile, []byte("Hello World"), 0o644)
+	err := os.WriteFile(tmpFile, []byte("Hello World"), 0o600)
 	require.NoError(t, err)
 	defer os.Remove(tmpFile)
 

@@ -447,7 +447,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	if err != nil {
 		log.Printf("initTest: failed to create HTTP request: %v", err)
 		// Create minimal request to prevent panic
-		req, _ = http.NewRequest("GET", "/", nil)
+		req, _ = http.NewRequestWithContext(context.Background(), "GET", "/", nil)
 	}
 	req.RequestURI = req.URL.RequestURI()
 
