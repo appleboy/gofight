@@ -2,8 +2,8 @@
 
 [![GoDoc](https://godoc.org/github.com/appleboy/gofight?status.svg)](https://godoc.org/github.com/appleboy/gofight)
 [![Run Tests](https://github.com/appleboy/gofight/actions/workflows/go.yml/badge.svg)](https://github.com/appleboy/gofight/actions/workflows/go.yml)
+[![Trivy Security Scan](https://github.com/appleboy/gofight/actions/workflows/security.yml/badge.svg)](https://github.com/appleboy/gofight/actions/workflows/security.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/appleboy/gofight)](https://goreportcard.com/report/github.com/appleboy/gofight)
-[![codebeat badge](https://codebeat.co/badges/4d8b58ae-67ec-469e-bde6-be3dd336b30d)](https://codebeat.co/projects/github-com-appleboy-gofight)
 [![codecov](https://codecov.io/gh/appleboy/gofight/branch/master/graph/badge.svg)](https://codecov.io/gh/appleboy/gofight)
 [![Sourcegraph](https://sourcegraph.com/github.com/appleboy/gofight/-/badge.svg)](https://sourcegraph.com/github.com/appleboy/gofight?badge)
 
