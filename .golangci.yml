@@ -31,6 +31,14 @@ linters:
       - common-false-positives
       - legacy
       - std-error-handling
+    rules:
+      - path: _test\.go
+        linters:
+          - gosec
+          - dupl
+          - goconst
+          - gocyclo
+          - unparam
     paths:
       - third_party$
       - builtin$
