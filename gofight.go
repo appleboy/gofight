@@ -458,7 +458,9 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	// Auto add user agent
 	req.Header.Set(UserAgent, "Gofight-client/"+Version)
 
-	if rc.Method == "POST" || rc.Method == "PUT" || rc.Method == "PATCH" {
+	if rc.Method == http.MethodPost ||
+		rc.Method == http.MethodPut ||
+		rc.Method == http.MethodPatch {
 		if rc.isJSONContent(rc.Body) {
 			req.Header.Set(ContentType, ApplicationJSON)
 		} else {
@@ -478,11 +480,12 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 
 	if len(rc.Cookies) > 0 {
 		for k, v := range rc.Cookies {
-			req.AddCookie(&http.Cookie{
+			// Secure is context-aware: a test client may exercise HTTP-only flows.
+			req.AddCookie(&http.Cookie{ //nolint:gosec
 				Name:     k,
 				Value:    v,
 				HttpOnly: true,
-				Secure:   rc.isSecureContext(), // Dynamic secure setting
+				Secure:   rc.isSecureContext(),
 				SameSite: http.SameSiteStrictMode,
 			})
 		}
