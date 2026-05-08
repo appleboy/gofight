@@ -31,27 +31,27 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        go: [1.25, 1.26]
         include:
           - os: ubuntu-latest
             go-build: ~/.cache/go-build
           - os: macos-latest
             go-build: ~/Library/Caches/go-build
-    name: ${{ matrix.os }} @ Go ${{ matrix.go }}
+    name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     env:
       GO111MODULE: on
       GOPROXY: https://proxy.golang.org
     steps:
-      - name: Set up Go ${{ matrix.go }}
-        uses: actions/setup-go@v6
-        with:
-          go-version: ${{ matrix.go }}
-
       - name: Checkout Code
         uses: actions/checkout@v6
         with:
           ref: ${{ github.ref }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          check-latest: true
 
       - uses: actions/cache@v5
         with:
@@ -68,4 +68,4 @@ jobs:
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v6
         with:
-          flags: ${{ matrix.os }},go-${{ matrix.go }}
+          flags: ${{ matrix.os }}
