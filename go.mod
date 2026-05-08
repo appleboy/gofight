@@ -1,6 +1,6 @@
 module github.com/appleboy/gofight/v2
 
-go 1.25.9
+go 1.25.10
 
 require github.com/stretchr/testify v1.11.1
 

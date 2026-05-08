@@ -1,6 +1,6 @@
 module example
 
-go 1.25.9
+go 1.25.10
 
 require (
 	github.com/appleboy/gofight/v2 v2.2.0
