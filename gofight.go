@@ -107,6 +107,7 @@ type RequestConfig struct {
 	Debug       bool
 	ContentType string
 	Context     context.Context
+	escapeHTML  *bool
 }
 
 // UploadFile for upload file struct
@@ -198,9 +199,30 @@ func (rc *RequestConfig) SetHeader(headers H) *RequestConfig {
 	return rc
 }
 
+// SetEscapeHTML controls whether <, > and & are escaped when serializing JSON
+// bodies. HTML escaping stays enabled by default to preserve existing behavior.
+func (rc *RequestConfig) SetEscapeHTML(escape bool) *RequestConfig {
+	rc.escapeHTML = &escape
+	return rc
+}
+
+// marshalJSON serializes body to JSON, honoring the SetEscapeHTML setting.
+func (rc *RequestConfig) marshalJSON(body any) ([]byte, error) {
+	if rc.escapeHTML == nil || *rc.escapeHTML {
+		return json.Marshal(body)
+	}
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+	if err := encoder.Encode(body); err != nil {
+		return nil, err
+	}
+	return bytes.TrimRight(buf.Bytes(), "\n"), nil
+}
+
 // SetJSON supply JSON body.
 func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
-	b, err := json.Marshal(body)
+	b, err := rc.marshalJSON(body)
 	if err != nil {
 		// Log error but continue to maintain backward compatibility
 		log.Printf("SetJSON: failed to marshal JSON: %v", err)
@@ -212,7 +234,7 @@ func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
 
 // SetJSONInterface supply JSON body
 func (rc *RequestConfig) SetJSONInterface(body any) *RequestConfig {
-	b, err := json.Marshal(body)
+	b, err := rc.marshalJSON(body)
 	if err != nil {
 		// Log error but continue to maintain backward compatibility
 		log.Printf("SetJSONInterface: failed to marshal JSON: %v", err)
