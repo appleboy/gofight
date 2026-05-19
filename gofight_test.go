@@ -434,6 +434,29 @@ func TestSetJSONInterface(t *testing.T) {
 	}
 }
 
+// TestSetEscapeHTML verifies SetEscapeHTML toggles HTML escaping in JSON bodies.
+func TestSetEscapeHTML(t *testing.T) {
+	data := D{"html": "<b>bold</b> & text"}
+
+	// Default behavior keeps HTML escaping enabled.
+	def := New().SetJSON(data)
+	assert.Contains(t, def.Body, `\u003c`)
+	assert.NotContains(t, def.Body, "<b>")
+
+	// Opting out disables HTML escaping, leaving the raw characters.
+	raw := New().SetEscapeHTML(false).SetJSON(data)
+	assert.Contains(t, raw.Body, "<b>bold</b> & text")
+	assert.NotContains(t, raw.Body, `\u003c`)
+
+	// Explicitly enabling escaping matches the default.
+	on := New().SetEscapeHTML(true).SetJSON(data)
+	assert.Equal(t, def.Body, on.Body)
+
+	// SetJSONInterface honors the same setting.
+	iface := New().SetEscapeHTML(false).SetJSONInterface(map[string]string{"html": "<p>"})
+	assert.Contains(t, iface.Body, "<p>")
+}
+
 // TestSetQueryD tests query parameter arrays functionality
 func TestSetQueryD(t *testing.T) {
 	tests := []struct {
