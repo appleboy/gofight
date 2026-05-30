@@ -200,14 +200,7 @@ func (rc *RequestConfig) SetHeader(headers H) *RequestConfig {
 
 // SetJSON supply JSON body.
 func (rc *RequestConfig) SetJSON(body D) *RequestConfig {
-	b, err := json.Marshal(body)
-	if err != nil {
-		// Log error but continue to maintain backward compatibility
-		log.Printf("SetJSON: failed to marshal JSON: %v", err)
-		return rc
-	}
-	rc.Body = string(b)
-	return rc
+	return rc.SetJSONInterface(body)
 }
 
 // SetJSONInterface supply JSON body
@@ -234,15 +227,19 @@ func (rc *RequestConfig) SetJSONInterface(body any) *RequestConfig {
 //
 //	*RequestConfig: The updated request configuration.
 func (rc *RequestConfig) SetForm(body H) *RequestConfig {
-	f := make(url.Values)
+	rc.Body = encodeValues(body)
 
-	for k, v := range body {
+	return rc
+}
+
+// encodeValues converts an H map into a URL-encoded query/form string.
+func encodeValues(data H) string {
+	f := make(url.Values, len(data))
+	for k, v := range data {
 		f.Set(k, v)
 	}
 
-	rc.Body = f.Encode()
-
-	return rc
+	return f.Encode()
 }
 
 // SetFileFromPath upload new file.
@@ -276,35 +273,29 @@ func (rc *RequestConfig) SetFileFromPath(uploads []UploadFile, params ...H) *Req
 	return rc
 }
 
-// processUploadFile handles the processing of a single upload file.
+// processUploadFile handles the processing of a single upload file. Content is
+// taken from f.Content when present, otherwise read from the file at f.Path.
 func (rc *RequestConfig) processUploadFile(writer *multipart.Writer, f UploadFile) error {
-	reader := bytes.NewReader(f.Content)
-	if reader.Size() == 0 {
-		// Open file and ensure it's closed properly
+	var src io.Reader = bytes.NewReader(f.Content)
+	if len(f.Content) == 0 {
+		// Open file and ensure it's closed properly.
 		file, err := os.Open(f.Path)
 		if err != nil {
 			return fmt.Errorf("failed to open file %s: %w", f.Path, err)
 		}
 		defer file.Close()
-
-		part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
-		if err != nil {
-			return fmt.Errorf("failed to create form file for %s: %w", f.Name, err)
-		}
-
-		if _, err = io.Copy(part, file); err != nil {
-			return fmt.Errorf("failed to copy file content: %w", err)
-		}
-	} else {
-		part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
-		if err != nil {
-			return fmt.Errorf("failed to create form file for %s: %w", f.Name, err)
-		}
-
-		if _, err = reader.WriteTo(part); err != nil {
-			return fmt.Errorf("failed to write content: %w", err)
-		}
+		src = file
 	}
+
+	part, err := writer.CreateFormFile(f.Name, filepath.Base(f.Path))
+	if err != nil {
+		return fmt.Errorf("failed to create form file for %s: %w", f.Name, err)
+	}
+
+	if _, err = io.Copy(part, src); err != nil {
+		return fmt.Errorf("failed to copy file content: %w", err)
+	}
+
 	return nil
 }
 
@@ -313,14 +304,6 @@ func (rc *RequestConfig) isJSONContent(body string) bool {
 	trimmed := strings.TrimSpace(body)
 	return (strings.HasPrefix(trimmed, "{") && strings.HasSuffix(trimmed, "}")) ||
 		(strings.HasPrefix(trimmed, "[") && strings.HasSuffix(trimmed, "]"))
-}
-
-// isSecureContext determines if cookies should be set as secure.
-// For testing purposes, this returns false, but can be overridden based on context.
-func (rc *RequestConfig) isSecureContext() bool {
-	// In a real application, you might check for HTTPS or environment variables
-	// For testing framework, we default to false but this can be made configurable
-	return false
 }
 
 // SetPath supply new request path to deal with path variable request
@@ -338,36 +321,19 @@ func (rc *RequestConfig) SetQueryD(query D) *RequestConfig {
 		return rc
 	}
 
-	var buf strings.Builder
-	buf.WriteString("?")
-	first := true
-
+	f := make(url.Values)
 	for k, v := range query {
 		switch v := v.(type) {
 		case string:
-			if !first {
-				buf.WriteString("&")
-			}
-			buf.WriteString(url.QueryEscape(k))
-			buf.WriteString("=")
-			buf.WriteString(url.QueryEscape(v))
-			first = false
+			f.Add(k, v)
 		case []string:
 			for _, info := range v {
-				if !first {
-					buf.WriteString("&")
-				}
-				buf.WriteString(url.QueryEscape(k))
-				buf.WriteString("=")
-				buf.WriteString(url.QueryEscape(info))
-				first = false
+				f.Add(k, info)
 			}
 		}
 	}
 
-	// Avoid calling buf.String() twice
-	queryStr := buf.String()
-	rc.Path += queryStr
+	rc.Path += "?" + f.Encode()
 	return rc
 }
 
@@ -385,17 +351,11 @@ func (rc *RequestConfig) SetQueryD(query D) *RequestConfig {
 //
 //	*RequestConfig: The updated request configuration with the query parameters set.
 func (rc *RequestConfig) SetQuery(query H) *RequestConfig {
-	f := make(url.Values)
-
-	for k, v := range query {
-		f.Set(k, v)
-	}
-
+	sep := "?"
 	if strings.Contains(rc.Path, "?") {
-		rc.Path = rc.Path + "&" + f.Encode()
-	} else {
-		rc.Path = rc.Path + "?" + f.Encode()
+		sep = "&"
 	}
+	rc.Path += sep + encodeValues(query)
 
 	return rc
 }
@@ -435,13 +395,12 @@ func (rc *RequestConfig) SetCookie(cookies H) *RequestConfig {
 
 func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) {
 	qs := ""
-	if strings.Contains(rc.Path, "?") {
-		ss := strings.Split(rc.Path, "?")
-		rc.Path = ss[0]
-		qs = ss[1]
+	if i := strings.IndexByte(rc.Path, '?'); i >= 0 {
+		qs = rc.Path[i+1:]
+		rc.Path = rc.Path[:i]
 	}
 
-	body := bytes.NewBufferString(rc.Body)
+	body := strings.NewReader(rc.Body)
 
 	req, err := http.NewRequestWithContext(rc.Context, rc.Method, rc.Path, body)
 	if err != nil {
@@ -480,12 +439,12 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 
 	if len(rc.Cookies) > 0 {
 		for k, v := range rc.Cookies {
-			// Secure is context-aware: a test client may exercise HTTP-only flows.
+			// Secure is false so a test client can exercise plain HTTP flows.
 			req.AddCookie(&http.Cookie{ //nolint:gosec
 				Name:     k,
 				Value:    v,
 				HttpOnly: true,
-				Secure:   rc.isSecureContext(),
+				Secure:   false,
 				SameSite: http.SameSiteStrictMode,
 			})
 		}
