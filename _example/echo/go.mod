@@ -4,7 +4,7 @@ go 1.25.10
 
 require (
 	github.com/appleboy/gofight/v2 v2.2.0
-	github.com/labstack/echo/v4 v4.15.2
+	github.com/labstack/echo/v4 v4.15.3
 	github.com/stretchr/testify v1.11.1
 )
 
