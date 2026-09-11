@@ -215,6 +215,18 @@ func (rc *RequestConfig) SetJSONInterface(body any) *RequestConfig {
 	return rc
 }
 
+// SetJSONWithEncoder supply JSON body using a custom encoder function.
+func (rc *RequestConfig) SetJSONWithEncoder(encoder func(any) ([]byte, error), body any) *RequestConfig {
+	b, err := encoder(body)
+	if err != nil {
+		// Log error but continue to maintain backward compatibility
+		log.Printf("SetJSONWithEncoder: failed to encode JSON: %v", err)
+		return rc
+	}
+	rc.Body = string(b)
+	return rc
+}
+
 // SetForm sets the form data for the request configuration.
 // It takes a map of string keys and values, converts it to url.Values,
 // and encodes it as a URL-encoded form string, which is then assigned to the Body field.
