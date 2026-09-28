@@ -406,7 +406,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	if err != nil {
 		log.Printf("initTest: failed to create HTTP request: %v", err)
 		// Create minimal request to prevent panic
-		req, _ = http.NewRequestWithContext(context.Background(), "GET", "/", nil)
+		req, _ = http.NewRequestWithContext(context.Background(), http.MethodGet, "/", nil)
 	}
 	req.RequestURI = req.URL.RequestURI()
 
@@ -440,7 +440,7 @@ func (rc *RequestConfig) initTest() (*http.Request, *httptest.ResponseRecorder) 
 	if len(rc.Cookies) > 0 {
 		for k, v := range rc.Cookies {
 			// Secure is false so a test client can exercise plain HTTP flows.
-			req.AddCookie(&http.Cookie{ //nolint:gosec
+			req.AddCookie(&http.Cookie{
 				Name:     k,
 				Value:    v,
 				HttpOnly: true,
