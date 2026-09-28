@@ -1,15 +1,15 @@
 GO ?= go
-GOFMT ?= gofumpt -l -w
+TOOLS_MOD := -modfile=go.tools.mod
 PACKAGES ?= $(shell $(GO) list ./...)
 GOFILES := $(shell find . -name "*.go" -type f)
 
 .PHONY: fmt
 fmt:
-	$(GOFMT) -w $(GOFILES)
+	$(GO) tool $(TOOLS_MOD) golangci-lint fmt
 
 .PHONY: fmt-check
 fmt-check:
-	@diff=$$($(GOFMT) -d $(GOFILES)); \
+	@diff=$$($(GO) tool $(TOOLS_MOD) golangci-lint fmt --diff) || exit $$?; \
 	if [ -n "$$diff" ]; then \
 		echo "Please run 'make fmt' and commit the result:"; \
 		echo "$${diff}"; \
@@ -25,3 +25,11 @@ vet:
 clean:
 	$(GO) clean -modcache -cache -i
 	find . -name "coverage.txt" -delete
+
+.PHONY: lint
+lint: ## Run golangci-lint
+	$(GO) tool $(TOOLS_MOD) golangci-lint run
+
+.PHONY: install-tools fmt lint
+install-tools: ## Download pinned Go tools
+	$(GO) mod download $(TOOLS_MOD)

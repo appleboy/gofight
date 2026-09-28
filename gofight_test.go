@@ -171,11 +171,11 @@ func TestSetCookie(t *testing.T) {
 		SetCookie(cookies).
 		Run(basicEngine(), func(r HTTPResponse, rq HTTPRequest) {
 			cookieFoo, err := rq.Cookie("foo")
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, "bar", cookieFoo.Value)
 
 			cookieBaz, err := rq.Cookie("baz")
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, "qux", cookieBaz.Value)
 
 			assert.Equal(t, "bar", r.Body.String())
@@ -243,13 +243,13 @@ func jsonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data interface{}
+	var data any
 	if err := json.Unmarshal(body, &data); err != nil {
 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
 		return
 	}
 
-	response := map[string]interface{}{
+	response := map[string]any{
 		"received": data,
 		"method":   r.Method,
 	}
@@ -287,7 +287,7 @@ func methodEchoHandler(w http.ResponseWriter, r *http.Request) {
 
 func pathVariableHandler(w http.ResponseWriter, r *http.Request) {
 	path := strings.TrimPrefix(r.URL.Path, "/books/")
-	_, _ = io.WriteString(w, fmt.Sprintf("Book path: %s", path))
+	_, _ = io.WriteString(w, "Book path: "+path)
 }
 
 func extendedEngine() http.Handler {
@@ -386,9 +386,9 @@ func TestSetJSON(t *testing.T) {
 					assert.Contains(t, req.Header.Get("Content-Type"), "application/json")
 
 					// Parse response to verify data was processed correctly
-					var response map[string]interface{}
+					var response map[string]any
 					err := json.Unmarshal(resp.Body.Bytes(), &response)
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					assert.Equal(t, "POST", response["method"])
 					assert.NotNil(t, response["received"])
 				})
@@ -405,7 +405,7 @@ func TestSetJSONInterface(t *testing.T) {
 
 	tests := []struct {
 		name string
-		data interface{}
+		data any
 	}{
 		{
 			name: "struct",
@@ -413,7 +413,7 @@ func TestSetJSONInterface(t *testing.T) {
 		},
 		{
 			name: "map",
-			data: map[string]interface{}{"key": "value", "number": 123},
+			data: map[string]any{"key": "value", "number": 123},
 		},
 		{
 			name: "slice",
@@ -501,7 +501,7 @@ func TestSetBodyEmpty(t *testing.T) {
 		SetBody("").
 		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
 			body, _ := io.ReadAll(req.Body)
-			assert.Equal(t, "", string(body))
+			assert.Empty(t, string(body))
 			assert.Equal(t, http.StatusOK, resp.Code)
 		})
 }
@@ -585,7 +585,7 @@ func TestErrorHandling(t *testing.T) {
 // TestSetFileFromPath tests file upload functionality
 func TestSetFileFromPath(t *testing.T) {
 	// Create a temporary test file
-	tmpFile := filepath.Join(os.TempDir(), "test.txt")
+	tmpFile := filepath.Join(t.TempDir(), "test.txt")
 	err := os.WriteFile(tmpFile, []byte("Hello World"), 0o600)
 	require.NoError(t, err)
 	defer os.Remove(tmpFile)
@@ -808,7 +808,7 @@ func TestJSONMarshallErrors(t *testing.T) {
 		Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
 			// Should continue execution even with marshal error
 			body, _ := io.ReadAll(req.Body)
-			assert.Equal(t, "", string(body)) // Body should be empty due to marshal error
+			assert.Empty(t, string(body)) // Body should be empty due to marshal error
 		})
 }
 
@@ -918,7 +918,7 @@ func TestHTTPResponseHeaders(t *testing.T) {
 			handler: mux,
 			checkHeaders: func(t *testing.T, resp HTTPResponse) {
 				values := resp.Header()["X-Multiple"]
-				assert.Equal(t, 2, len(values))
+				assert.Len(t, values, 2)
 				assert.Contains(t, values, "value1")
 				assert.Contains(t, values, "value2")
 			},
@@ -937,7 +937,7 @@ func TestHTTPResponseHeaders(t *testing.T) {
 			name:    "non-existent header returns empty string",
 			handler: mux,
 			checkHeaders: func(t *testing.T, resp HTTPResponse) {
-				assert.Equal(t, "", resp.Header().Get("X-Non-Existent"))
+				assert.Empty(t, resp.Header().Get("X-Non-Existent"))
 			},
 		},
 	}
@@ -967,7 +967,7 @@ func TestHTTPResponseHeaderMethods(t *testing.T) {
 
 			// Test Values() method for multiple header values
 			multipleValues := resp.Header().Values("X-Multiple")
-			assert.Equal(t, 2, len(multipleValues))
+			assert.Len(t, multipleValues, 2)
 			assert.Equal(t, "value1", multipleValues[0])
 			assert.Equal(t, "value2", multipleValues[1])
 
