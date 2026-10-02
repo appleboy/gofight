@@ -434,6 +434,79 @@ func TestSetJSONInterface(t *testing.T) {
 	}
 }
 
+// TestSetJSONWithEncoder tests custom JSON encoder functionality
+func TestSetJSONWithEncoder(t *testing.T) {
+	tests := []struct {
+		name    string
+		data    D
+		encoder func(any) ([]byte, error)
+	}{
+		{
+			name: "json marshal",
+			data: D{
+				"name":  "test",
+				"value": 123,
+			},
+			encoder: json.Marshal,
+		},
+		{
+			name: "custom encoder",
+			data: D{
+				"name":  "test",
+				"value": 123,
+			},
+			encoder: func(v any) ([]byte, error) {
+				return json.Marshal(v)
+			},
+		},
+		{
+			name: "encoder without html escaping",
+			data: D{
+				"html": "<script>alert('test')</script>",
+			},
+			encoder: func(v any) ([]byte, error) {
+				var buf strings.Builder
+				encoder := json.NewEncoder(&buf)
+				encoder.SetEscapeHTML(false)
+				if err := encoder.Encode(v); err != nil {
+					return nil, err
+				}
+				return []byte(strings.TrimSuffix(buf.String(), "\n")), nil
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := New()
+
+			r.POST("/json").
+				SetJSONWithEncoder(tt.encoder, tt.data).
+				Run(extendedEngine(), func(resp HTTPResponse, req HTTPRequest) {
+					assert.Equal(t, http.StatusOK, resp.Code)
+					assert.Contains(t, req.Header.Get("Content-Type"), "application/json")
+
+					var response map[string]interface{}
+					err := json.Unmarshal(resp.Body.Bytes(), &response)
+					require.NoError(t, err)
+
+					assert.Equal(t, "POST", response["method"])
+					assert.NotNil(t, response["received"])
+
+					received := response["received"].(map[string]interface{})
+
+					if tt.name == "encoder without html escaping" {
+						assert.Equal(
+							t,
+							"<script>alert('test')</script>",
+							received["html"],
+						)
+					}
+				})
+		})
+	}
+}
+
 // TestSetQueryD tests query parameter arrays functionality
 func TestSetQueryD(t *testing.T) {
 	tests := []struct {
