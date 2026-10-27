@@ -212,6 +212,9 @@ func (rc *RequestConfig) SetJSONInterface(body any) *RequestConfig {
 		return rc
 	}
 	rc.Body = string(b)
+	if rc.ContentType == "" {
+		rc.ContentType = ApplicationJSON
+	}
 	return rc
 }
 
