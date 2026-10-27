@@ -434,6 +434,16 @@ func TestSetJSONInterface(t *testing.T) {
 	}
 }
 
+func TestSetJSONInterfaceScalarContentType(t *testing.T) {
+	r := New().POST("/json").SetJSONInterface("plain text")
+	request, _ := r.initTest()
+
+	assert.Equal(t, `"plain text"`, r.Body)
+	if got := request.Header.Get(ContentType); got != ApplicationJSON {
+		t.Errorf("Content-Type = %q, want %q", got, ApplicationJSON)
+	}
+}
+
 // TestSetQueryD tests query parameter arrays functionality
 func TestSetQueryD(t *testing.T) {
 	tests := []struct {
